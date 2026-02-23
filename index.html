@@ -1470,24 +1470,15 @@
             });
 
 try {
-                // روابط السيرفرات السريعة
-                const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
-                const ffmpegURL = 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.7/dist/umd';
-                
-                // الحيلة الذكية: سحب ملف الـ Worker (حجمه 3 كيلوبايت فقط) كملف محلي وهمي لتخطي حماية المتصفح
-                const workerRes = await fetch(`${ffmpegURL}/814.ffmpeg.js`);
-                const workerBlob = await workerRes.blob();
-                const workerBlobURL = URL.createObjectURL(workerBlob);
-                
-                // تشغيل المحرك: 
-                // سنمرر الرابط الوهمي للملف الصغير، ونترك ملف الـ 31 ميجا (wasmURL) يُحمل من السيرفر الخارجي!
+                // المحرك الهجين: 
+                // 1. نقرأ ملفات الـ JS الصغيرة من مشروعنا محلياً لتخطي حماية المتصفح (SecurityError).
+                // 2. نقرأ الملف الثقيل (31 ميجا) من السيرفر الخارجي السريع لكي لا نرفعه على GitHub.
                 await ffmpegInstance.load({
-                    coreURL: `${baseURL}/ffmpeg-core.js`,
-                    wasmURL: `${baseURL}/ffmpeg-core.wasm`,
-                    workerURL: workerBlobURL,
-                    classWorkerURL: workerBlobURL
+                    coreURL: 'ffmpeg/ffmpeg-core.js',
+                    workerURL: 'ffmpeg/814.ffmpeg.js',
+                    classWorkerURL: 'ffmpeg/814.ffmpeg.js',
+                    wasmURL: 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm'
                 });
-
                 const isLandscape = currentVideoOrientation === 'landscape';
                 const width = isLandscape ? 1920 : 1080;
                 const height = isLandscape ? 1080 : 1920;
