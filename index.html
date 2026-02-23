@@ -1470,14 +1470,14 @@
             });
 
             try {
-                const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
-                const ffmpegURL = 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.7/dist/umd';
-                
-                await ffmpegInstance.load({
-                    coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-                    wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
-                    workerURL: await toBlobURL(`${ffmpegURL}/814.ffmpeg.js`, 'text/javascript')
-                });
+    const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
+    const ffmpegURL = 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.7/dist/umd';
+    
+    await ffmpegInstance.load({
+        coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+        wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+        classWorkerURL: await toBlobURL(`${ffmpegURL}/814.ffmpeg.js`, 'text/javascript')
+    });
 
                 const isLandscape = currentVideoOrientation === 'landscape';
                 const width = isLandscape ? 1920 : 1080;
