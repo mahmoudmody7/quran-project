@@ -1132,30 +1132,19 @@ const glowSettings = document.getElementById('glowSettings');
 function getAudioDuration(audioSrc) {
     return new Promise(resolve => {
         if (!audioSrc) { resolve(1.0); return; }
-        
-        // تمرير الرابط الخارجي عبر البروكسي لتخطي حظر Vercel
-        let finalSrc = audioSrc;
-        if (!audioSrc.startsWith('data:') && (audioSrc.includes('everyayah.com') || audioSrc.includes('alquran.cloud'))) {
-            finalSrc = `https://corsproxy.io/?${encodeURIComponent(audioSrc)}`;
-        }
-
-        const audio = audioSrc.startsWith('data:') ? new Audio(audioSrc) : audioPlayerForDuration;
-        audio.crossOrigin = "anonymous"; // ضروري جداً
-
-        if (!audioSrc.startsWith('data:')) audio.src = finalSrc;
+        const audio = (audioSrc.startsWith('data:') || audioSrc.startsWith('blob:')) ? new Audio(audioSrc) : document.getElementById('audioPlayerForDuration');
+        audio.crossOrigin = "anonymous";
+        audio.src = audioSrc;
         
         let resolved = false;
-        const timer = setTimeout(() => { if (!resolved) { console.warn(`Timeout duration for ${finalSrc.substring(0, 50)}`); cleanupAndResolve(5.0); }}, 15000); 
+        const timer = setTimeout(() => { if (!resolved) { cleanupAndResolve(5.0); }}, 15000); 
+        function cleanupAndResolve(duration) { resolved = true; clearTimeout(timer); audio.onloadedmetadata = audio.onerror = null; if (!audioSrc.startsWith('data:') && !audioSrc.startsWith('blob:')) audio.src = ''; resolve(Math.max(0.05, duration)); }
         
-        function cleanupAndResolve(duration) { resolved = true; clearTimeout(timer); audio.onloadedmetadata = audio.onerror = null; if (!audioSrc.startsWith('data:')) audio.src = ''; resolve(Math.max(0.05, duration)); }
-        
-        audio.onloadedmetadata = () => { if (!resolved) { const d = audio.duration; cleanupAndResolve(isFinite(d) && d > 0 ? d : 5.0); }};
-        audio.onerror = () => { if (!resolved) { console.error(`Audio error for ${finalSrc.substring(0, 50)}`); cleanupAndResolve(5.0); }};
-        
-        if (!audioSrc.startsWith('data:')) audio.load();
+        audio.onloadedmetadata = () => { if (!resolved) { cleanupAndResolve(audio.duration || 5.0); }};
+        audio.onerror = () => { if (!resolved) { cleanupAndResolve(5.0); }};
+        if (!audioSrc.startsWith('data:') && !audioSrc.startsWith('blob:')) audio.load();
     });
 }
-
         function updateProgressUI(current, total, customMessage = "") {
             const percent = total > 0 ? Math.max(0, Math.min(100, (current / total) * 100)) : 0;
             progressBarDiv.style.width = percent + '%';
@@ -1467,13 +1456,31 @@ const everyAyahFolders = {
                         const formattedAyah = String(ayahNum).padStart(3, '0');
                         // تكوين الرابط المباشر
                         audioUrlDefault = `${EVERYAYAH_BASE_URL}${readerDir}/${formattedSurah}${formattedAyah}.mp3`;
-                    } else {
+    } else {
                         // إذا لم يكن في القاموس، استخدم الطريقة القديمة (alquran.cloud)
                         const audioApiResponse = await fetch(`${API_BASE_QURAN_CLOUD}/ayah/${surahNum}:${ayahNum}/${readerVal}`);
                         audioUrlDefault = (await audioApiResponse.json())?.data?.audio || '';
                     }
-                    audioSource = ayahData.userWantsCustomAudio && ayahData.customAudioBase64 ? ayahData.customAudioBase64 : audioUrlDefault;
-                    audioDuration = ayahData.userWantsCustomAudio && ayahData.customAudioDuration ? parseFloat(ayahData.customAudioDuration) : await getAudioDuration(audioSource);
+
+                    // --- بداية الكود السحري الجديد ---
+                    let rawAudioSource = ayahData.userWantsCustomAudio && ayahData.customAudioBase64 ? ayahData.customAudioBase64 : audioUrlDefault;
+
+                    // تحويل الرابط الخارجي إلى ملف محلي مؤقت (Blob URL) لتخطي حظر Vercel (COEP) نهائياً
+                    let audioSource = rawAudioSource;
+                    if (!rawAudioSource.startsWith('data:') && !rawAudioSource.startsWith('blob:')) {
+                        try {
+                            const res = await fetch(rawAudioSource);
+                            const blob = await res.blob();
+                            audioSource = URL.createObjectURL(blob);
+                        } catch (e) {
+                            console.error("Fetch audio blob failed:", e);
+                            audioSource = `https://api.allorigins.win/raw?url=${encodeURIComponent(rawAudioSource)}`;
+                        }
+                    }
+
+                    let audioDuration = ayahData.userWantsCustomAudio && ayahData.customAudioDuration ? parseFloat(ayahData.customAudioDuration) : await getAudioDuration(audioSource);
+                    // --- نهاية الكود السحري الجديد ---
+                    
                     collectedFrameDataForServer.push({ textOverlayImageBase64, durationSeconds: parseFloat(audioDuration.toFixed(3)), audioUrl: audioSource, isCustomAudio: !!(ayahData.userWantsCustomAudio && ayahData.customAudioBase64), background: backgroundInfo, applyFadeIn: applyFadeIn, applyFadeOut: applyFadeOut });
                     const previewBgForStrip = backgroundInfo.type === 'image' ? backgroundInfo.imageBase64 : 'data:image/jpeg;base64,...';
                     const montageImageIndex = collectedFrameDataForServer.length - 1;
@@ -1514,21 +1521,27 @@ function base64ToUint8Array(base64Str) {
             updateProgressUI(0, 100, "تحميل المحرك..."); 
 
 const { FFmpeg } = window.FFmpegWASM;
+const { fetchFile, toBlobURL } = window.FFmpegUtil; // إضافة toBlobURL
+const ffmpegInstance = new FFmpeg();
 
-            const { fetchFile } = window.FFmpegUtil;
-            const ffmpegInstance = new FFmpeg();
+// لتتبع عملية المونتاج
+ffmpegInstance.on('progress', ({ progress, time }) => {
+    const percent = Math.round(progress * 100);
+    if (percent > 0 && percent <= 100) {
+        updateProgressUI(percent, 100, `جاري استخراج الفيديو...`);
+    }
+});
 
-            // لتتبع عملية المونتاج
-            ffmpegInstance.on('progress', ({ progress, time }) => {
-                const percent = Math.round(progress * 100);
-                if (percent > 0 && percent <= 100) {
-                    updateProgressUI(percent, 100, `جاري استخراج الفيديو...`);
-                }
-            });
-
-            try {
-                // 1. تشغيل المحرك
-                await ffmpegInstance.load();
+try {
+    // 1. تشغيل المحرك بطريقة آمنة لتخطي خطأ الـ Worker SecurityError
+    const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
+    const ffmpegURL = 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.7/dist/umd';
+    
+    await ffmpegInstance.load({
+        coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+        wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+        workerURL: await toBlobURL(`${ffmpegURL}/814.ffmpeg.js`, 'text/javascript')
+    });
 
                 const isLandscape = currentVideoOrientation === 'landscape';
                 const width = isLandscape ? 1920 : 1080;
