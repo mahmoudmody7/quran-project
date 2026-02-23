@@ -1470,14 +1470,31 @@
             });
 
 try {
-                // الحل الجذري والنهائي:
-                // قراءة ملفات المونتاج من مجلد المشروع مباشرة لتخطي حماية المتصفح (CORS & Worker Security)
+                // دالة سحرية تقوم بسحب المحرك من الإنترنت وتحويله لملفات وهمية داخل المتصفح
+                // لتخطي حظر الأمان (SecurityError) ولتجنب مشكلة رفع الملفات الكبيرة (25MB+)
+                async function fetchToBlobURL(url, mimeType) {
+                    const response = await fetch(url);
+                    const arrayBuffer = await response.arrayBuffer();
+                    const blob = new Blob([arrayBuffer], { type: mimeType });
+                    return URL.createObjectURL(blob);
+                }
+
+                const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
+                const ffmpegURL = 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.7/dist/umd';
+                
+                // تحميل الملفات الثلاثة كـ Blobs آمنة
+                const safeCore = await fetchToBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript');
+                const safeWasm = await fetchToBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm');
+                const safeWorker = await fetchToBlobURL(`${ffmpegURL}/814.ffmpeg.js`, 'text/javascript');
+                
+                // تشغيل المحرك بأمان تام
                 await ffmpegInstance.load({
-                    coreURL: 'ffmpeg/ffmpeg-core.js',
-                    wasmURL: 'ffmpeg/ffmpeg-core.wasm',
-                    workerURL: 'ffmpeg/814.ffmpeg.js',
-                    classWorkerURL: 'ffmpeg/814.ffmpeg.js'
+                    coreURL: safeCore,
+                    wasmURL: safeWasm,
+                    workerURL: safeWorker,
+                    classWorkerURL: safeWorker
                 });
+				
                 const isLandscape = currentVideoOrientation === 'landscape';
                 const width = isLandscape ? 1920 : 1080;
                 const height = isLandscape ? 1080 : 1920;
