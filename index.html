@@ -23,14 +23,10 @@
         @font-face { font-family: 'PDMS_Saleem_QuranFont_shipped'; src: url('fonts/PDMS_Saleem_QuranFont_shipped.ttf') format('truetype'); }
         @font-face { font-family: 'ayatquran9-6RYBv'; src: url('fonts/ayatquran9-6RYBv.ttf') format('truetype'); }
         @font-face { font-family: 'icomoon'; src: url('fonts/icomoon.ttf') format('truetype'); }
-
-        /* --- الخطوط الجديدة التي تمت إضافتها --- */
         @font-face { font-family: 'reem-kufi-fun-regular'; src: url('fonts/reem-kufi-fun-regular.ttf') format('truetype'); }
         @font-face { font-family: 'reem-kufi-regular'; src: url('fonts/reem-kufi-regular.ttf') format('truetype'); }
         @font-face { font-family: 'ruwudu-bold'; src: url('fonts/ruwudu-bold.ttf') format('truetype'); }
         @font-face { font-family: 'Hafs'; src: url('fonts/Hafs.ttf') format('truetype'); }
-
-        /* --- END: التعديل المطلوب --- */
 
         body { font-family: 'NotoNaskhArabic-Regular', sans-serif; }
         .preview-wrapper { aspect-ratio: 9/16; width: 270px; height: 480px; overflow: hidden; position: relative; margin: 0 auto 1rem; border: 1px solid #ccc; }
@@ -62,24 +58,17 @@
         .download-icon { position: absolute; top: 0.5rem; right: 0.5rem; width: 32px; height: 32px; background-color: rgba(0, 0, 0, 0.6); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: all 0.2s ease-in-out; z-index: 10; }
         .download-icon:hover { background-color: #6d28d9; transform: scale(1.1); }
         .download-icon i { font-size: 16px; }
+        
         /* تأثير توهج النص (Glow) */
-.text-glow-effect {
-    text-shadow: 0 0 30px rgba(255,255,255,0.8), 0 0 40px rgba(255,255,255,0.6), 0 0 50px rgba(255,255,255,0.4), 0 0 60px rgba(255,255,255,0.2) !important;
-}
+        .text-glow-effect { text-shadow: 0 0 30px rgba(255,255,255,0.8), 0 0 40px rgba(255,255,255,0.6), 0 0 50px rgba(255,255,255,0.4), 0 0 60px rgba(255,255,255,0.2) !important; }
 
-
-/* تأثير حركة الموجة (Wave) */
-/* تأثير حركة الموجة (Wave) - تم إصلاح التمركز */
-@keyframes gentleWave {
-    0% { transform: translateX(-50%) translateY(0px); }
-    50% { transform: translateX(-50%) translateY(-5px); }
-    100% { transform: translateX(-50%) translateY(0px); }
-}
-.wave-text-effect {
-    animation: gentleWave 4s ease-in-out infinite;
-    display: inline-block;
-}
-
+        /* تأثير حركة الموجة (Wave) */
+        @keyframes gentleWave {
+            0% { transform: translateX(-50%) translateY(0px); }
+            50% { transform: translateX(-50%) translateY(-5px); }
+            100% { transform: translateX(-50%) translateY(0px); }
+        }
+        .wave-text-effect { animation: gentleWave 4s ease-in-out infinite; display: inline-block; }
 
         #importAyahVideoBtn { background-color: #22c55e; color: white; }
         #importAyahVideoBtn:hover { background-color: #16a34a; }
@@ -204,8 +193,6 @@
                             <option value="everyayah.albanna" data-reader-name="Al_Banna">محمود علي البنا</option>
                             <option value="everyayah.tablawi" data-reader-name="Tablawi">محمد محمود الطبلاوي</option>
                         </select>
-                            
-                        </select>
                     </div>
                     <div class="form-group mt-3">
                         <label for="surahSelect" class="block text-gray-700 mb-1 font-medium flex items-center">
@@ -280,7 +267,6 @@
     </h3>
     
     <!-- 1. توهج النص -->
-<!-- 1. توهج النص مع شريط التحكم -->
 <div class="mb-3 border-b border-gray-700 pb-3">
     <div class="flex items-center gap-2 mb-2">
         <input type="checkbox" id="enableTextGlow" class="h-4 w-4 text-yellow-500 rounded">
@@ -370,10 +356,10 @@
                                     <select id="ayahMarkerNumberFont" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500" onchange="updateTextAndOverlayStyles()"></select>
                                 </div>
                                 <div><label for="ayahMarkerColor" class="block text-sm text-gray-700">لون لون ترقيم الآية:</label><input type="color" id="ayahMarkerColor" value="#FFFFFF" class="w-full h-8 p-0" onchange="updateTextAndOverlayStyles()"></div>
-                                                               <!-- START: شريط التحكم بحجم الرمز المضاف -->
-                                                               <div id="ayahReadyMarkerSizeGroup"><label for="ayahMarkerSizeFactor" class="block text-sm text-gray-700">معامل حجم الرمز الجاهز: <span id="ayahMarkerSizeFactorValue">1.1</span>x</label><input type="range" id="ayahMarkerSizeFactor" min="0.8" max="2.0" value="1.1" step="0.05" class="w-full h-2" oninput="updateTextAndOverlayStyles(true)"></div>
-                                                               <!-- END: شريط التحكم بحجم الرمز المضاف -->
-                                                                                               <!-- START: شريط التحكم بالمسافة المضاف -->
+                                <!-- START: شريط التحكم بحجم الرمز المضاف -->
+                                <div id="ayahReadyMarkerSizeGroup"><label for="ayahMarkerSizeFactor" class="block text-sm text-gray-700">معامل حجم الرمز الجاهز: <span id="ayahMarkerSizeFactorValue">1.1</span>x</label><input type="range" id="ayahMarkerSizeFactor" min="0.8" max="2.0" value="1.1" step="0.05" class="w-full h-2" oninput="updateTextAndOverlayStyles(true)"></div>
+                                <!-- END: شريط التحكم بحجم الرمز المضاف -->
+                                <!-- START: شريط التحكم بالمسافة المضاف -->
                                 <div id="ayahReadyMarkerSpacingGroup"><label for="ayahMarkerSpacing" class="block text-sm text-gray-700">المسافة الأفقية للرمز: <span id="ayahMarkerSpacingValue">1.2</span>em</label><input type="range" id="ayahMarkerSpacing" min="0.5" max="2.0" value="1.2" step="0.05" class="w-full h-2" oninput="updateTextAndOverlayStyles(true)"></div>
                                 <!-- END: شريط التحكم بالمسافة المضاف -->
                                 <div id="ayahNumberSizeGroup"><label for="ayahMarkerFontSizeFactor" class="block text-sm text-gray-700">معامل حجم رقم الآية: <span id="ayahMarkerFontSizeFactorValue">0.5</span></label><input type="range" id="ayahMarkerFontSizeFactor" min="0.2" max="1.0" value="0.5" step="0.05" class="w-full h-2" oninput="updateTextAndOverlayStyles(true)"></div>
@@ -554,7 +540,7 @@
         </div>
     </footer>
 
-<audio id="audioPlayerForDuration" style="display:none;" preload="metadata" crossorigin="anonymous"></audio>
+    <audio id="audioPlayerForDuration" style="display:none;" preload="metadata" crossorigin="anonymous"></audio>
 
     <script>
         const removeAyahBgBtn = document.getElementById('removeAyahBgBtn');
@@ -614,8 +600,7 @@
         let currentVideoOrientation = 'portrait';
         const videoQualitySelect = document.getElementById('videoQuality');
 
-// متغيرات التأثيرات السينمائية
-const enableTextGlow = document.getElementById('enableTextGlow');
+        const enableTextGlow = document.getElementById('enableTextGlow');
         const enableRainEffect = document.getElementById('enableRainEffect');
         const rainVideoInput = document.getElementById('rainVideoInput');
         const btnSelectRain = document.getElementById('btnSelectRain');
@@ -631,31 +616,22 @@ const enableTextGlow = document.getElementById('enableTextGlow');
         let rainVideoPath = null;
         let snowVideoPath = null;
 
-        // إظهار التوهج على النص المباشر
-// --- متغيرات التوهج والموجة ---
-const glowSettings = document.getElementById('glowSettings');
+        const glowSettings = document.getElementById('glowSettings');
         const glowIntensity = document.getElementById('glowIntensity');
         const glowIntensityValue = document.getElementById('glowIntensityValue');
         const enableTextWave = document.getElementById('enableTextWave');
 
-        // دالة للتحكم بقوة التوهج وتحديثه فوراً
         function updateGlowEffect() {
             const elements = [arabicTextCaptureEl, englishTextCaptureEl, tafsirTextCaptureEl, surahNameTextElement, readerNameTextElement];
-            
             if (enableTextGlow.checked) {
                 glowSettings.style.display = 'block';
                 const val = parseInt(glowIntensity.value);
                 glowIntensityValue.textContent = val;
-                
-                // حساب مساحة وشفافية التوهج بناءً على المؤشر
-                const spread1 = val * 0.3; // انتشار خفيف
-                const spread2 = val * 0.6; // انتشار متوسط
-                const spread3 = val * 0.9; // انتشار واسع
-                const opacity = val / 100; // شفافية التوهج
-                
-                // إنشاء الظل المتوهج وتطبيقه
+                const spread1 = val * 0.3; 
+                const spread2 = val * 0.6; 
+                const spread3 = val * 0.9; 
+                const opacity = val / 100; 
                 const shadowString = `0 0 ${spread1}px rgba(255,255,255,${opacity}), 0 0 ${spread2}px rgba(255,255,255,${opacity * 0.8}), 0 0 ${spread3}px rgba(255,255,255,${opacity * 0.5})`;
-                
                 elements.forEach(el => { el.style.textShadow = shadowString; });
             } else {
                 glowSettings.style.display = 'none';
@@ -663,11 +639,9 @@ const glowSettings = document.getElementById('glowSettings');
             }
         }
 
-        // تشغيل دالة التوهج عند تفعيل الزر أو تحريك المؤشر
         enableTextGlow.addEventListener('change', updateGlowEffect);
         glowIntensity.addEventListener('input', updateGlowEffect);
 
-        // تشغيل حركة الموجة للنص العربي فقط
         enableTextWave.addEventListener('change', () => {
             if (enableTextWave.checked) {
                 arabicTextCaptureEl.classList.add('wave-text-effect');
@@ -676,7 +650,6 @@ const glowSettings = document.getElementById('glowSettings');
             }
         });
 
-        // أحداث اختيار الفيديوهات
         enableRainEffect.addEventListener('change', () => document.getElementById('rainSettings').style.display = enableRainEffect.checked ? 'block' : 'none');
         btnSelectRain.addEventListener('click', () => rainVideoInput.click());
         rainVideoInput.addEventListener('change', (e) => {
@@ -708,7 +681,6 @@ const glowSettings = document.getElementById('glowSettings');
         const triggerImportCustomAudioBtn = document.getElementById('triggerImportCustomAudioBtn');
         const removeCustomAudioBtn = document.getElementById('removeCustomAudioBtn');
         const customAudioInfoDiv = document.getElementById('customAudioInfo');
-        const audioPlayerForDuration = document.getElementById('audioPlayerForDuration');
         const prepareFramesBtn = document.getElementById('prepareFramesBtn');
         const exportVideoBtn = document.getElementById('exportVideoBtn');
         const statusMessageP = document.getElementById('statusMessage');
@@ -751,10 +723,6 @@ const glowSettings = document.getElementById('glowSettings');
         const ayahMarkerSizeFactorInput = document.getElementById('ayahMarkerSizeFactor');
         const ayahMarkerSpacingInput = document.getElementById('ayahMarkerSpacing');
 
-        /* --- START: التعديل المطلوب --- */
-        // تمت إضافة الخط الجديد إلى قائمة الخيارات
-/* --- START: التعديل المطلوب --- */
-        // تمت إضافة الخطوط الجديدة إلى قائمة الخيارات
         const allTextFontOptions = [ 
             { text: 'AmiriQuran-Regular', value: "'AmiriQuran-Regular', serif" }, 
             { text: 'Amiri-Regular', value: "'Amiri-Regular', serif" },
@@ -764,19 +732,15 @@ const glowSettings = document.getElementById('glowSettings');
             { text: 'NotoNaskhArabic-Medium', value: "'NotoNaskhArabic-Medium', sans-serif" },
             { text: 'NotoNaskhArabic-Regular', value: "'NotoNaskhArabic-Regular', sans-serif" }, 
             { text: 'PDMS_Saleem_QuranFont_shipped', value: "'PDMS_Saleem_QuranFont_shipped', serif" },
-            
-            // --- الخطوط الجديدة ---
             { text: 'Reem Kufi Fun', value: "'reem-kufi-fun-regular', sans-serif" },
             { text: 'Reem Kufi', value: "'reem-kufi-regular', sans-serif" },
             { text: 'Hafs', value: "'Hafs', sans-serif" },
-
             { text: 'Ruwudu Bold', value: "'ruwudu-bold', serif" }
         ];
-        const ayahMarkerFontOptions = [ // قائمة لرموز الآيات فقط
+        const ayahMarkerFontOptions = [ 
             { text: 'خط ترقيم جاهز (شكل 1)', value: "'ayatquran9-6RYBv', sans-serif" },
             { text: 'خط ترقيم جاهز (شكل 2 - IcoMoon)', value: "'icomoon', sans-serif" }
         ];
-                /* --- END: التعديل المطلوب --- */
         
         function updateVideoOrientation() {
             const isLandscape = landscapeModeRadio.checked;
@@ -800,12 +764,11 @@ const glowSettings = document.getElementById('glowSettings');
             updatePreviewBackground();
             updateTextAndOverlayStyles();
             updateLogoInPreview();
-            console.log(`تم التبديل إلى النمط: ${currentVideoOrientation}`);
         }
 
         function populateFontDropdown(selectElement, defaultSelectedValue, fontList) {
             if (!selectElement) return;
-            const options = fontList || allTextFontOptions; // استخدم القائمة المخصصة أو القائمة العامة
+            const options = fontList || allTextFontOptions;
             selectElement.innerHTML = ''; 
             options.forEach(font => {
                 const option = new Option(font.text, font.value);
@@ -865,20 +828,20 @@ const glowSettings = document.getElementById('glowSettings');
         }
 
         function updateRangeValueLabel(inputId, valueId, suffix = '') { 
-    const input = document.getElementById(inputId);
-    const valueEl = document.getElementById(valueId);
-    if (input && valueEl) {
-        let displaySuffix = suffix;
-        if (inputId === 'ayahMarkerSizeFactor') {
-            displaySuffix = 'x'; // لاحقة خاصة لشريط حجم الرمز
-        } else if (suffix === '') {
-             displaySuffix = ''; // لاحقة فارغة لأحجام الخطوط
-        } else {
-             displaySuffix = '%'; // اللاحقة الافتراضية للموضع
+            const input = document.getElementById(inputId);
+            const valueEl = document.getElementById(valueId);
+            if (input && valueEl) {
+                let displaySuffix = suffix;
+                if (inputId === 'ayahMarkerSizeFactor') {
+                    displaySuffix = 'x';
+                } else if (suffix === '') {
+                     displaySuffix = '';
+                } else {
+                     displaySuffix = '%';
+                }
+                valueEl.textContent = input.value + displaySuffix; 
+            }
         }
-        valueEl.textContent = input.value + displaySuffix; 
-    }
-}
         
         async function loadLocalData() {
             try {
@@ -927,17 +890,12 @@ const glowSettings = document.getElementById('glowSettings');
             updateTextAndOverlayStyles(true);
         }
         
-        /* --- START: التعديل المطلوب --- */
-        // تم تحديث هذه الدالة بالكامل لدعم الخط الجديد
         function constructArabicTextHTML(ayahText, ayahNumberInSurah) {
             const ayahTextClean = (ayahText || "").replace(/\u0640(\u06E7)/g, '$1'); 
             const mainFontSize = arabicFontSizeInput.value + 'px';
             const mainFontFamily = arabicFontSelect.value;
             const markerShapeFontFamily = ayahMarkerFontSelect.value;
             const markerColor = ayahMarkerColorInput.value;
-
-            // --- START: الكود المحدث والنهائي ---
-            // هذا الكود يتعامل فقط مع الخطوط الجاهزة التي اخترتها
 
             const sizeFactor = parseFloat(ayahMarkerSizeFactorInput.value); 
             const spacingValue = parseFloat(ayahMarkerSpacingInput.value);
@@ -946,29 +904,20 @@ const glowSettings = document.getElementById('glowSettings');
             const placeholderStyle = `display: inline-block; position: relative; width: ${spacingValue}em; height: 0; vertical-align: middle;`;
             
             let glyphCharacter;
-            // التحقق من نوع الخط الجاهز لتحديد الرمز الصحيح
             if (markerShapeFontFamily.includes('icomoon')) {
-                // منطق خط icomoon الذي يستخدم اليونيكود الخاص
                 const baseCharCode = 59648; 
                 const charCode = baseCharCode + ayahNumberInSurah;
                 glyphCharacter = String.fromCharCode(charCode);
             } else { 
-                // منطق الخط الجاهز الآخر (ayatquran9) الذي يستخدم الأرقام العادية
                 glyphCharacter = String(ayahNumberInSurah);
             }
             
             const glyphStyle = `position: absolute; left: 0; top: 50%; transform: translateY(-50%); line-height: 1; font-family: ${markerShapeFontFamily}; font-size: ${specialMarkerFontSize}; color: ${markerColor};`;
 
-            const ayahNumberHTML = 
-                `<span style="${placeholderStyle}">` +
-                    `<span style="${glyphStyle}">${glyphCharacter}</span>` +
-                `</span>`;
+            const ayahNumberHTML = `<span style="${placeholderStyle}"><span style="${glyphStyle}">${glyphCharacter}</span></span>`;
             
             return `<span class="ayah-text-segment" style="font-family: ${mainFontFamily}; color: ${arabicFontColorInput.value};">${ayahTextClean}</span>` + ayahNumberHTML;
-            
-            // --- END: الكود المحدث والنهائي ---
         }
-        /* --- END: التعديل المطلوب --- */
 
         function updateImportedAyahImagePosition() {
             const currentAyahData = fetchedAyahsForPreview[currentPreviewAyahIndex];
@@ -1105,7 +1054,7 @@ const glowSettings = document.getElementById('glowSettings');
             updateTextAndOverlayStyles(); 
         }
         
-        function displayUserMessage(message, type = 'info', videoPathDetails = null) { 
+        function displayUserMessage(message, type = 'info') { 
             statusMessageP.textContent = message; 
             statusMessageP.className = 'font-semibold text-lg mb-2 '; 
             statusContainer.querySelectorAll('button.open-folder-button').forEach(el => el.remove());
@@ -1113,7 +1062,6 @@ const glowSettings = document.getElementById('glowSettings');
             else if (type === 'success') statusMessageP.classList.add('text-green-600'); 
             else if (type === 'warning') statusMessageP.classList.add('text-yellow-600');
             else statusMessageP.classList.add('text-blue-600');
-// تم حذف زر "فتح المجلد" لأن المتصفح سيقوم بتحميل الفيديو مباشرة كملف
         }
         
         function setControlsDisabled(isDisabled) { 
@@ -1129,22 +1077,23 @@ const glowSettings = document.getElementById('glowSettings');
             if (isDisabled || !hasCustomBg) { removeAyahBgBtn.classList.add('hidden'); }
         }
         
-function getAudioDuration(audioSrc) {
-    return new Promise(resolve => {
-        if (!audioSrc) { resolve(1.0); return; }
-        const audio = (audioSrc.startsWith('data:') || audioSrc.startsWith('blob:')) ? new Audio(audioSrc) : document.getElementById('audioPlayerForDuration');
-        audio.crossOrigin = "anonymous";
-        audio.src = audioSrc;
-        
-        let resolved = false;
-        const timer = setTimeout(() => { if (!resolved) { cleanupAndResolve(5.0); }}, 15000); 
-        function cleanupAndResolve(duration) { resolved = true; clearTimeout(timer); audio.onloadedmetadata = audio.onerror = null; if (!audioSrc.startsWith('data:') && !audioSrc.startsWith('blob:')) audio.src = ''; resolve(Math.max(0.05, duration)); }
-        
-        audio.onloadedmetadata = () => { if (!resolved) { cleanupAndResolve(audio.duration || 5.0); }};
-        audio.onerror = () => { if (!resolved) { cleanupAndResolve(5.0); }};
-        if (!audioSrc.startsWith('data:') && !audioSrc.startsWith('blob:')) audio.load();
-    });
-}
+        function getAudioDuration(audioSrc) {
+            return new Promise(resolve => {
+                if (!audioSrc) { resolve(1.0); return; }
+                const audio = (audioSrc.startsWith('data:') || audioSrc.startsWith('blob:')) ? new Audio(audioSrc) : document.getElementById('audioPlayerForDuration');
+                audio.crossOrigin = "anonymous";
+                audio.src = audioSrc;
+                
+                let resolved = false;
+                const timer = setTimeout(() => { if (!resolved) { cleanupAndResolve(5.0); }}, 15000); 
+                function cleanupAndResolve(duration) { resolved = true; clearTimeout(timer); audio.onloadedmetadata = audio.onerror = null; if (!audioSrc.startsWith('data:') && !audioSrc.startsWith('blob:')) audio.src = ''; resolve(Math.max(0.05, duration)); }
+                
+                audio.onloadedmetadata = () => { if (!resolved) { cleanupAndResolve(audio.duration || 5.0); }};
+                audio.onerror = () => { if (!resolved) { cleanupAndResolve(5.0); }};
+                if (!audioSrc.startsWith('data:') && !audioSrc.startsWith('blob:')) audio.load();
+            });
+        }
+
         function updateProgressUI(current, total, customMessage = "") {
             const percent = total > 0 ? Math.max(0, Math.min(100, (current / total) * 100)) : 0;
             progressBarDiv.style.width = percent + '%';
@@ -1430,9 +1379,7 @@ function getAudioDuration(audioSrc) {
                     let audioUrlDefault = '', audioSource, audioDuration;
                     const readerVal = readerSelect.value, surahNum = surahSelect.value, ayahNum = ayahData.numberInSurah;
                     
-                    // قاموس المجلدات في موقع EveryAyah
-// قاموس جميع القراء بروابط المجلدات المباشرة من EveryAyah
-const everyAyahFolders = {
+                    const everyAyahFolders = {
                         'everyayah.alafasy': 'Alafasy_128kbps',
                         'everyayah.abdulbasit_murattal': 'Abdul_Basit_Murattal_192kbps',
                         'everyayah.abdulbasit_mujawwad': 'Abdul_Basit_Mujawwad_128kbps',
@@ -1447,47 +1394,40 @@ const everyAyahFolders = {
                         'everyayah.tablawi': 'Mohammad_al_Tablaway_128kbps'
                     };
 
-                    // التحقق: هل القارئ موجود في القاموس؟
                     if (everyAyahFolders[readerVal]) {
-                        // استخراج اسم المجلد من القاموس
                         const readerDir = everyAyahFolders[readerVal];
-                        // تنسيق الأرقام لتصبح 3 خانات (مثل 001002.mp3)
                         const formattedSurah = String(surahNum).padStart(3, '0');
                         const formattedAyah = String(ayahNum).padStart(3, '0');
-                        // تكوين الرابط المباشر
                         audioUrlDefault = `${EVERYAYAH_BASE_URL}${readerDir}/${formattedSurah}${formattedAyah}.mp3`;
-    } else {
-                        // إذا لم يكن في القاموس، استخدم الطريقة القديمة (alquran.cloud)
+                    } else {
                         const audioApiResponse = await fetch(`${API_BASE_QURAN_CLOUD}/ayah/${surahNum}:${ayahNum}/${readerVal}`);
                         audioUrlDefault = (await audioApiResponse.json())?.data?.audio || '';
                     }
 
-                    // --- بداية الكود السحري الجديد ---
                     let rawAudioSource = ayahData.userWantsCustomAudio && ayahData.customAudioBase64 ? ayahData.customAudioBase64 : audioUrlDefault;
 
-                    // تحويل الرابط الخارجي إلى ملف محلي مؤقت (Blob URL) لتخطي حظر Vercel (COEP) نهائياً
-                    let audioSource = rawAudioSource;
+                    let audioSourceFinal = rawAudioSource;
                     if (!rawAudioSource.startsWith('data:') && !rawAudioSource.startsWith('blob:')) {
                         try {
                             const res = await fetch(rawAudioSource);
                             const blob = await res.blob();
-                            audioSource = URL.createObjectURL(blob);
+                            audioSourceFinal = URL.createObjectURL(blob);
                         } catch (e) {
                             console.error("Fetch audio blob failed:", e);
-                            audioSource = `https://api.allorigins.win/raw?url=${encodeURIComponent(rawAudioSource)}`;
+                            audioSourceFinal = `https://api.allorigins.win/raw?url=${encodeURIComponent(rawAudioSource)}`;
                         }
                     }
 
-                    let audioDuration = ayahData.userWantsCustomAudio && ayahData.customAudioDuration ? parseFloat(ayahData.customAudioDuration) : await getAudioDuration(audioSource);
-                    // --- نهاية الكود السحري الجديد ---
+                    let audioDurationValue = ayahData.userWantsCustomAudio && ayahData.customAudioDuration ? parseFloat(ayahData.customAudioDuration) : await getAudioDuration(audioSourceFinal);
                     
-                    collectedFrameDataForServer.push({ textOverlayImageBase64, durationSeconds: parseFloat(audioDuration.toFixed(3)), audioUrl: audioSource, isCustomAudio: !!(ayahData.userWantsCustomAudio && ayahData.customAudioBase64), background: backgroundInfo, applyFadeIn: applyFadeIn, applyFadeOut: applyFadeOut });
+                    collectedFrameDataForServer.push({ textOverlayImageBase64, durationSeconds: parseFloat(audioDurationValue.toFixed(3)), audioUrl: audioSourceFinal, isCustomAudio: !!(ayahData.userWantsCustomAudio && ayahData.customAudioBase64), background: backgroundInfo, applyFadeIn: applyFadeIn, applyFadeOut: applyFadeOut });
+                    
                     const previewBgForStrip = backgroundInfo.type === 'image' ? backgroundInfo.imageBase64 : 'data:image/jpeg;base64,...';
                     const montageImageIndex = collectedFrameDataForServer.length - 1;
                     const stripEl = document.createElement('div');
                     stripEl.className = 'flex items-start sm:items-center gap-3 p-3 bg-white border rounded-lg shadow-sm';
                     const aspectRatioClass = currentVideoOrientation === 'landscape' ? 'aspect-[16/9]' : 'aspect-[9/16]';
-                    stripEl.innerHTML = `<div class="w-20 h-auto border rounded shrink-0 relative ${aspectRatioClass}" style="background-image:url(${previewBgForStrip}); background-color: #2c3e50; background-size:cover; background-position:center;"><img src="${textOverlayImageBase64}" alt="Overlay Ayah ${ayahNum}" class="w-full h-full object-contain absolute top-0 left-0">${backgroundInfo.type === 'image' ? `<a href="javascript:void(0)" onclick="downloadMontageImage(${montageImageIndex})" class="download-icon" title="تحميل"><i class="fas fa-download"></i></a>` : ''}</div><div class="flex-grow min-w-0"><p class="font-semibold text-sm text-emerald-700">آية ${toArabicDigits(ayahNum)} - ${currentVideoOrientation === 'landscape' ? 'عرضي' : 'طولي'}</p><p class="text-xs text-gray-600 truncate" title="${ayahData.arabicText}">${ayahData.arabicText.substring(0,80)}...</p><p class="text-xs font-mono text-blue-600 mt-1">المدة: ${audioDuration.toFixed(2)} ث</p><audio controls src="https://corsproxy.io/?${encodeURIComponent(audioSource)}" preload="metadata" class="w-full h-8 mt-1" crossorigin="anonymous"></audio></audio></div>`;
+                    stripEl.innerHTML = `<div class="w-20 h-auto border rounded shrink-0 relative ${aspectRatioClass}" style="background-image:url(${previewBgForStrip}); background-color: #2c3e50; background-size:cover; background-position:center;"><img src="${textOverlayImageBase64}" alt="Overlay Ayah ${ayahNum}" class="w-full h-full object-contain absolute top-0 left-0">${backgroundInfo.type === 'image' ? `<a href="javascript:void(0)" onclick="downloadMontageImage(${montageImageIndex})" class="download-icon" title="تحميل"><i class="fas fa-download"></i></a>` : ''}</div><div class="flex-grow min-w-0"><p class="font-semibold text-sm text-emerald-700">آية ${toArabicDigits(ayahNum)} - ${currentVideoOrientation === 'landscape' ? 'عرضي' : 'طولي'}</p><p class="text-xs text-gray-600 truncate" title="${ayahData.arabicText}">${ayahData.arabicText.substring(0,80)}...</p><p class="text-xs font-mono text-blue-600 mt-1">المدة: ${audioDurationValue.toFixed(2)} ث</p><audio controls src="${audioSourceFinal}" preload="metadata" class="w-full h-8 mt-1" crossorigin="anonymous"></audio></div>`;
                     montageStripContainer.appendChild(stripEl);
                 }
                 displayUserMessage(`اكتمل تحضير ${toArabicDigits(collectedFrameDataForServer.length)} إطارات!`, 'success');
@@ -1504,15 +1444,13 @@ const everyAyahFolders = {
             }
         });
 
-// دالة مساعدة لتحويل الصور من Base64 إلى صيغة يفهمها محرك الفيديو
-function base64ToUint8Array(base64Str) {
+        function base64ToUint8Array(base64Str) {
             const raw = window.atob(base64Str.split(',')[1]);
             const result = new Uint8Array(new ArrayBuffer(raw.length));
             for (let i = 0; i < raw.length; i++) result[i] = raw.charCodeAt(i);
             return result;
         }
 
-        // محرك المونتاج الجبار داخل المتصفح
         exportVideoBtn.addEventListener('click', async () => { 
             if (collectedFrameDataForServer.length === 0) { displayUserMessage('لا توجد إطارات للتصدير.', 'error'); return; }
             setControlsDisabled(true); exportVideoBtn.disabled = true; 
@@ -1520,34 +1458,31 @@ function base64ToUint8Array(base64Str) {
             displayUserMessage('جاري تحميل محرك الفيديو في المتصفح (قد يستغرق بضع ثوانٍ)...', 'info'); 
             updateProgressUI(0, 100, "تحميل المحرك..."); 
 
-const { FFmpeg } = window.FFmpegWASM;
-const { fetchFile, toBlobURL } = window.FFmpegUtil; // إضافة toBlobURL
-const ffmpegInstance = new FFmpeg();
+            const { FFmpeg } = window.FFmpegWASM;
+            const { fetchFile, toBlobURL } = window.FFmpegUtil;
+            const ffmpegInstance = new FFmpeg();
 
-// لتتبع عملية المونتاج
-ffmpegInstance.on('progress', ({ progress, time }) => {
-    const percent = Math.round(progress * 100);
-    if (percent > 0 && percent <= 100) {
-        updateProgressUI(percent, 100, `جاري استخراج الفيديو...`);
-    }
-});
+            ffmpegInstance.on('progress', ({ progress, time }) => {
+                const percent = Math.round(progress * 100);
+                if (percent > 0 && percent <= 100) {
+                    updateProgressUI(percent, 100, `جاري استخراج الفيديو...`);
+                }
+            });
 
-try {
-    // 1. تشغيل المحرك بطريقة آمنة لتخطي خطأ الـ Worker SecurityError
-    const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
-    const ffmpegURL = 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.7/dist/umd';
-    
-    await ffmpegInstance.load({
-        coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-        wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
-        workerURL: await toBlobURL(`${ffmpegURL}/814.ffmpeg.js`, 'text/javascript')
-    });
+            try {
+                const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
+                const ffmpegURL = 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.7/dist/umd';
+                
+                await ffmpegInstance.load({
+                    coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+                    wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+                    workerURL: await toBlobURL(`${ffmpegURL}/814.ffmpeg.js`, 'text/javascript')
+                });
 
                 const isLandscape = currentVideoOrientation === 'landscape';
                 const width = isLandscape ? 1920 : 1080;
                 const height = isLandscape ? 1080 : 1920;
                 
-                // 2. تحميل تأثيرات المطر والثلج للذاكرة المؤقتة (إذا تم تفعيلها)
                 if (enableRainEffect.checked && rainVideoPath) {
                     await ffmpegInstance.writeFile('rain.mp4', await fetchFile(rainVideoPath));
                 }
@@ -1558,18 +1493,15 @@ try {
                 const segmentFiles = [];
                 const totalFrames = collectedFrameDataForServer.length;
 
-                // 3. معالجة كل آية (إطار) لوحدها
                 for (let i = 0; i < totalFrames; i++) {
                     displayUserMessage(`جاري معالجة الآية ${toArabicDigits(i + 1)} من ${toArabicDigits(totalFrames)}...`, 'info');
                     const frame = collectedFrameDataForServer[i];
                     const iStr = String(i).padStart(3, '0');
                     const audioDuration = frame.durationSeconds;
 
-                    // كتابة ملف الصوت
                     if (frame.isCustomAudio) {
                         await ffmpegInstance.writeFile(`audio_${iStr}.mp3`, base64ToUint8Array(frame.audioUrl));
                     } else {
-                        // استخدام Proxy لتجنب مشاكل CORS في المتصفحات
                         try {
                             await ffmpegInstance.writeFile(`audio_${iStr}.mp3`, await fetchFile(frame.audioUrl));
                         } catch(e) {
@@ -1578,14 +1510,12 @@ try {
                         }
                     }
 
-                    // كتابة صورة النص
                     await ffmpegInstance.writeFile(`text_${iStr}.png`, base64ToUint8Array(frame.textOverlayImageBase64));
 
                     let ffmpegArgs = [];
                     let filterComplex = '';
                     let inputIdx = 0;
 
-                    // كتابة الخلفية
                     if (frame.background.type === 'image') {
                         await ffmpegInstance.writeFile(`bg_${iStr}.png`, base64ToUint8Array(frame.background.imageBase64));
                         ffmpegArgs.push('-loop', '1', '-framerate', '30', '-i', `bg_${iStr}.png`);
@@ -1596,12 +1526,10 @@ try {
                     filterComplex += `[0:v]scale=${width}:${height}:force_original_aspect_ratio=increase,crop=${width}:${height},setsar=1[bg];`;
                     inputIdx++;
 
-                    // إضافة النص
                     ffmpegArgs.push('-loop', '1', '-i', `text_${iStr}.png`);
                     let textStream = `[1:v]`;
                     inputIdx++;
 
-                    // تأثيرات التلاشي (Fade In / Fade Out) برمجياً للمتصفح (بدون صور إضافية)
                     let fadeFilters = [];
                     if (frame.applyFadeIn) fadeFilters.push(`fade=t=in:st=0:d=0.2:alpha=1`);
                     if (frame.applyFadeOut) fadeFilters.push(`fade=t=out:st=${Math.max(0, audioDuration - 0.2)}:d=0.2:alpha=1`);
@@ -1611,17 +1539,14 @@ try {
                         textStream = `[text_faded]`;
                     }
 
-                    // الموجة (Wave)
                     if (enableTextWave.checked) {
                         filterComplex += `${textStream}geq=r='p(X,Y+8*sin(X/50+T*3))':g='p(X,Y+8*sin(X/50+T*3))':b='p(X,Y+8*sin(X/50+T*3))':a='p(X,Y+8*sin(X/50+T*3))'[text_wavy];`;
                         textStream = `[text_wavy]`;
                     }
 
-                    // دمج النص مع الخلفية
                     filterComplex += `[bg]${textStream}overlay=0:0[v_base];`;
                     let currentV = `[v_base]`;
 
-                    // إضافة المطر
                     if (enableRainEffect.checked && rainVideoPath) {
                         ffmpegArgs.push('-stream_loop', '-1', '-i', 'rain.mp4');
                         filterComplex += `[${inputIdx}:v]scale=${width}:${height},setsar=1,colorkey=0x000000:0.3:0.2[rain_keyed];`;
@@ -1630,7 +1555,6 @@ try {
                         inputIdx++;
                     }
 
-                    // إضافة الثلج
                     if (enableSnowEffect.checked && snowVideoPath) {
                         ffmpegArgs.push('-stream_loop', '-1', '-i', 'snow.mp4');
                         filterComplex += `[${inputIdx}:v]scale=${width}:${height},setsar=1,colorkey=0x000000:0.3:0.2[snow_keyed];`;
@@ -1639,20 +1563,17 @@ try {
                         inputIdx++;
                     }
 
-                    // إضافة الجليتش
                     if (enableWhiteGlitch.checked) {
                         filterComplex += `${currentV}eq=brightness=0.3:contrast=1.5:enable='lt(mod(t,3),0.15)',rgbashift=rh=4:bh=-4:enable='lt(mod(t,3),0.15)'[v_glitch];`;
                         currentV = `[v_glitch]`;
                     }
 
-                    // ملف الصوت
                     ffmpegArgs.push('-i', `audio_${iStr}.mp3`);
                     let audioIdx = inputIdx;
 
                     const segmentName = `segment_${iStr}.mp4`;
                     segmentFiles.push(`file '${segmentName}'`);
 
-                    // 4. تنفيذ الدمج لهذه الآية
                     await ffmpegInstance.exec([
                         ...ffmpegArgs,
                         '-filter_complex', filterComplex,
@@ -1660,7 +1581,7 @@ try {
                         '-map', `${audioIdx}:a`,
                         '-t', String(audioDuration),
                         '-c:v', 'libx264',
-                        '-preset', 'ultrafast', // سريع جداً ليتناسب مع الويب
+                        '-preset', 'ultrafast',
                         '-pix_fmt', 'yuv420p',
                         '-c:a', 'aac',
                         '-b:a', '128k',
@@ -1668,7 +1589,6 @@ try {
                     ]);
                 }
 
-                // 5. دمج جميع الآيات في فيديو واحد نهائي
                 displayUserMessage(`جاري تجميع الفيديو النهائي...`, 'info');
                 await ffmpegInstance.writeFile('concat_list.txt', segmentFiles.join('\n'));
                 
@@ -1680,12 +1600,10 @@ try {
                     'output_final.mp4'
                 ]);
 
-                // 6. تحميل الفيديو واستخراجه للمستخدم
                 const fileData = await ffmpegInstance.readFile('output_final.mp4');
                 const videoBlob = new Blob([fileData.buffer], { type: 'video/mp4' });
                 const videoUrl = URL.createObjectURL(videoBlob);
 
-                // إنشاء زر تحميل مخفي والضغط عليه أوتوماتيكياً
                 const downloadLink = document.createElement('a');
                 downloadLink.href = videoUrl;
                 downloadLink.download = `Quran_Video_${Date.now()}.mp4`;
@@ -1706,20 +1624,15 @@ try {
                 exportVideoBtn.disabled = collectedFrameDataForServer.length === 0; 
             }
         });
-        /* --- START: التعديل المطلوب --- */
-        // تمت إضافة دالة جديدة للتحكم في واجهة المستخدم عند تغيير الخط
+
         function handleMarkerFontChange() {
-    const isSpecialFont = ayahMarkerFontSelect.value.includes('ayatquran9-6RYBv') || ayahMarkerFontSelect.value.includes('icomoon');
-    // إخفاء/إظهار الخيارات القديمة
-    document.getElementById('ayahNumberFontGroup').style.display = isSpecialFont ? 'none' : 'block';
-    document.getElementById('ayahNumberSizeGroup').style.display = isSpecialFont ? 'none' : 'block';
-    // إخفاء/إظهار خيارات الحجم والمسافة الجديدة
-    document.getElementById('ayahReadyMarkerSizeGroup').style.display = isSpecialFont ? 'block' : 'none';
-    document.getElementById('ayahReadyMarkerSpacingGroup').style.display = isSpecialFont ? 'block' : 'none'; // <-- هذا هو السطر الجديد
-    
-    updateTextAndOverlayStyles();
-}
-        /* --- END: التعديل المطلوب --- */
+            const isSpecialFont = ayahMarkerFontSelect.value.includes('ayatquran9-6RYBv') || ayahMarkerFontSelect.value.includes('icomoon');
+            document.getElementById('ayahNumberFontGroup').style.display = isSpecialFont ? 'none' : 'block';
+            document.getElementById('ayahNumberSizeGroup').style.display = isSpecialFont ? 'none' : 'block';
+            document.getElementById('ayahReadyMarkerSizeGroup').style.display = isSpecialFont ? 'block' : 'none';
+            document.getElementById('ayahReadyMarkerSpacingGroup').style.display = isSpecialFont ? 'block' : 'none';
+            updateTextAndOverlayStyles();
+        }
         
         document.addEventListener('DOMContentLoaded', async () => {
             populateFontDropdown(arabicFontSelect, "'AmiriQuran-Regular', serif");
@@ -1740,12 +1653,8 @@ try {
             toggleTranslationSettings();
             toggleTafsirSettings();
 
-            /* --- START: التعديل المطلوب --- */
-            // ربط الدالة الجديدة بحدث تغيير القائمة المنسدلة
             ayahMarkerFontSelect.addEventListener('change', handleMarkerFontChange);
-            // استدعاء الدالة عند التحميل لضبط الحالة الأولية
             handleMarkerFontChange();
-            /* --- END: التعديل المطلوب --- */
         });
         
         importGlobalBgBtn.addEventListener('click', () => globalBgImageInput.click());
