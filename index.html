@@ -1451,8 +1451,7 @@
             return result;
         }
 
-        exportVideoBtn.addEventListener('click', async () => { 
-// محرك المونتاج الجبار داخل المتصفح
+  // محرك المونتاج الجبار داخل المتصفح
         exportVideoBtn.addEventListener('click', async () => { 
             if (collectedFrameDataForServer.length === 0) { displayUserMessage('لا توجد إطارات للتصدير.', 'error'); return; }
             setControlsDisabled(true); exportVideoBtn.disabled = true; 
