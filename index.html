@@ -9,7 +9,8 @@
     <link rel="stylesheet" href="css/font-awesome.all.min.css">
     <script src="js/html2canvas.min.js"></script>
     <!-- مكتبة FFmpeg للويب (محرك المونتاج داخل المتصفح) -->
-
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.7/dist/umd/ffmpeg.js"></script>
+    <script src="https://unpkg.com/@ffmpeg/util@0.12.1/dist/umd/index.js"></script>
     
     <style>
         @font-face { font-family: 'AmiriQuran-Regular'; src: url('fonts/AmiriQuran-Regular.ttf') format('truetype'); }
@@ -1450,6 +1451,7 @@
             return result;
         }
 
+// محرك المونتاج الجبار داخل المتصفح
         exportVideoBtn.addEventListener('click', async () => { 
             if (collectedFrameDataForServer.length === 0) { displayUserMessage('لا توجد إطارات للتصدير.', 'error'); return; }
             setControlsDisabled(true); exportVideoBtn.disabled = true; 
@@ -1458,29 +1460,48 @@
             updateProgressUI(0, 100, "تحميل المحرك..."); 
 
             const { FFmpeg } = window.FFmpegWASM;
-            const { fetchFile, toBlobURL } = window.FFmpegUtil;
             const ffmpegInstance = new FFmpeg();
 
-            ffmpegInstance.on('progress', ({ progress, time }) => {
+            ffmpegInstance.on('progress', ({ progress }) => {
                 const percent = Math.round(progress * 100);
                 if (percent > 0 && percent <= 100) {
                     updateProgressUI(percent, 100, `جاري استخراج الفيديو...`);
                 }
             });
 
-try {
-                // المحرك الهجين: 
-                // 1. نقرأ ملفات الـ JS الصغيرة من مشروعنا محلياً لتخطي حماية المتصفح (SecurityError).
-                // 2. نقرأ الملف الثقيل (31 ميجا) من السيرفر الخارجي السريع لكي لا نرفعه على GitHub.
+            try {
+                // --- الكود السحري النهائي والقطعي ---
+                // دالة لتحويل ملفات الجافاسكريبت إلى ملفات محلية وهمية لتخطي حظر Vercel و SecurityError
+                async function getSafeJsBlob(url) {
+                    const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
+                    const text = await res.text();
+                    const blob = new Blob([text], { type: 'text/javascript' });
+                    return URL.createObjectURL(blob);
+                }
+
+                // استخدمنا سيرفرات jsdelivr بدلاً من unpkg لأنها لا تسبب مشاكل
+                const baseURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd';
+                const ffmpegURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.7/dist/umd';
+
+                // سحب الملفات الصغيرة فقط كملفات محلية (لتخطي حظر المتصفح)
+                const safeCore = await getSafeJsBlob(`${baseURL}/ffmpeg-core.js`);
+                const safeWorker = await getSafeJsBlob(`${ffmpegURL}/814.ffmpeg.js`);
+
                 await ffmpegInstance.load({
-                    coreURL: 'ffmpeg/ffmpeg-core.js',
-                    workerURL: 'ffmpeg/814.ffmpeg.js',
-                    classWorkerURL: 'ffmpeg/814.ffmpeg.js',
-                    wasmURL: 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm'
+                    coreURL: safeCore,
+                    workerURL: safeWorker,
+                    classWorkerURL: safeWorker,
+                    // الملف الكبير (31 ميجا) نحمله برابط مباشر لنتجنب مشاكل الرفع والذاكرة
+                    wasmURL: `${baseURL}/ffmpeg-core.wasm`
                 });
+                // --- نهاية الكود السحري ---
+
                 const isLandscape = currentVideoOrientation === 'landscape';
                 const width = isLandscape ? 1920 : 1080;
                 const height = isLandscape ? 1080 : 1920;
+                
+                // استخدام دالة fetchFile المتوفرة في window.FFmpegUtil
+                const { fetchFile } = window.FFmpegUtil;
                 
                 if (enableRainEffect.checked && rainVideoPath) {
                     await ffmpegInstance.writeFile('rain.mp4', await fetchFile(rainVideoPath));
