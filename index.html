@@ -1451,12 +1451,13 @@
             return result;
         }
 
+        exportVideoBtn.addEventListener('click', async () => { 
 // محرك المونتاج الجبار داخل المتصفح
         exportVideoBtn.addEventListener('click', async () => { 
             if (collectedFrameDataForServer.length === 0) { displayUserMessage('لا توجد إطارات للتصدير.', 'error'); return; }
             setControlsDisabled(true); exportVideoBtn.disabled = true; 
             
-            displayUserMessage('جاري تحميل محرك الفيديو في المتصفح (قد يستغرق بضع ثوانٍ)...', 'info'); 
+            displayUserMessage('جاري تحميل محرك الفيديو في المتصفح...', 'info'); 
             updateProgressUI(0, 100, "تحميل المحرك..."); 
 
             const { FFmpeg } = window.FFmpegWASM;
@@ -1470,38 +1471,28 @@
             });
 
             try {
-                // --- الكود السحري النهائي والقطعي ---
-                // دالة لتحويل ملفات الجافاسكريبت إلى ملفات محلية وهمية لتخطي حظر Vercel و SecurityError
-                async function getSafeJsBlob(url) {
-                    const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
-                    const text = await res.text();
-                    const blob = new Blob([text], { type: 'text/javascript' });
-                    return URL.createObjectURL(blob);
-                }
+                // --- الحل النظيف والرسمي (بدون بروكسيات وبدون رفع ملفات كبيرة) ---
+                const { fetchFile, toBlobURL } = window.FFmpegUtil;
 
-                // استخدمنا سيرفرات jsdelivr بدلاً من unpkg لأنها لا تسبب مشاكل
-                const baseURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd';
-                const ffmpegURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.7/dist/umd';
+                const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
+                const ffmpegURL = 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.7/dist/umd';
 
-                // سحب الملفات الصغيرة فقط كملفات محلية (لتخطي حظر المتصفح)
-                const safeCore = await getSafeJsBlob(`${baseURL}/ffmpeg-core.js`);
-                const safeWorker = await getSafeJsBlob(`${ffmpegURL}/814.ffmpeg.js`);
+                // سحب الملفات الصغيرة فقط للذاكرة لتخطي حماية المتصفح (SecurityError)
+                const safeCore = await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript');
+                const safeWorker = await toBlobURL(`${ffmpegURL}/814.ffmpeg.js`, 'text/javascript');
 
                 await ffmpegInstance.load({
                     coreURL: safeCore,
                     workerURL: safeWorker,
                     classWorkerURL: safeWorker,
-                    // الملف الكبير (31 ميجا) نحمله برابط مباشر لنتجنب مشاكل الرفع والذاكرة
+                    // الملف الكبير (31 ميجا) نتركه على سيرفراته السريعة لتتجنب مشكلة الرفع!
                     wasmURL: `${baseURL}/ffmpeg-core.wasm`
                 });
-                // --- نهاية الكود السحري ---
+                // --- نهاية إعداد المحرك ---
 
                 const isLandscape = currentVideoOrientation === 'landscape';
                 const width = isLandscape ? 1920 : 1080;
                 const height = isLandscape ? 1080 : 1920;
-                
-                // استخدام دالة fetchFile المتوفرة في window.FFmpegUtil
-                const { fetchFile } = window.FFmpegUtil;
                 
                 if (enableRainEffect.checked && rainVideoPath) {
                     await ffmpegInstance.writeFile('rain.mp4', await fetchFile(rainVideoPath));
@@ -1525,7 +1516,7 @@
                         try {
                             await ffmpegInstance.writeFile(`audio_${iStr}.mp3`, await fetchFile(frame.audioUrl));
                         } catch(e) {
-                            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(frame.audioUrl)}`;
+                            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(frame.audioUrl)}`;
                             await ffmpegInstance.writeFile(`audio_${iStr}.mp3`, await fetchFile(proxyUrl));
                         }
                     }
