@@ -1470,15 +1470,21 @@
             });
 
             try {
-// --- ربط محرك FFmpeg بالملفات المحلية (الموجودة في مجلد ffmpeg) ---
-const { fetchFile } = window.FFmpegUtil;
+// --- ربط محرك FFmpeg بالملفات المحلية وحل مشكلة الـ Worker ---
+const { fetchFile, toBlobURL } = window.FFmpegUtil;
 
-// توجيه المحرك لقراءة الملفات من المجلد المحلي مباشرة لتسريع العمل وتجنب مشاكل الروابط الخارجية
+// رابط المكتبة الأساسية على الإنترنت لجلب ملف الـ Worker الخاص بها فقط
+const ffmpegURL = 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.7/dist/umd';
+
+// تحويل ملف الـ Worker الخارجي إلى ملف محلي (Blob) لتخطي حظر الحماية (CORS)
+const safeClassWorker = await toBlobURL(`${ffmpegURL}/814.ffmpeg.js`, 'text/javascript');
+
+// توجيه المحرك لدمج الملفات المحلية مع الـ Worker الآمن
 await ffmpegInstance.load({
     coreURL: './ffmpeg/ffmpeg-core.js',
     wasmURL: './ffmpeg/ffmpeg-core.wasm',
     workerURL: './ffmpeg/ffmpeg-core.worker.js',
-    classWorkerURL: './ffmpeg/ffmpeg-core.worker.js'
+    classWorkerURL: safeClassWorker // هذا السطر يحل الخطأ الأحمر تماماً!
 });
 // --- نهاية إعداد المحرك ---
 
