@@ -1470,14 +1470,18 @@
             });
 
             try {
-// --- ربط محرك FFmpeg بالملفات المحلية (بمسارات مطلقة ليتوافق مع Vercel) ---
+// --- الحل النهائي والأقوى (جلب الملفات من السيرفر الرسمي وتحويلها لملفات آمنة برمجياً) ---
 const { fetchFile, toBlobURL } = window.FFmpegUtil;
 
+const coreURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
+const ffmpegURL = 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.7/dist/umd';
+
+// جلب الملفات وتحويلها إلى Blob (ملفات محلية وهمية) لتخطي حظر Vercel
 await ffmpegInstance.load({
-    coreURL: '/ffmpeg/ffmpeg-core.js',
-    wasmURL: '/ffmpeg/ffmpeg-core.wasm',
-    workerURL: '/ffmpeg/ffmpeg-core.worker.js',
-    classWorkerURL: '/js/814.ffmpeg.js' 
+    coreURL: await toBlobURL(`${coreURL}/ffmpeg-core.js`, 'text/javascript'),
+    wasmURL: await toBlobURL(`${coreURL}/ffmpeg-core.wasm`, 'application/wasm'),
+    workerURL: await toBlobURL(`${coreURL}/ffmpeg-core.worker.js`, 'text/javascript'),
+    classWorkerURL: await toBlobURL(`${ffmpegURL}/814.ffmpeg.js`, 'text/javascript')
 });
 // --- نهاية إعداد المحرك ---
 
