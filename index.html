@@ -1470,14 +1470,14 @@
             });
 
             try {
-// --- ربط محرك FFmpeg بالملفات المحلية 100% ---
-const { fetchFile } = window.FFmpegUtil;
+// --- ربط محرك FFmpeg بالملفات المحلية (بمسارات مطلقة ليتوافق مع Vercel) ---
+const { fetchFile, toBlobURL } = window.FFmpegUtil;
 
 await ffmpegInstance.load({
-    coreURL: './ffmpeg/ffmpeg-core.js',
-    wasmURL: './ffmpeg/ffmpeg-core.wasm',
-    workerURL: './ffmpeg/ffmpeg-core.worker.js',
-    classWorkerURL: './js/814.ffmpeg.js' // الآن يقرأ الـ Worker من مشروعك مباشرة!
+    coreURL: '/ffmpeg/ffmpeg-core.js',
+    wasmURL: '/ffmpeg/ffmpeg-core.wasm',
+    workerURL: '/ffmpeg/ffmpeg-core.worker.js',
+    classWorkerURL: '/js/814.ffmpeg.js' 
 });
 // --- نهاية إعداد المحرك ---
 
