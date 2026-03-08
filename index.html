@@ -1470,24 +1470,17 @@
             });
 
             try {
-                // --- الحل النظيف والرسمي (بدون بروكسيات وبدون رفع ملفات كبيرة) ---
-                const { fetchFile, toBlobURL } = window.FFmpegUtil;
+// --- ربط محرك FFmpeg بالملفات المحلية (الموجودة في مجلد ffmpeg) ---
+const { fetchFile } = window.FFmpegUtil;
 
-                const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
-                const ffmpegURL = 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.7/dist/umd';
-
-                // سحب الملفات الصغيرة فقط للذاكرة لتخطي حماية المتصفح (SecurityError)
-                const safeCore = await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript');
-                const safeWorker = await toBlobURL(`${ffmpegURL}/814.ffmpeg.js`, 'text/javascript');
-
-                await ffmpegInstance.load({
-                    coreURL: safeCore,
-                    workerURL: safeWorker,
-                    classWorkerURL: safeWorker,
-                    // الملف الكبير (31 ميجا) نتركه على سيرفراته السريعة لتتجنب مشكلة الرفع!
-                    wasmURL: `${baseURL}/ffmpeg-core.wasm`
-                });
-                // --- نهاية إعداد المحرك ---
+// توجيه المحرك لقراءة الملفات من المجلد المحلي مباشرة لتسريع العمل وتجنب مشاكل الروابط الخارجية
+await ffmpegInstance.load({
+    coreURL: './ffmpeg/ffmpeg-core.js',
+    wasmURL: './ffmpeg/ffmpeg-core.wasm',
+    workerURL: './ffmpeg/ffmpeg-core.worker.js',
+    classWorkerURL: './ffmpeg/ffmpeg-core.worker.js'
+});
+// --- نهاية إعداد المحرك ---
 
                 const isLandscape = currentVideoOrientation === 'landscape';
                 const width = isLandscape ? 1920 : 1080;
