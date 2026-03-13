@@ -1495,19 +1495,15 @@ exportVideoBtn.addEventListener('click', async () => {
         displayUserMessage('جاري المعالجة والتصدير...', 'info');
 
         // 2. أمر التصدير الصاروخي (الصور + الصوتيات)
-        await ffmpeg.run(
-            '-y',
-            '-f', 'concat', '-safe', '0', '-i', 'vid_list.txt',
-            '-f', 'concat', '-safe', '0', '-i', 'aud_list.txt',
-            '-c:v', 'libx264',
-            '-preset', 'ultrafast',
-            '-crf', '28', 
-            '-pix_fmt', 'yuv420p',
-            '-c:a', 'aac',
-            '-b:a', '128k',
-            '-shortest',
-            'output.mp4'
-        );
+// هذا هو أمر FFmpeg الصحيح للدمج (فيديو + صورة فوقه)
+await ffmpeg.run(
+    '-i', 'original_video.mp4',   // الفيديو الذي رفعه المستخدم
+    '-i', 'overlay_text.png',      // الصورة الشفافة التي صورها html2canvas
+    '-filter_complex', 'overlay=0:0', // دمج الصورة فوق الفيديو
+    '-c:v', 'libx264',
+    '-preset', 'ultrafast',
+    'output.mp4'
+);
 
         // 3. تحميل الفيديو النهائي
         const mp4Data = ffmpeg.FS('readFile', 'output.mp4');
@@ -1731,10 +1727,10 @@ exportVideoBtn.addEventListener('click', async () => {
 globalVideoInput.addEventListener('change', (event) => {
     const file = event.target.files[0];
     if (file) {
-        const videoUrl = URL.createObjectURL(file); // هذه هي الطريقة الصحيحة للمتصفح
+const videoUrl = URL.createObjectURL(event.target.files[0]);
         globalVideoPath = videoUrl; // حفظ الرابط المؤقت
         const previewVideoEl = document.getElementById('previewBackgroundLayer');
-        previewVideoEl.src = videoUrl;
+previewVideoEl.src = videoUrl;
         previewVideoEl.style.display = 'block';
         videoFileName.textContent = file.name;
                 removeGlobalVideoBtn.classList.remove('hidden');
