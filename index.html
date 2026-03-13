@@ -1123,11 +1123,9 @@ const enableTextGlow = document.getElementById('enableTextGlow');
             ayahImageScaleInput.value = ayah.customAyahImageScale || 100;
             enableAyahImageImportCheckbox.checked = ayah.userWantsAyahImageImport;
             enableCustomAudioCheckbox.checked = ayah.userWantsCustomAudio;
-if (ayah.customVideoUrl) {
-    previewVideoEl.src = ayah.customVideoUrl;
-    previewVideoEl.style.display = 'block';
-}
-
+            if (ayah.customVideoPath && await window.electronAPI.fileExists(ayah.customVideoPath)) {
+                previewVideoEl.src = ayah.customVideoPath;
+                previewVideoEl.style.display = 'block';
                 ayahVideoFileName.textContent = ayah.customVideoName;
                 removeAyahVideoBtn.classList.remove('hidden');
             } else if (ayah.customBgImageBase64) {
@@ -1312,37 +1310,6 @@ if (ayah.customVideoUrl) {
         prevAyahBtn.addEventListener('click', () => { if (currentPreviewAyahIndex > 0) showAyahInPreview(currentPreviewAyahIndex - 1); });
 
         prepareFramesBtn.addEventListener('click', async () => {
-
-            // ... داخل الحلقة ...
-
-// 1. التقط النص فقط (اجعل الـ captureArea شفافاً تماماً أو التقط الـ div الخاص بالنص فقط)
-const textCanvas = await html2canvas(document.getElementById('captureArea'), { 
-    backgroundColor: null,
-    logging: false 
-});
-
-// 2. أنشئ Canvas "الماستر"
-const masterCanvas = document.createElement('canvas');
-masterCanvas.width = isLandscape ? 1920 : 1080;
-masterCanvas.height = isLandscape ? 1080 : 1920;
-const ctx = masterCanvas.getContext('2d');
-
-// 3. ارسم الخلفية يدوياً
-if (backgroundInfo.type === 'image') {
-    // ارسم الصورة
-    const bgImg = new Image();
-    bgImg.src = backgroundInfo.imageBase64;
-    ctx.drawImage(bgImg, 0, 0, masterCanvas.width, masterCanvas.height);
-} else if (backgroundInfo.type === 'video') {
-    // هذا الجزء يتطلب استخراج إطار من الفيديو (راجع كود الفيديو أدناه)
-}
-
-// 4. ارسم النص فوق الخلفية
-ctx.drawImage(textCanvas, 0, 0);
-
-// 5. استخدم masterCanvas.toDataURL لتصدير الإطار
-const textOverlayImageBase64 = masterCanvas.toDataURL('image/png');
-            
             const originalCaptureStyles = { transform: captureAreaDiv.style.transform, position: captureAreaDiv.style.position, top: captureAreaDiv.style.top, left: captureAreaDiv.style.left, zIndex: captureAreaDiv.style.zIndex };
             const originalPreviewIndex = currentPreviewAyahIndex;
             resetUIBeforeProcessing();
@@ -1699,21 +1666,40 @@ exportVideoBtn.addEventListener('click', async () => {
             const previewVideoEl = document.getElementById('previewBackgroundLayer');
             if(previewVideoEl) previewVideoEl.style.display = 'none';
             try {
-                for (let i = 0; i < ayahsToProcess.length; i++) {
+for (let i = 0; i < ayahsToProcess.length; i++) {
                     const ayahData = ayahsToProcess[i];
                     updateProgressUI(i + 1, ayahsToProcess.length, `إنشاء صورة ${toArabicDigits(i + 1)}`);
+                    
+                    // 1. تحديث البيانات للمعاينة (لتظهر الصورة الصحيحة)
                     const tempOriginalIndex = currentPreviewAyahIndex;
                     currentPreviewAyahIndex = fetchedAyahsForPreview.indexOf(ayahData);
                     updateTextAndOverlayStyles();
                     currentPreviewAyahIndex = tempOriginalIndex;
-                    await new Promise(r => setTimeout(r, 300));
-                    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+                    
+                    // 2. ضمان تحميل الخطوط والعناصر
+                    await new Promise(r => setTimeout(r, 500)); 
+                    
+                    // 3. التقاط الصورة مع فرض الشفافية التامة
                     const isLandscape = currentVideoOrientation === 'landscape';
                     const canvasWidth = isLandscape ? 1920 : 1080;
                     const canvasHeight = isLandscape ? 1080 : 1920;
-                    const canvas = await html2canvas(captureAreaDiv, { scale: 1, width: canvasWidth, height: canvasHeight, backgroundColor: null });
+                    
+                    // تأكد أن منطقة التصوير شفافة قبل الالتقاط
+                    captureAreaDiv.style.backgroundImage = 'none';
+                    captureAreaDiv.style.backgroundColor = 'transparent';
+                    
+                    const canvas = await html2canvas(captureAreaDiv, { 
+                        backgroundColor: null, // هام جداً للشفافية
+                        scale: 1, 
+                        width: canvasWidth, 
+                        height: canvasHeight, 
+                        logging: false 
+                    });
+                    
                     const transparentImageBase64 = canvas.toDataURL('image/png');
                     const filename = `Quran_${surahSelect.value}_${ayahData.numberInSurah}_Transparent.png`;
+                    
+                    // 4. إضافة الصورة للمعرض
                     const card = document.createElement('div');
                     card.className = 'preview-card transparent-preview-bg';
                     card.innerHTML = `<img src="${transparentImageBase64}"><a href="${transparentImageBase64}" download="${filename}" class="download-icon" title="تحميل الصورة الشفافة"><i class="fas fa-download"></i></a>`;
@@ -1761,23 +1747,28 @@ exportVideoBtn.addEventListener('click', async () => {
         });
         
         importGlobalVideoBtn.addEventListener('click', () => { globalVideoInput.click(); });
+// ابحث عن globalVideoInput.addEventListener
 globalVideoInput.addEventListener('change', (event) => {
     const file = event.target.files[0];
     if (file) {
-        const videoUrl = URL.createObjectURL(file); // هذه هي الطريقة الصحيحة للمتصفح
-        globalVideoPath = videoUrl; // حفظ الرابط المؤقت
+        // نستخدم URL.createObjectURL بدلاً من file.path
+        const videoUrl = URL.createObjectURL(file); 
+        globalVideoPath = videoUrl; 
+        
         const previewVideoEl = document.getElementById('previewBackgroundLayer');
         previewVideoEl.src = videoUrl;
         previewVideoEl.style.display = 'block';
         videoFileName.textContent = file.name;
-                removeGlobalVideoBtn.classList.remove('hidden');
-                displayUserMessage("تم تعيين خلفية الفيديو بنجاح.", "success");
-                globalBackgroundBase64 = null;
-                removeGlobalBgBtn.classList.add('hidden');
-                showAyahInPreview(currentPreviewAyahIndex);
-            }
-            event.target.value = null;
-        });
+        removeGlobalVideoBtn.classList.remove('hidden');
+        displayUserMessage("تم تعيين خلفية الفيديو بنجاح.", "success");
+        
+        // مسح الخلفية الثابتة إذا تم رفع فيديو
+        globalBackgroundBase64 = null;
+        removeGlobalBgBtn.classList.add('hidden');
+        showAyahInPreview(currentPreviewAyahIndex);
+    }
+    event.target.value = null;
+});
 
         removeGlobalVideoBtn.addEventListener('click', () => {
             globalVideoPath = null;
