@@ -1123,9 +1123,11 @@ const enableTextGlow = document.getElementById('enableTextGlow');
             ayahImageScaleInput.value = ayah.customAyahImageScale || 100;
             enableAyahImageImportCheckbox.checked = ayah.userWantsAyahImageImport;
             enableCustomAudioCheckbox.checked = ayah.userWantsCustomAudio;
-            if (ayah.customVideoPath && await window.electronAPI.fileExists(ayah.customVideoPath)) {
-                previewVideoEl.src = ayah.customVideoPath;
-                previewVideoEl.style.display = 'block';
+if (ayah.customVideoUrl) {
+    previewVideoEl.src = ayah.customVideoUrl;
+    previewVideoEl.style.display = 'block';
+}
+
                 ayahVideoFileName.textContent = ayah.customVideoName;
                 removeAyahVideoBtn.classList.remove('hidden');
             } else if (ayah.customBgImageBase64) {
@@ -1310,6 +1312,37 @@ const enableTextGlow = document.getElementById('enableTextGlow');
         prevAyahBtn.addEventListener('click', () => { if (currentPreviewAyahIndex > 0) showAyahInPreview(currentPreviewAyahIndex - 1); });
 
         prepareFramesBtn.addEventListener('click', async () => {
+
+            // ... داخل الحلقة ...
+
+// 1. التقط النص فقط (اجعل الـ captureArea شفافاً تماماً أو التقط الـ div الخاص بالنص فقط)
+const textCanvas = await html2canvas(document.getElementById('captureArea'), { 
+    backgroundColor: null,
+    logging: false 
+});
+
+// 2. أنشئ Canvas "الماستر"
+const masterCanvas = document.createElement('canvas');
+masterCanvas.width = isLandscape ? 1920 : 1080;
+masterCanvas.height = isLandscape ? 1080 : 1920;
+const ctx = masterCanvas.getContext('2d');
+
+// 3. ارسم الخلفية يدوياً
+if (backgroundInfo.type === 'image') {
+    // ارسم الصورة
+    const bgImg = new Image();
+    bgImg.src = backgroundInfo.imageBase64;
+    ctx.drawImage(bgImg, 0, 0, masterCanvas.width, masterCanvas.height);
+} else if (backgroundInfo.type === 'video') {
+    // هذا الجزء يتطلب استخراج إطار من الفيديو (راجع كود الفيديو أدناه)
+}
+
+// 4. ارسم النص فوق الخلفية
+ctx.drawImage(textCanvas, 0, 0);
+
+// 5. استخدم masterCanvas.toDataURL لتصدير الإطار
+const textOverlayImageBase64 = masterCanvas.toDataURL('image/png');
+            
             const originalCaptureStyles = { transform: captureAreaDiv.style.transform, position: captureAreaDiv.style.position, top: captureAreaDiv.style.top, left: captureAreaDiv.style.left, zIndex: captureAreaDiv.style.zIndex };
             const originalPreviewIndex = currentPreviewAyahIndex;
             resetUIBeforeProcessing();
@@ -1495,15 +1528,19 @@ exportVideoBtn.addEventListener('click', async () => {
         displayUserMessage('جاري المعالجة والتصدير...', 'info');
 
         // 2. أمر التصدير الصاروخي (الصور + الصوتيات)
-// هذا هو أمر FFmpeg الصحيح للدمج (فيديو + صورة فوقه)
-await ffmpeg.run(
-    '-i', 'original_video.mp4',   // الفيديو الذي رفعه المستخدم
-    '-i', 'overlay_text.png',      // الصورة الشفافة التي صورها html2canvas
-    '-filter_complex', 'overlay=0:0', // دمج الصورة فوق الفيديو
-    '-c:v', 'libx264',
-    '-preset', 'ultrafast',
-    'output.mp4'
-);
+        await ffmpeg.run(
+            '-y',
+            '-f', 'concat', '-safe', '0', '-i', 'vid_list.txt',
+            '-f', 'concat', '-safe', '0', '-i', 'aud_list.txt',
+            '-c:v', 'libx264',
+            '-preset', 'ultrafast',
+            '-crf', '28', 
+            '-pix_fmt', 'yuv420p',
+            '-c:a', 'aac',
+            '-b:a', '128k',
+            '-shortest',
+            'output.mp4'
+        );
 
         // 3. تحميل الفيديو النهائي
         const mp4Data = ffmpeg.FS('readFile', 'output.mp4');
@@ -1727,10 +1764,10 @@ await ffmpeg.run(
 globalVideoInput.addEventListener('change', (event) => {
     const file = event.target.files[0];
     if (file) {
-const videoUrl = URL.createObjectURL(event.target.files[0]);
+        const videoUrl = URL.createObjectURL(file); // هذه هي الطريقة الصحيحة للمتصفح
         globalVideoPath = videoUrl; // حفظ الرابط المؤقت
         const previewVideoEl = document.getElementById('previewBackgroundLayer');
-previewVideoEl.src = videoUrl;
+        previewVideoEl.src = videoUrl;
         previewVideoEl.style.display = 'block';
         videoFileName.textContent = file.name;
                 removeGlobalVideoBtn.classList.remove('hidden');
