@@ -1424,11 +1424,18 @@ let ffmpeg = null;
 async function initFFmpeg() {
     if (ffmpeg) return;
     const { createFFmpeg } = window.FFmpeg;
-    ffmpeg = createFFmpeg({ log: true, corePath: 'https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js' });
+    
+    // الانتباه هنا: المسار './ffmpeg-core.js' ليقرأ من ملفاتك المحملة
+    ffmpeg = createFFmpeg({ 
+        log: true, 
+        corePath: './ffmpeg-core.js' 
+    });
+    
     ffmpeg.setProgress(({ ratio }) => {
         const p = Math.min(Math.round(ratio * 100), 100);
         if(p > 0) updateProgressUI(p, 100, "جاري دمج الفيديو...");
     });
+    
     await ffmpeg.load();
 }
 
