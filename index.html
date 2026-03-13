@@ -1322,8 +1322,8 @@ const enableTextGlow = document.getElementById('enableTextGlow');
                     updateProgressUI(i + 1, ayahsToProcess.length, `آية ${toArabicDigits(ayahData.numberInSurah)}`);
                     captureAreaDiv.style.backgroundImage = 'none';
                     captureAreaDiv.style.backgroundColor = 'transparent';
-                    const previewVideoEl = document.getElementById('previewBackgroundLayer');
-                    if (previewVideoEl) previewVideoEl.style.display = 'none';
+const previewVideoEl = document.getElementById('previewBackgroundLayer');
+previewVideoEl.style.display = 'none'; // أخف الفيديو قبل التصوير
                     const tempOriginalIndex = currentPreviewAyahIndex;
                     currentPreviewAyahIndex = fetchedAyahsForPreview.indexOf(ayahData);
                     updateTextAndOverlayStyles();
@@ -1333,7 +1333,11 @@ const enableTextGlow = document.getElementById('enableTextGlow');
                     const isLandscape = currentVideoOrientation === 'landscape';
                     const canvasWidth = isLandscape ? 1920 : 1080;
                     const canvasHeight = isLandscape ? 1080 : 1920;
-                    const canvas = await html2canvas(captureAreaDiv, { scale: 1, width: canvasWidth, height: canvasHeight, backgroundColor: null, useCORS: true });
+const canvas = await html2canvas(captureAreaDiv, { 
+    backgroundColor: null, // تأكد أنها null لضمان الشفافية
+    logging: false 
+});
+                    
                     const textOverlayImageBase64 = canvas.toDataURL('image/png');
                     let backgroundInfo, currentBackgroundSource;
                     if (ayahData.customVideoPath && await window.electronAPI.fileExists(ayahData.customVideoPath)) {
