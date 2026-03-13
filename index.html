@@ -726,14 +726,16 @@ async function fetchAudioWithCORSBypass(audioUrl, audioCtx) {
 
 async function initFFmpeg() {
     if (ffmpeg) return;
+    
     const { createFFmpeg } = window.FFmpeg;
     
-    // القراءة من نفس مسار الموقع على Vercel لضمان أقصى سرعة وتخطي الحظر
+    // الحل هنا: وضع الرابط المباشر للمكتبة. هذا سيمنع المتصفح من البحث في المسار الوهمي (jeromewu)
     ffmpeg = createFFmpeg({ 
         log: true,
-        corePath: './ffmpeg-core.js' 
+        corePath: 'https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js'
     });
     
+    // شريط التقدم
     ffmpeg.setProgress(({ ratio }) => {
         const percent = Math.min(Math.round(ratio * 100), 100);
         if (percent > 0) {
