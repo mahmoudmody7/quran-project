@@ -6,433 +6,119 @@
     <title>Quran Studio - Pro Edition</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Cairo:wght@400;600;700;900&family=Reem+Kufi:wght@400;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
     <style>
-        /* Modern Dark Theme - Ocean Blue & Purple Gradient */
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #8b5cf6;
-            --accent: #06b6d4;
-            --bg-dark: #0f172a;
-            --bg-panel: #1e293b;
-            --bg-input: #334155;
-            --text-primary: #f8fafc;
-            --text-secondary: #cbd5e1;
-            --border: #475569;
-        }
-
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body { 
-            font-family: 'Tajawal', sans-serif; 
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
-            margin: 0; 
-            padding: 0; 
-            color: var(--text-primary);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* Mobile-First Responsive Layout */
-        .app-container {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        @media (min-width: 1024px) {
-            .app-container {
-                flex-direction: row;
-            }
-        }
-
-        /* Glassmorphism Panels */
-        .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-        }
-
-        /* Modern Tabs */
-        .tab-btn { 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border-radius: 12px;
-            border: 1px solid transparent;
-            position: relative;
-            overflow: hidden;
-        }
+        /* Modern UI Style - Midnight & Indigo Theme */
+        body { font-family: 'Tajawal', sans-serif; background-color: #020617; margin:0; padding:0; color: #f8fafc; }
         
-        .tab-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            opacity: 0;
-            transition: opacity 0.3s;
-            z-index: -1;
-        }
+        .studio-panel { background-color: #0f172a; border: 1px solid #1e293b; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
         
-        .tab-btn.active { 
-            color: white;
-            border-color: transparent;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
-        }
+        /* Pill Tabs */
+        .tab-btn { transition: all 0.2s ease; border-radius: 8px; border: 1px solid transparent; }
+        .tab-btn.active { background-color: #4f46e5; color: white; border-color: #4338ca; box-shadow: 0 0 12px rgba(79, 70, 229, 0.4); }
+        .tab-btn:not(.active):hover { background-color: #1e293b; }
         
-        .tab-btn.active::before {
-            opacity: 1;
-        }
-        
-        .tab-btn:not(.active):hover { 
-            background: rgba(255, 255, 255, 0.05);
-            transform: translateY(-1px);
-        }
-
         /* Timeline */
-        .timeline-clip { 
-            transition: all 0.3s ease;
-            border-radius: 8px;
-            background: rgba(51, 65, 85, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
+        .timeline-clip { transition: all 0.2s ease; border-radius: 6px; border-left: 3px solid #334155; }
+        .timeline-clip.active { border-left-color: #4f46e5; background-color: rgba(79, 70, 229, 0.15); transform: scale(1.02); }
         
-        .timeline-clip.active { 
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-color: transparent;
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
-        }
-
-        /* Canvas Container - Fixed Background Movement */
-        .canvas-wrapper {
-            position: relative;
-            width: 100%;
-            height: 60vh;
-            background: radial-gradient(circle at center, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
-            border-radius: 20px;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        @media (min-width: 1024px) {
-            .canvas-wrapper {
-                height: 70vh;
-            }
-        }
-
-        canvas {
-            max-width: 100%;
-            max-height: 100%;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            border-radius: 12px;
-            background: #000;
-        }
-
-        /* Modern Inputs */
-        select, input[type="text"], input[type="number"], input[type="file"] {
-            background: var(--bg-input);
-            border: 2px solid transparent;
-            color: var(--text-primary);
-            border-radius: 10px;
-            padding: 10px 14px;
-            font-family: 'Tajawal', sans-serif;
-            transition: all 0.3s;
-            width: 100%;
-            font-size: 0.9rem;
-        }
-
-        select:focus, input:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-        }
-
-        select option {
-            background: var(--bg-panel);
-            color: var(--text-primary);
-        }
-
-        select optgroup {
-            background: var(--bg-dark);
-            color: var(--accent);
-            font-weight: 700;
-        }
-
-        input[type="range"] {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 6px;
-            border-radius: 3px;
-            background: var(--bg-input);
-            outline: none;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-        }
-
-        /* Custom Scrollbar */
+        /* Canvas Container */
+        .canvas-container { height: 100%; display: flex; align-items: center; justify-content: center; background-image: radial-gradient(#1e293b 1px, transparent 1px); background-size: 20px 20px; overflow: hidden; border-radius: 8px; }
+        canvas { max-height: 100%; max-width: 100%; object-fit: contain; box-shadow: 0 10px 40px rgba(0,0,0,0.8); background-color: #000; transition: all 0.3s ease; border-radius: 6px; }
+        
+        /* Inputs Customization */
+        select, input[type="text"], input[type="number"], input[type="file"] { background: #020617; border: 1px solid #334155; color: white; border-radius: 6px; transition: all 0.2s; outline: none; }
+        select:focus, input:focus { border-color: #4f46e5; box-shadow: 0 0 0 1px #4f46e5; }
+        select option { background: #0f172a; color: white; }
+        select optgroup { background: #020617; color: #818cf8; font-weight: bold; }
+        input[type="range"] { accent-color: #4f46e5; cursor: pointer; }
+        
+        /* Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-dark); }
-        ::-webkit-scrollbar-thumb { 
-            background: var(--primary); 
-            border-radius: 3px; 
-        }
-        ::-webkit-scrollbar-thumb:hover { background: var(--secondary); }
-
-        /* Gradient Text */
-        .gradient-text {
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Mobile Optimizations */
-        .mobile-scroll {
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        /* Audio Visualizer Canvas Overlay */
-        .viz-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 150px;
-            pointer-events: none;
-        }
-
-        /* Loading Animation */
-        @keyframes pulse-ring {
-            0% { transform: scale(0.8); opacity: 0.5; }
-            100% { transform: scale(1.2); opacity: 0; }
-        }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4f46e5; }
         
-        .loading-ring {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            border: 2px solid var(--primary);
-            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-        }
-
-        /* Button Styles */
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-secondary);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
-            color: var(--text-primary);
-        }
-
-        /* Hide file input */
-        input[type="file"] {
-            padding: 8px;
-            font-size: 0.8rem;
-        }
-
-        input[type="file"]::file-selector-button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            margin-left: 10px;
-            cursor: pointer;
-            font-family: 'Tajawal', sans-serif;
-        }
-
-        /* Responsive Sidebar */
-        .sidebar {
-            width: 100%;
-            max-height: 40vh;
-            overflow-y: auto;
-        }
-
-        @media (min-width: 1024px) {
-            .sidebar {
-                width: 400px;
-                max-height: none;
-                height: calc(100vh - 80px);
-            }
-        }
-
-        /* Preview Section */
-        .preview-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 16px;
-        }
-
-        @media (min-width: 1024px) {
-            .preview-section {
-                padding: 24px;
-            }
-        }
-
-        /* Status Box */
-        .status-box {
-            background: rgba(99, 102, 241, 0.1);
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            border-radius: 12px;
-            padding: 16px;
-            margin-top: 16px;
-        }
-
-        .progress-bar {
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-            overflow: hidden;
-            margin-top: 8px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            transition: width 0.3s;
-            border-radius: 3px;
-        }
+        .glow-text { text-shadow: 0 0 12px rgba(79, 70, 229, 0.6); }
     </style>
-    
-    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
+	
+<!-- إضافة مكتبات FFmpeg.wasm لتحويل الفيديو إلى MP4 داخل المتصفح -->
+<script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
+	
 </head>
-<body>
+<body class="h-[100dvh] flex flex-col overflow-hidden">
 
     <!-- Header -->
-    <header class="glass-panel mx-4 mt-4 mb-2 px-6 py-4 flex items-center justify-between shrink-0 z-20">
+    <header class="bg-[#0f172a] border-b border-[#1e293b] h-14 flex items-center justify-between px-4 md:px-6 shrink-0 z-20">
         <div class="flex items-center gap-3">
-            <div class="relative w-10 h-10 flex items-center justify-center">
-                <div class="loading-ring"></div>
-                <i class="fa-solid fa-circle-play text-2xl text-indigo-500"></i>
-            </div>
-            <div>
-                <h1 class="font-black text-xl tracking-wide">Quran<span class="gradient-text">Studio</span></h1>
-                <span class="text-[10px] text-slate-400 uppercase tracking-wider">Pro Edition</span>
-            </div>
+            <div class="w-2.5 h-2.5 bg-indigo-500 rounded-full animate-pulse"></div>
+            <h1 class="font-black text-xl tracking-wider text-slate-100">Quran<span class="text-indigo-400 glow-text">Studio</span> <span class="text-[9px] uppercase tracking-widest bg-slate-900 text-slate-300 px-2 py-0.5 rounded border border-slate-700 ml-2 hidden md:inline-block">Pro Edition</span></h1>
         </div>
         <div class="flex gap-2">
-            <button onclick="savePreset()" class="btn-secondary hidden sm:flex items-center gap-2 text-xs">
-                <i class="fa-solid fa-download"></i> <span class="hidden md:inline">حفظ</span>
-            </button>
-            <button onclick="loadPreset()" class="btn-secondary hidden sm:flex items-center gap-2 text-xs">
-                <i class="fa-solid fa-upload"></i> <span class="hidden md:inline">استرجاع</span>
-            </button>
-            <button id="generate-btn" class="btn-primary flex items-center gap-2 text-sm">
-                <i class="fa-solid fa-play"></i> <span>تصدير</span>
+            <button onclick="savePreset()" class="hidden md:inline-block bg-[#1e293b] hover:bg-[#334155] text-slate-300 px-4 py-1.5 rounded text-xs font-bold border border-[#334155] transition"><i class="fa-solid fa-download"></i> حفظ</button>
+            <button onclick="loadPreset()" class="hidden md:inline-block bg-[#1e293b] hover:bg-[#334155] text-slate-300 px-4 py-1.5 rounded text-xs font-bold border border-[#334155] transition"><i class="fa-solid fa-upload"></i> استرجاع</button>
+            <button id="generate-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 md:px-6 py-1.5 rounded text-xs md:text-sm font-bold transition flex items-center gap-2">
+                <i class="fa-solid fa-play"></i> <span>تصدير </span>
             </button>
         </div>
     </header>
 
-    <div class="app-container px-4 pb-4 gap-4">
+    <!-- Main Workspace (Responsive: Column on Mobile, Row on Desktop) -->
+    <main class="flex-1 flex flex-col md:flex-row overflow-hidden p-2 md:p-3 gap-2 md:gap-3">
         
-        <!-- Sidebar Settings -->
-        <aside class="sidebar glass-panel flex flex-col shrink-0 overflow-hidden">
+        <!-- Preview Area (Order 1 on mobile: Top, Order 2 on desktop: Center) -->
+        <section class="h-[45%] md:h-auto md:flex-1 flex flex-col studio-panel overflow-hidden relative order-1 md:order-2">
+            <div class="p-2 border-b border-[#1e293b] flex justify-between items-center bg-[#020617] z-10 shrink-0">
+                <span class="text-xs text-slate-300 font-bold"><i class="fa-solid fa-desktop text-indigo-500 ml-1"></i> العرض الحي</span>
+                <span id="res-display" class="text-[9px] bg-[#0f172a] text-slate-400 font-bold px-2 py-0.5 rounded border border-[#1e293b]">Shorts (9:16)</span>
+            </div>
+            <div class="canvas-container flex-1 overflow-hidden relative p-2 md:p-4">
+                <canvas id="video-canvas"></canvas>
+            </div>
+            
+            <!-- Timeline -->
+            <footer class="h-16 md:h-20 bg-[#020617] border-t border-[#1e293b] shrink-0 flex flex-col overflow-hidden">
+                <div class="flex-1 p-2 overflow-x-auto flex items-center relative custom-scrollbar">
+                    <div class="flex gap-1.5 h-10 items-center w-full min-w-max px-2" id="timeline-tracks">
+                        <!-- سيتم ملؤه تلقائياً -->
+                    </div>
+                </div>
+            </footer>
+        </section>
+
+        <!-- Sidebar Settings (Order 2 on mobile: Bottom scrollable, Order 1 on desktop: Left fixed) -->
+        <aside class="flex-1 md:flex-none md:w-[380px] lg:w-[400px] studio-panel flex flex-col shrink-0 overflow-hidden relative order-2 md:order-1">
             <!-- Tabs Navigation -->
-            <div class="flex p-3 gap-2 border-b border-slate-700/50 bg-slate-900/30">
-                <button onclick="switchTab('basic')" id="tab-basic" class="tab-btn active flex-1 text-xs font-bold py-3 text-slate-300 flex flex-col items-center gap-1">
-                    <i class="fa-solid fa-list text-lg"></i>
-                    <span>المحتوى</span>
-                </button>
-                <button onclick="switchTab('style')" id="tab-style" class="tab-btn flex-1 text-xs font-bold py-3 text-slate-400 flex flex-col items-center gap-1">
-                    <i class="fa-solid fa-image text-lg"></i>
-                    <span>المشهد</span>
-                </button>
-                <button onclick="switchTab('text')" id="tab-text" class="tab-btn flex-1 text-xs font-bold py-3 text-slate-400 flex flex-col items-center gap-1">
-                    <i class="fa-solid fa-font text-lg"></i>
-                    <span>النصوص</span>
-                </button>
-                <button onclick="switchTab('audio')" id="tab-audio" class="tab-btn flex-1 text-xs font-bold py-3 text-slate-400 flex flex-col items-center gap-1">
-                    <i class="fa-solid fa-wave-square text-lg"></i>
-                    <span>الصوت</span>
-                </button>
+            <div class="flex p-2 gap-1 border-b border-[#1e293b] bg-[#020617] overflow-x-auto whitespace-nowrap custom-scrollbar shrink-0">
+                <button onclick="switchTab('basic')" id="tab-basic" class="tab-btn active px-4 flex-1 text-[11px] font-bold py-2 text-slate-200"><i class="fa-solid fa-list block mb-1"></i> المحتوى</button>
+                <button onclick="switchTab('style')" id="tab-style" class="tab-btn px-4 flex-1 text-[11px] font-bold py-2 text-slate-400"><i class="fa-solid fa-layer-group block mb-1"></i> المشهد</button>
+                <button onclick="switchTab('text')" id="tab-text" class="tab-btn px-4 flex-1 text-[11px] font-bold py-2 text-slate-400"><i class="fa-solid fa-t block mb-1"></i> النصوص</button>
+                <button onclick="switchTab('audio')" id="tab-audio" class="tab-btn px-4 flex-1 text-[11px] font-bold py-2 text-slate-400"><i class="fa-solid fa-wave-square block mb-1"></i> الصوت</button>
             </div>
 
-            <div class="p-4 overflow-y-auto flex-1 text-sm space-y-5 mobile-scroll">
+            <div class="p-4 overflow-y-auto flex-1 text-sm space-y-5 custom-scrollbar bg-[#0f172a]">
                 
                 <!-- Tab 1: Basics -->
                 <div id="content-basic" class="space-y-4">
-                    <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 space-y-3">
-                        <label class="block text-indigo-400 font-bold text-xs flex items-center gap-2">
-                            <i class="fa-solid fa-microphone"></i> اختيار القارئ
-                        </label>
-                        <select id="reciter" class="w-full"></select>
-                        
-                        <label class="block text-slate-400 font-bold text-xs mt-4">السورة</label>
-                        <select id="surah" class="w-full"></select>
-                        
-                        <div class="grid grid-cols-2 gap-3 mt-4">
+                    <div class="bg-[#020617] p-3 rounded-md border border-[#1e293b]">
+                        <label class="block mb-2 text-indigo-400 font-bold text-xs"><i class="fa-solid fa-microphone"></i> اختيار القارئ والمحتوى</label>
+                        <select id="reciter" class="w-full p-2 mb-3 text-xs"></select>
+                        <select id="surah" class="w-full p-2 mb-3 text-xs"></select>
+                        <div class="grid grid-cols-2 gap-2 mb-3">
                             <div>
-                                <label class="block mb-1 text-slate-500 text-xs">من الآية</label>
-                                <input id="start-ayah" type="number" value="1" min="1" class="w-full text-center">
+                                <label class="block mb-1 text-slate-400 text-[10px]">من الآية</label>
+                                <input id="start-ayah" type="number" value="1" min="1" class="w-full p-1.5 text-center text-xs">
                             </div>
                             <div>
-                                <label class="block mb-1 text-slate-500 text-xs">إلى الآية</label>
-                                <input id="end-ayah" type="number" value="3" min="1" class="w-full text-center">
+                                <label class="block mb-1 text-slate-400 text-[10px]">إلى الآية</label>
+                                <input id="end-ayah" type="number" value="3" min="1" class="w-full p-1.5 text-center text-xs">
                             </div>
                         </div>
-
-                        <label class="block text-slate-400 font-bold text-xs mt-4">نسبة العرض</label>
-                        <select id="video-ratio" class="w-full font-bold text-slate-300">
+                        <select id="video-ratio" class="w-full p-2 text-xs font-bold text-slate-200">
                             <option value="9:16">📱 Shorts / Reels (9:16)</option>
-                            <option value="16:9">💻 YouTube (16:9)</option>
+                            <option value="16:9">💻 YouTube Wide (16:9)</option>
                             <option value="1:1">🟦 Square (1:1)</option>
                         </select>
                     </div>
@@ -440,51 +126,43 @@
 
                 <!-- Tab 2: Style -->
                 <div id="content-style" class="space-y-4 hidden">
-                    <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 space-y-3">
-                        <label class="block text-indigo-400 font-bold text-xs flex items-center gap-2">
-                            <i class="fa-solid fa-palette"></i> إعدادات المشهد
-                        </label>
-                        
-                        <select id="theme-selector" class="w-full mb-3">
-                            <option value="custom">-- سمة مخصصة --</option>
-                            <option value="ocean">محيط أزرق</option>
-                            <option value="sunset">غروب الشمس</option>
-                            <option value="forest">غابة خضراء</option>
-                            <option value="galaxy">مجرة بنفسجية</option>
+                    <div class="bg-[#020617] p-3 rounded-md border border-[#1e293b]">
+                        <label class="block mb-2 text-indigo-400 font-bold text-xs"><i class="fa-solid fa-image"></i> إعدادات المشهد</label>
+                        <select id="theme-selector" class="w-full p-2 text-xs mb-3 border-[#334155]">
+                            <option value="indigo">أزرق نيلي (افتراضي)</option>
+                            <option value="cyan">سماوي تكنولوجي</option>
+                            <option value="emerald">أخضر هادئ</option>
+                            <option value="gold">أسود وذهبي</option>
                         </select>
+                        
+                        <label class="block mb-1 text-slate-400 text-[10px]">ملف الخلفية</label>
+                        <input id="bg-media" type="file" accept="image/*,video/*" class="w-full text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-[10px] file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 mb-3 transition cursor-pointer">
 
-                        <label class="block text-slate-400 text-xs mb-1">ملف الخلفية (صورة/فيديو)</label>
-                        <input id="bg-media" type="file" accept="image/*,video/*" class="w-full text-slate-400 mb-3">
-
-                        <div class="grid grid-cols-2 gap-3 mb-3">
+                        <div class="grid grid-cols-2 gap-2 mb-3">
                             <div>
-                                <label class="block mb-1 text-slate-500 text-xs">حركة الخلفية</label>
-                                <select id="bg-anim-type" class="w-full text-xs">
-                                    <option value="none">ثابت</option>
-                                    <option value="slow-zoom">تكبير بطيء</option>
-                                    <option value="gentle-pan">تحريك لطيف</option>
-                                    <option value="breathe">تنفس نبضي</option>
+                                <label class="block mb-1 text-slate-400 text-[10px]">حركة الخلفية</label>
+                                <select id="bg-anim-type" class="w-full p-1.5 text-[10px]">
+                                    <option value="kenburns">زحف سينمائي بطيء</option>
+                                    <option value="zoomIn">تكبير هادئ</option>
+                                    <option value="panRight">تحريك عرضي</option>
+                                    <option value="none">بدون حركة</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block mb-1 text-slate-500 text-xs">فلتر اللون</label>
-                                <select id="color-filter" class="w-full text-xs">
+                                <label class="block mb-1 text-slate-400 text-[10px]">فلتر سينمائي</label>
+                                <select id="color-filter" class="w-full p-1.5 text-[10px]">
                                     <option value="none">طبيعي</option>
-                                    <option value="cinematic">سينمائي</option>
+                                    <option value="bw">أبيض وأسود</option>
                                     <option value="warm">دافئ</option>
                                     <option value="cool">بارد</option>
-                                    <option value="noir">نوير</option>
                                 </select>
                             </div>
                         </div>
 
-                        <div class="space-y-3 mt-4 pt-4 border-t border-slate-700/50">
+                        <div class="space-y-2 mt-3 pt-3 border-t border-[#1e293b]">
                             <div>
-                                <label class="flex justify-between text-xs text-slate-400 mb-1">
-                                    <span>شفافية الطبقة السوداء</span>
-                                    <span id="opacity-val">40%</span>
-                                </label>
-                                <input type="range" id="bg-opacity" min="0" max="90" value="40">
+                                <label class="flex justify-between text-[10px] text-slate-400 mb-1"><span>تعتيم الفيديو</span> <span id="opacity-val">60%</span></label>
+                                <input type="range" id="bg-opacity" min="0" max="100" value="60" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer">
                             </div>
                         </div>
                     </div>
@@ -492,281 +170,204 @@
 
                 <!-- Tab 3: Text -->
                 <div id="content-text" class="space-y-4 hidden">
-                    <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 space-y-3">
-                        <label class="block text-indigo-400 font-bold text-xs flex items-center gap-2 border-b border-slate-700/50 pb-2">
-                            <i class="fa-solid fa-quote-right"></i> إعدادات الخطوط
-                        </label>
+                    <div class="bg-[#020617] p-3 rounded-md border border-[#1e293b] space-y-3">
+                        <label class="block text-indigo-400 font-bold text-xs border-b border-[#1e293b] pb-2"><i class="fa-solid fa-quote-right"></i> إعدادات النصوص</label>
                         
-                        <select id="font-family" class="w-full">
-                            <option value="'Noto Naskh Arabic', serif">نوتو نسخ (قرآني)</option>
-                            <option value="'Readex Pro', sans-serif">ريديكس برو (عصري)</option>
-                            <option value="'Tajawal', sans-serif">تجوال (واضح)</option>
+                        <select id="font-family" class="w-full p-2 text-xs">
+                            <option value="'Amiri Quran', serif">الخط الأميري</option>
+                            <option value="'Tajawal', sans-serif" selected>خط تجوال (عصري)</option>
+                            <option value="'Cairo', sans-serif">خط كايرو</option>
+                            <option value="'Reem Kufi', sans-serif">ريم كوفي</option>
                         </select>
 
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="bg-slate-900/50 p-2 rounded-lg flex items-center justify-between border border-slate-700/30">
-                                <label class="text-xs text-slate-400">لون النص</label>
-                                <input type="color" id="text-color" value="#ffffff" class="w-8 h-8 rounded cursor-pointer bg-transparent border-0">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="bg-[#0f172a] p-1.5 rounded flex items-center justify-between border border-[#1e293b]">
+                                <label class="text-[10px] text-slate-400">لون النص</label>
+                                <input type="color" id="text-color" value="#ffffff" class="w-6 h-6 border-0 bg-transparent cursor-pointer rounded">
                             </div>
-                            <div class="bg-slate-900/50 p-2 rounded-lg flex items-center justify-between border border-slate-700/30">
-                                <label class="text-xs text-slate-400">لون الظل</label>
-                                <input type="color" id="shadow-color" value="#000000" class="w-8 h-8 rounded cursor-pointer bg-transparent border-0">
+                            <div class="bg-[#0f172a] p-1.5 rounded flex items-center justify-between border border-[#1e293b]">
+                                <label class="text-[10px] text-slate-400">لون الظل</label>
+                                <input type="color" id="shadow-color" value="#000000" class="w-6 h-6 border-0 bg-transparent cursor-pointer rounded">
                             </div>
                         </div>
 
-                        <div class="mt-3">
-                            <label class="flex justify-between text-xs text-slate-400 mb-1">
-                                <span>حجم الخط</span>
-                                <span id="font-size-val">100%</span>
-                            </label>
-                            <input type="range" id="font-size" min="60" max="140" value="100">
+                        <div>
+                            <label class="flex justify-between text-[10px] text-slate-400 mb-1"><span>حجم الخط</span> <span id="font-size-val">100%</span></label>
+                            <input type="range" id="font-size" min="50" max="150" value="100" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer">
                         </div>
 
-                        <div class="pt-3 border-t border-slate-700/50">
-                            <label class="block mb-2 text-slate-400 font-bold text-xs">الترجمة / التفسير</label>
-                            <select id="translation" class="w-full">
-                                <option value="none">بدون ترجمة</option>
+                        <div class="pt-2">
+                            <label class="block mb-1 text-slate-300 font-bold text-[10px]">إضافة ترجمة أو تفسير (سيظهر في التصدير)</label>
+                            <select id="translation" class="w-full p-2 text-xs border-[#334155]">
+                                <option value="none">بدون (النص القرآني فقط)</option>
                                 <optgroup label="عربي">
                                     <option value="ar.muyassar">التفسير الميسر</option>
                                     <option value="ar.jalalayn">تفسير الجلالين</option>
                                 </optgroup>
-                                <optgroup label="English">
-                                    <option value="en.asad">Muhammad Asad</option>
-                                    <option value="en.pickthall">Pickthall</option>
-                                    <option value="en.yusufali">Yusuf Ali</option>
-                                </optgroup>
-                                <optgroup label="Other Languages">
+                                <optgroup label="لغات أجنبية">
+                                    <option value="en.asad">English</option>
                                     <option value="fr.hamidullah">Français</option>
-                                    <option value="ur.jalandhry">اردو</option>
-                                    <option value="es.cortes">Español</option>
+                                    <option value="ur.jalandhry">Urdu</option>
                                 </optgroup>
                             </select>
                         </div>
 
-                        <label class="flex items-center gap-3 cursor-pointer mt-3 bg-slate-900/30 p-3 rounded-lg border border-slate-700/30">
-                            <input type="checkbox" id="text-fade" checked class="w-4 h-4 accent-indigo-500 rounded">
-                            <span class="text-xs text-slate-300">تأثير ظهور ناعم للنص</span>
+                        <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mt-2 bg-[#0f172a] p-2 rounded border border-[#1e293b]">
+                            <input type="checkbox" id="text-fade" checked="true" class="w-4 h-4 accent-indigo-500 rounded cursor-pointer">
+                            <span class="text-[11px] text-slate-300">تأثير الظهور الناعم (Fade In)</span>
                         </label>
                     </div>
                 </div>
 
                 <!-- Tab 4: Audio & FX -->
                 <div id="content-audio" class="space-y-4 hidden">
-                    <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 space-y-3">
-                        <label class="block text-indigo-400 font-bold text-xs flex items-center gap-2 border-b border-slate-700/50 pb-2">
-                            <i class="fa-solid fa-sliders"></i> الهندسة الصوتية
-                        </label>
+                    <div class="bg-[#020617] p-3 rounded-md border border-[#1e293b]">
+                        <label class="block mb-3 text-indigo-400 font-bold text-xs border-b border-[#1e293b] pb-2"><i class="fa-solid fa-sliders"></i> الهندسة الصوتية</label>
                         
-                        <div class="space-y-3">
+                        <div class="space-y-3 mb-3">
                             <div>
-                                <label class="flex justify-between text-xs text-slate-400 mb-1">
-                                    <span>صوت القارئ</span>
-                                    <span id="vol-reciter-val">100%</span>
-                                </label>
-                                <input type="range" id="vol-reciter" min="0" max="150" value="100" class="accent-indigo-500">
+                                <label class="flex justify-between text-[10px] text-slate-400 mb-1">طبقة التلاوة <span id="vol-reciter-val">100%</span></label>
+                                <input type="range" id="vol-reciter" min="0" max="150" value="100" class="w-full h-1.5 bg-slate-700 appearance-none rounded-lg cursor-pointer">
                             </div>
-                            
-                            <div class="bg-slate-900/30 p-3 rounded-lg border border-slate-700/30 space-y-2">
-                                <label class="flex justify-between text-xs text-slate-400">
-                                    <span>مؤثرات صوتية (خلفية)</span>
-                                    <span id="vol-bg-val">30%</span>
-                                </label>
-                                <input id="bg-audio-file" type="file" accept="audio/*" class="w-full text-xs text-slate-500 mb-2">
-                                <input type="range" id="vol-bg" min="0" max="100" value="30" class="accent-cyan-500">
+                            <div class="p-2 bg-[#0f172a] rounded border border-[#1e293b]">
+                                <label class="flex justify-between text-[10px] text-slate-400 mb-1">خلفية صوتية (ارفع ملف) <span id="vol-bg-val">20%</span></label>
+                                <input id="bg-audio-file" type="file" accept="audio/*" class="w-full text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 text-[10px] file:bg-slate-800 file:text-white mb-2 cursor-pointer">
+                                <input type="range" id="vol-bg" min="0" max="100" value="20" class="w-full h-1.5 bg-slate-700 appearance-none rounded-lg cursor-pointer">
                             </div>
                         </div>
                         
-                        <div class="pt-3 border-t border-slate-700/50 space-y-3">
-                            <label class="flex items-center gap-3 cursor-pointer">
-                                <input type="checkbox" id="toggle-visualizer" checked class="w-4 h-4 accent-indigo-500 rounded">
-                                <span class="text-xs text-slate-300">تفعيل المرئيات الصوتية</span>
+                        <div class="pt-2 border-t border-[#1e293b]">
+                            <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-3">
+                                <input type="checkbox" id="toggle-visualizer" checked="true" class="w-4 h-4 accent-indigo-500 rounded cursor-pointer">
+                                <span class="text-[11px] font-bold text-slate-200">عرض الموجات الصوتية</span>
                             </label>
                             
-                            <div class="grid grid-cols-2 gap-3">
+                            <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block mb-1 text-[10px] text-slate-500">نمط المرئي</label>
-                                    <select id="visualizer-style" class="w-full text-xs">
-                                        <option value="particles">جسيمات متحركة</option>
-                                        <option value="orbital">مدارات دائرية</option>
-                                        <option value="liquid">موجة سائلة</option>
-                                        <option value="spectrum">طيف ملون</option>
+                                    <label class="block mb-1 text-[10px] text-slate-400">شكل الموجة</label>
+                                    <select id="visualizer-style" class="w-full p-2 text-[11px]">
+                                        <option value="symmetric">موجة سينمائية متماثلة</option>
+                                        <option value="circular">حلقة مضيئة (دائري)</option>
+                                        <option value="glowLine">خط نبض نيون</option>
                                     </select>
                                 </div>
                                 <div class="flex flex-col">
-                                    <label class="block mb-1 text-[10px] text-slate-500">اللون الرئيسي</label>
-                                    <input type="color" id="visualizer-color" value="#6366f1" class="w-full h-8 bg-transparent cursor-pointer rounded">
+                                    <label class="block mb-1 text-[10px] text-slate-400">اللون</label>
+                                    <input type="color" id="visualizer-color" value="#4f46e5" class="w-full h-8 border-0 p-0 bg-transparent cursor-pointer rounded">
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
-                        <label class="block mb-2 text-slate-400 font-bold text-xs">علامة مائية</label>
-                        <input id="watermark" type="text" placeholder="@username" class="w-full text-center text-xs">
+                    <div class="bg-[#020617] p-3 rounded-md border border-[#1e293b]">
+                        <label class="block mb-1 text-slate-300 font-bold text-[10px]">علامة حقوق النشر</label>
+                        <input id="watermark" type="text" placeholder="@YourName" class="w-full p-2 text-xs text-center">
                     </div>
                 </div>
                 
                 <!-- Status Box -->
-                <div id="status-box" class="status-box hidden">
-                    <p id="status-text" class="text-indigo-300 font-bold text-xs mb-2 text-center">جاري التحضير...</p>
-                    <div class="progress-bar">
-                        <div id="progress-bar" class="progress-fill" style="width: 0%"></div>
+                <div class="mt-auto pt-2">
+                    <div id="status-box" class="p-3 bg-indigo-900/20 border border-indigo-800/50 rounded-md hidden text-center">
+                        <p id="status-text" class="text-indigo-400 font-bold text-xs animate-pulse mb-2">جاري معالجة البيانات...</p>
+                        <div class="w-full bg-[#020617] rounded-full h-2 overflow-hidden border border-[#1e293b]">
+                            <div id="progress-bar" class="bg-indigo-500 h-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
                     </div>
+                    <a id="download-btn" class="hidden w-full bg-emerald-600 hover:bg-emerald-500 text-white text-center font-bold py-3 rounded-lg shadow-lg shadow-emerald-900/20 transition mt-3 block text-sm">
+                        <i class="fa-solid fa-download ml-1"></i> تحميل الفيديو الآن
+                    </a>
                 </div>
-                
-                <a id="download-btn" class="hidden w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white text-center font-bold py-3 rounded-xl transition shadow-lg shadow-green-500/30 block text-sm">
-                    <i class="fa-solid fa-download ml-2"></i> تحميل الفيديو
-                </a>
 
             </div>
 
             <!-- Credits Section -->
-            <div class="border-t border-slate-700/50 bg-slate-900/30 p-4 text-center mt-auto">
-                <span class="text-xs text-slate-500 font-bold block mb-2">تطوير</span>
-                <span class="text-lg font-bold gradient-text block mb-3">Mahmoud Shokri</span>
-                <a href="https://www.instagram.com/mahmoudshokri7" target="_blank" class="inline-flex items-center gap-2 text-slate-400 hover:text-pink-500 transition bg-slate-800/50 px-4 py-2 rounded-full border border-slate-700/50 hover:border-pink-500/50">
-                    <i class="fa-brands fa-instagram text-lg"></i>
-                    <span class="text-xs font-bold">@mahmoudshokri7</span>
-                </a>
-            </div>
-        </aside>
-
-        <!-- Preview Area -->
-        <section class="preview-section glass-panel overflow-hidden">
-            <div class="flex justify-between items-center mb-4">
-                <span class="text-sm text-slate-300 font-bold flex items-center gap-2">
-                    <i class="fa-solid fa-eye text-indigo-500"></i> معاينة مباشرة
-                </span>
-                <span id="res-display" class="text-xs bg-slate-800/80 text-slate-400 font-bold px-3 py-1 rounded-full border border-slate-700/50">
-                    9:16
-                </span>
-            </div>
-            
-            <div class="canvas-wrapper flex-1 relative">
-                <canvas id="video-canvas"></canvas>
-                <canvas id="viz-canvas" class="viz-overlay"></canvas>
-            </div>
-            
-            <!-- Timeline -->
-            <div class="mt-4 bg-slate-900/30 rounded-xl p-3 border border-slate-700/30">
-                <div class="flex gap-2 overflow-x-auto pb-2" id="timeline-tracks">
-                    <!-- سيتم ملؤه تلقائياً -->
+            <div class="border-t border-[#1e293b] bg-[#020617] p-3 text-center shrink-0 flex flex-col items-center">
+                <span class="text-[11px] text-slate-400 font-bold mb-2">صنع بواسطة <span class="text-indigo-400">Mahmoud Shokri</span></span>
+                <div class="flex justify-center gap-3">
+                    <a href="https://www.instagram.com/mahmoudshokri7" target="_blank" class="text-slate-500 hover:text-pink-500 transition" title="Instagram"><i class="fa-brands fa-instagram text-xl"></i></a>
                 </div>
             </div>
-        </section>
-        
-    </div>
+        </aside>
+    </main>
 
     <script>
-        // === المتغيرات والتهيئة ===
+        // === 1. المتغيرات والتهيئة ===
         const canvas = document.getElementById('video-canvas');
         const ctx = canvas.getContext('2d');
-        const vizCanvas = document.getElementById('viz-canvas');
-        const vizCtx = vizCanvas.getContext('2d');
-        
         let audioCtx, destNode, analyser, dataArray;
         let reciterGain, bgGain, bgAudioBuffer = null;
         let canvasWidth = 1080;
         let canvasHeight = 1920;
-        let animationId;
-        let particles = [];
 
         let currentState = {
             bgType: 'none',
             bgImg: new Image(),
             bgVideo: document.createElement('video'),
-            textAr: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", 
-            textTrans: "", 
+            textAr: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ﴿١﴾", 
+            textSec: "In the name of Allah, the Entirely Merciful...", 
             isRecording: false,
             verseStartTime: 0,
-            startTime: Date.now(),
-            audioData: new Array(64).fill(0)
+            startTime: Date.now()
         };
-        
-        currentState.bgVideo.muted = true; 
-        currentState.bgVideo.loop = true; 
-        currentState.bgVideo.crossOrigin = "anonymous";
-
-        // === تهيئة الجسيمات للمرئيات ===
-        function initParticles() {
-            particles = [];
-            for(let i = 0; i < 50; i++) {
-                particles.push({
-                    x: Math.random() * canvasWidth,
-                    y: Math.random() * canvasHeight,
-                    size: Math.random() * 3 + 1,
-                    speedX: (Math.random() - 0.5) * 0.5,
-                    speedY: (Math.random() - 0.5) * 0.5,
-                    opacity: Math.random() * 0.5 + 0.2
-                });
-            }
-        }
+        currentState.bgVideo.muted = true; currentState.bgVideo.loop = true; currentState.bgVideo.crossOrigin = "anonymous";
 
         function toArabicNumber(n) {
             if(!n) return '';
             const d = { '0': '٠', '1': '١', '2': '٢', '3': '٣', '4': '٤', '5': '٥', '6': '٦', '7': '٧', '8': '٨', '9': '٩' };
             return n.toString().replace(/\d/g, m => d[m]);
         }
-        
         function pad3(n) { return n.toString().padStart(3,'0'); }
 
-        // === قائمة القراء ===
+        // === 2. القائمة الشاملة للقراء ===
         const recitersList = {
-            "أشهر القراء": [
+            "أشهر القراء عالمياً":[
                 {id:'Alafasy_128kbps', name:'مشاري العفاسي'},
                 {id:'Abdurrahmaan_As-Sudais_192kbps', name:'عبد الرحمن السديس'},
+                {id:'Saood_ash-Shuraym_128kbps', name:'سعود الشريم'},
                 {id:'MaherAlMuaiqly_128kbps', name:'ماهر المعيقلي'},
                 {id:'Yasser_Ad-Dussary_128kbps', name:'ياسر الدوسري'},
+                {id:'Ahmed_ibn_Ali_al-Ajamy_128kbps', name:'أحمد بن علي العجمي'},
                 {id:'Ghamadi_40kbps', name:'سعد الغامدي'},
+                {id:'Fares_Abbad_64kbps', name:'فارس عباد'},
+                {id:'Nasser_Alqatami_128kbps', name:'ناصر القطامي'},
                 {id:'Hudhaify_128kbps', name:'علي الحذيفي'}
             ],
-            "المدرسة المصرية": [
-                {id:'Abdul_Basit_Murattal_192kbps', name:'عبد الباسط عبد الصمد'},
-                {id:'Minshawy_Murattal_128kbps', name:'محمد صديق المنشاوي'},
-                {id:'Husary_128kbps', name:'محمود خليل الحصري'},
+            "المدرسة المصرية الذهبية":[
+                {id:'Abdul_Basit_Murattal_192kbps', name:'عبد الباسط عبد الصمد (مرتل)'},
+                {id:'Abdul_Basit_Mujawwad_128kbps', name:'عبد الباسط عبد الصمد (مجود)'},
+                {id:'Minshawy_Murattal_128kbps', name:'محمد صديق المنشاوي (مرتل)'},
+                {id:'Minshawy_Mujawwad_192kbps', name:'محمد صديق المنشاوي (مجود)'},
+                {id:'Husary_128kbps', name:'محمود خليل الحصري (مرتل)'},
+                {id:'Husary_128kbps_Mujawwad', name:'محمود خليل الحصري (مجود)'},
+                {id:'Mohammad_al_Tablaway_128kbps', name:'محمد محمود الطبلاوي'},
                 {id:'Mustafa_Ismail_48kbps', name:'مصطفى إسماعيل'},
-                {id:'Muhammad_Ayyoub_128kbps', name:'محمد أيوب'}
+                {id:'Muhammad_Ayyoub_128kbps', name:'محمد أيوب'},
+                {id:'Muhammad_Jibreel_128kbps', name:'محمد جبريل'}
             ]
         };
 
         const recSelect = document.getElementById('reciter');
         for(let cat in recitersList){
-            let grp = document.createElement('optgroup'); 
-            grp.label = cat;
-            recitersList[cat].forEach(r => { 
-                let o = document.createElement('option'); 
-                o.value = r.id; 
-                o.innerText = r.name; 
-                grp.appendChild(o); 
-            });
+            let grp = document.createElement('optgroup'); grp.label = cat;
+            recitersList[cat].forEach(r => { let o = document.createElement('option'); o.value=r.id; o.innerText=r.name; grp.appendChild(o); });
             if(recSelect) recSelect.appendChild(grp);
         }
 
-        // === أحداث الواجهة ===
+        // === 3. أحداث الواجهة ===
         function setResolution() {
             let ratio = document.getElementById('video-ratio')?.value || '9:16';
-            if(ratio === '9:16') { canvasWidth = 1080; canvasHeight = 1920; }
-            else if(ratio === '16:9') { canvasWidth = 1920; canvasHeight = 1080; }
-            else if(ratio === '1:1') { canvasWidth = 1080; canvasHeight = 1080; }
-            
-            canvas.width = canvasWidth; 
-            canvas.height = canvasHeight;
-            vizCanvas.width = canvasWidth;
-            vizCanvas.height = canvasHeight;
-            
-            initParticles();
-            
+            if(ratio === '9:16') { canvasWidth=1080; canvasHeight=1920; }
+            else if(ratio === '16:9') { canvasWidth=1920; canvasHeight=1080; }
+            else if(ratio === '1:1') { canvasWidth=1080; canvasHeight=1080; }
+            canvas.width = canvasWidth; canvas.height = canvasHeight;
             let ratioText = document.getElementById('video-ratio');
-            if(ratioText) document.getElementById('res-display').innerText = ratio.split(':').join(':');
+            if(ratioText) document.getElementById('res-display').innerText = ratioText.options[ratioText.selectedIndex].text;
         }
-
-        if(document.getElementById('video-ratio')) {
-            document.getElementById('video-ratio').addEventListener('change', setResolution);
-        }
+        if(document.getElementById('video-ratio')) document.getElementById('video-ratio').addEventListener('change', setResolution);
         setResolution();
 
         function switchTab(t){
-            ['basic','style','text','audio'].forEach(x => {
+            ['basic','style','text','audio'].forEach(x=>{
                 document.getElementById('tab-'+x)?.classList.remove('active');
                 document.getElementById('content-'+x)?.classList.add('hidden');
             });
@@ -774,23 +375,17 @@
             document.getElementById('content-'+t)?.classList.remove('hidden');
         }
 
-        const updateVal = (id, val) => { 
-            let el = document.getElementById(id+'-val'); 
-            if(el) el.innerText = val; 
-        };
-
-        ['bg-opacity', 'font-size', 'vol-reciter', 'vol-bg'].forEach(id => {
-            const el = document.getElementById(id);
-            if(el) {
-                el.oninput = e => updateVal(id, e.target.value + (id.includes('vol') || id.includes('opacity') ? '%' : '%'));
-            }
-        });
+        const updateVal = (id, val) => { let el = document.getElementById(id+'-val'); if(el) el.innerText = val; };
+        if(document.getElementById('bg-opacity')) document.getElementById('bg-opacity').oninput = e => updateVal('opacity', e.target.value+'%');
+        if(document.getElementById('font-size')) document.getElementById('font-size').oninput = e => updateVal('font-size', e.target.value+'%');
+        if(document.getElementById('vol-reciter')) document.getElementById('vol-reciter').oninput = e => updateVal('vol-reciter', e.target.value+'%');
+        if(document.getElementById('vol-bg')) document.getElementById('vol-bg').oninput = e => updateVal('vol-bg', e.target.value+'%');
 
         const themes = {
-            'ocean': { text: '#e0f2fe', viz: '#0ea5e9', opacity: 40, filter: 'cool' },
-            'sunset': { text: '#fef3c7', viz: '#f59e0b', opacity: 50, filter: 'warm' },
-            'forest': { text: '#dcfce7', viz: '#22c55e', opacity: 45, filter: 'none' },
-            'galaxy': { text: '#fae8ff', viz: '#c084fc', opacity: 40, filter: 'cinematic' }
+            'indigo': { text: '#ffffff', viz: '#4f46e5', opacity: 60 },
+            'cyan': { text: '#e0f2fe', viz: '#06b6d4', opacity: 70 },
+            'emerald': { text: '#ffffff', viz: '#10b981', opacity: 60 },
+            'gold': { text: '#fef3c7', viz: '#f59e0b', opacity: 75 }
         };
 
         if(document.getElementById('theme-selector')) {
@@ -799,11 +394,8 @@
                 if(theme) {
                     if(document.getElementById('text-color')) document.getElementById('text-color').value = theme.text;
                     if(document.getElementById('visualizer-color')) document.getElementById('visualizer-color').value = theme.viz;
-                    if(document.getElementById('bg-opacity')) {
-                        document.getElementById('bg-opacity').value = theme.opacity;
-                        updateVal('bg-opacity', theme.opacity + '%');
-                    }
-                    if(document.getElementById('color-filter')) document.getElementById('color-filter').value = theme.filter;
+                    if(document.getElementById('bg-opacity')) document.getElementById('bg-opacity').value = theme.opacity;
+                    updateVal('opacity', theme.opacity + '%');
                 }
             });
         }
@@ -815,184 +407,181 @@
             if(!timeline) return;
             timeline.innerHTML = '';
             for(let i = start; i <= end; i++) {
-                timeline.innerHTML += `
-                    <div id='clip-${i}' class='timeline-clip px-4 py-2 min-w-[80px] text-center text-xs font-bold text-slate-400 whitespace-nowrap'>
-                        آية ${toArabicNumber(i)}
-                    </div>
-                `;
+                timeline.innerHTML += `<div id='clip-${i}' class='timeline-clip bg-[#0f172a] border border-[#334155] rounded px-3 py-1.5 min-w-[60px] text-center text-[10px] font-bold text-slate-400'>الآية ${i}</div>`;
             }
         }
-
-        if(document.getElementById('start-ayah')) {
-            document.getElementById('start-ayah').addEventListener('input', updateTimelineLive);
-        }
-        if(document.getElementById('end-ayah')) {
-            document.getElementById('end-ayah').addEventListener('input', updateTimelineLive);
-        }
+        if(document.getElementById('start-ayah')) document.getElementById('start-ayah').addEventListener('input', updateTimelineLive);
+        if(document.getElementById('end-ayah')) document.getElementById('end-ayah').addEventListener('input', updateTimelineLive);
         updateTimelineLive(); 
 
-        const surahNames = ["الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس","هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه","الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم","لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر","فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق","الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج","نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس","التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد","الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر","المسد","الإخلاص","الفلق","الناس"];
-        
+        const surahNames =["الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس","هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه","الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم","لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر","فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق","الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج","نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس","التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد","الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر","المسد","الإخلاص","الفلق","الناس"];
         const sSelect = document.getElementById('surah');
-        if(sSelect) {
-            surahNames.forEach((n, i) => { 
-                let o = document.createElement('option'); 
-                o.value = i + 1; 
-                o.innerText = `${i + 1}. ${n}`; 
-                sSelect.appendChild(o); 
-            });
-        }
+        if(sSelect) surahNames.forEach((n,i)=>{ let o=document.createElement('option'); o.value=i+1; o.innerText=`${i+1}. ${n}`; sSelect.appendChild(o); });
 
         if(document.getElementById('bg-media')) {
             document.getElementById('bg-media').addEventListener('change', (e) => {
-                const file = e.target.files[0]; 
-                if(!file) return;
+                const file = e.target.files[0]; if(!file) return;
                 const url = URL.createObjectURL(file);
                 if(file.type.startsWith('video/')) {
-                    currentState.bgType = 'video'; 
-                    currentState.bgVideo.src = url; 
-                    currentState.bgVideo.play();
+                    currentState.bgType = 'video'; currentState.bgVideo.src = url; currentState.bgVideo.play();
                 } else {
-                    currentState.bgType = 'image'; 
-                    currentState.bgImg.src = url;
+                    currentState.bgType = 'image'; currentState.bgImg.src = url;
                 }
             });
         }
 
-        // === المحرك الرسومي المحسّن ===
+        // === 4. المحرك الأساسي الحي (Render Loop) ===
         function render() {
             if(!ctx) return;
-            
-            // خلفية داكنة أساسية
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-            
-            let time = Date.now() * 0.001; // ثواني
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+            let time = Date.now();
             let animEl = document.getElementById('bg-anim-type');
-            let animType = animEl ? animEl.value : 'none';
+            let animType = animEl ? animEl.value : 'kenburns';
             
-            // رسم الخلفية مع الحركة المحسّنة
             ctx.save();
+            let scale = 1, transX = 0, transY = 0;
             
-            let scale = 1;
-            let transX = 0;
-            let transY = 0;
-            
-            if(currentState.bgType !== 'none') {
-                // حساب الحركة بحيث لا تخرج الصورة عن الإطار
-                let maxOffset = 0; // نسبة الحد الأقصى للتحريك
-                
-                switch(animType) {
-                    case 'slow-zoom':
-                        // تكبير بطيء من 1 إلى 1.1 على مدى 30 ثانية
-                        scale = 1 + (time % 30) / 300;
-                        break;
-                    case 'gentle-pan':
-                        // تحريك لطيف ذهاب وإياب
-                        transX = Math.sin(time * 0.1) * 20;
-                        transY = Math.cos(time * 0.08) * 10;
-                        break;
-                    case 'breathe':
-                        // تنفس نبضي
-                        scale = 1 + Math.sin(time * 0.5) * 0.02;
-                        break;
+            // خوارزمية الحركة الهادئة التي تمنع ظهور الحواف
+            if(currentState.isRecording || animType !== 'none') {
+                let progress = time * 0.00005; // سرعة هادئة ومناسبة
+                if(animType === 'zoomIn') {
+                    scale = 1.0 + (progress % 0.15); // تكبير حتى 15% ببطء
+                } else if(animType === 'kenburns') {
+                    scale = 1.1; // تكبير بمقدار 10% لإعطاء مساحة للحركة
+                    transX = Math.sin(progress) * (canvasWidth * 0.04);
+                    transY = Math.cos(progress * 0.8) * (canvasHeight * 0.04);
+                } else if(animType === 'panRight') {
+                    scale = 1.1;
+                    transX = Math.sin(progress) * (canvasWidth * 0.04); 
                 }
-                
-                // ضمان عدم خروج الصورة عن الإطار
-                let safeScale = Math.max(scale, 1.15); // نضمن تغطية كاملة
-                
-                ctx.translate(canvasWidth/2, canvasHeight/2);
-                ctx.scale(safeScale, safeScale);
-                ctx.translate(-canvasWidth/2 + transX, -canvasHeight/2 + transY);
-                
-                if(currentState.bgType === 'video' && currentState.bgVideo.readyState >= 2) {
-                    drawCover(currentState.bgVideo, currentState.bgVideo.videoWidth, currentState.bgVideo.videoHeight);
-                } else if(currentState.bgType === 'image' && currentState.bgImg.src && currentState.bgImg.complete) {
-                    drawCover(currentState.bgImg, currentState.bgImg.width, currentState.bgImg.height);
-                } else {
-                    // خلفية افتراضية متدرجة
-                    let g = ctx.createLinearGradient(0, 0, canvasWidth, canvasHeight);
-                    g.addColorStop(0, '#1e1b4b');
-                    g.addColorStop(0.5, '#0f172a');
-                    g.addColorStop(1, '#1e1b4b');
-                    ctx.fillStyle = g;
-                    ctx.fillRect(-canvasWidth, -canvasHeight, canvasWidth*3, canvasHeight*3);
-                }
-            } else {
-                // خلفية افتراضية
-                let g = ctx.createLinearGradient(0, 0, 0, canvasHeight);
-                g.addColorStop(0, '#0f172a');
-                g.addColorStop(1, '#1e1b4b');
-                ctx.fillStyle = g;
-                ctx.fillRect(0, 0, canvasWidth, canvasHeight);
             }
-            
+
+            ctx.translate(canvasWidth/2, canvasHeight/2);
+            ctx.scale(scale, scale);
+            ctx.translate(-canvasWidth/2 + transX, -canvasHeight/2 + transY);
+
+            if(currentState.bgType === 'video' && currentState.bgVideo.readyState >= 2) {
+                drawCover(currentState.bgVideo, currentState.bgVideo.videoWidth, currentState.bgVideo.videoHeight);
+            } else if(currentState.bgType === 'image' && currentState.bgImg.src) {
+                drawCover(currentState.bgImg, currentState.bgImg.width, currentState.bgImg.height);
+            } else {
+                let g = ctx.createLinearGradient(0,0,0,canvasHeight); g.addColorStop(0,'#0f172a'); g.addColorStop(1,'#020617');
+                ctx.fillStyle = g; ctx.fillRect(0,0,canvasWidth,canvasHeight);
+            }
             ctx.restore();
 
-            // الفلاتر اللونية
             let filterEl = document.getElementById('color-filter');
             let filter = filterEl ? filterEl.value : 'none';
-            
-            if(filter !== 'none') {
+            if(filter === 'bw') { ctx.globalCompositeOperation='saturation'; ctx.fillStyle='white'; ctx.fillRect(0,0,canvasWidth,canvasHeight); ctx.globalCompositeOperation='source-over'; }
+            if(filter === 'warm') { ctx.fillStyle='rgba(245, 158, 11, 0.1)'; ctx.fillRect(0,0,canvasWidth,canvasHeight); }
+            if(filter === 'cool') { ctx.fillStyle='rgba(14, 165, 233, 0.1)'; ctx.fillRect(0,0,canvasWidth,canvasHeight); }
+
+            let opEl = document.getElementById('bg-opacity');
+            let op = (opEl ? opEl.value : 60) / 100;
+            ctx.fillStyle = `rgba(0,0,0,${op})`; ctx.fillRect(0,0,canvasWidth,canvasHeight);
+
+            // الموجات الصوتية الجديدة والجذابة
+            let vizToggle = document.getElementById('toggle-visualizer');
+            if(vizToggle && vizToggle.checked) {
+                let vizStyle = document.getElementById('visualizer-style') ? document.getElementById('visualizer-style').value : 'symmetric';
+                let vizColor = document.getElementById('visualizer-color') ? document.getElementById('visualizer-color').value : '#4f46e5';
+                
+                const hex2rgb = (hex) => {
+                    if(!hex) return '79, 70, 229';
+                    const r = parseInt(hex.slice(1, 3), 16);
+                    const g = parseInt(hex.slice(3, 5), 16);
+                    const b = parseInt(hex.slice(5, 7), 16);
+                    return `${r}, ${g}, ${b}`;
+                }
+                const vizRgb = hex2rgb(vizColor);
+
+                let dataLength = 64;
+                if(analyser && currentState.isRecording) {
+                    analyser.getByteFrequencyData(dataArray);
+                    dataLength = dataArray.length;
+                }
+
                 ctx.save();
-                switch(filter) {
-                    case 'cinematic':
-                        ctx.fillStyle = 'rgba(59, 130, 246, 0.1)';
-                        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-                        break;
-                    case 'warm':
-                        ctx.fillStyle = 'rgba(251, 191, 36, 0.15)';
-                        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-                        break;
-                    case 'cool':
-                        ctx.fillStyle = 'rgba(14, 165, 233, 0.15)';
-                        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-                        break;
-                    case 'noir':
-                        ctx.globalCompositeOperation = 'saturation';
-                        ctx.fillStyle = 'white';
-                        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-                        ctx.globalCompositeOperation = 'source-over';
-                        ctx.fillStyle = 'rgba(0,0,0,0.3)';
-                        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-                        break;
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = `rgba(${vizRgb}, 0.8)`;
+                ctx.strokeStyle = `rgba(${vizRgb}, 0.9)`;
+                ctx.fillStyle = `rgba(${vizRgb}, 0.2)`;
+                ctx.lineWidth = 4;
+                ctx.lineCap = 'round';
+
+                if (vizStyle === 'symmetric') {
+                    // موجة سينمائية متماثلة (أعلى وأسفل المحور)
+                    let yCenter = canvasHeight * 0.85;
+                    let barW = (canvasWidth / dataLength) * 2;
+                    let x = (canvasWidth - ((dataLength/2) * barW * 2)) / 2; 
+                    
+                    ctx.beginPath();
+                    for (let i = 0; i < dataLength; i+=2) { 
+                        let val = (analyser && currentState.isRecording) ? dataArray[i] : (Math.sin((time/300) + i) * 40 + 50);
+                        let h = (val / 255) * (canvasHeight * 0.12);
+                        if(h < 5) h = 5;
+                        
+                        ctx.moveTo(x, yCenter - h/2);
+                        ctx.lineTo(x, yCenter + h/2);
+                        x += barW * 2;
+                    }
+                    ctx.stroke();
+
+                } else if (vizStyle === 'circular') {
+                    // حلقة مضيئة بالأسفل
+                    let cx = canvasWidth / 2;
+                    let cy = canvasHeight * 0.82;
+                    let radius = canvasWidth * 0.12;
+                    
+                    for (let i = 0; i < dataLength; i+=2) {
+                        let val = (analyser && currentState.isRecording) ? dataArray[i] : (Math.sin((time/300) + i) * 40 + 50);
+                        let h = (val / 255) * (canvasWidth * 0.08);
+                        if(h < 5) h = 5;
+                        
+                        let angle = (i / dataLength) * Math.PI * 2;
+                        let x1 = cx + Math.cos(angle) * radius;
+                        let y1 = cy + Math.sin(angle) * radius;
+                        let x2 = cx + Math.cos(angle) * (radius + h);
+                        let y2 = cy + Math.sin(angle) * (radius + h);
+                        
+                        ctx.beginPath();
+                        ctx.moveTo(x1, y1);
+                        ctx.lineTo(x2, y2);
+                        ctx.stroke();
+                    }
+
+                } else if (vizStyle === 'glowLine') {
+                    // خط نبض نيون ممتد بعرض الشاشة
+                    let yCenter = canvasHeight * 0.85;
+                    ctx.beginPath();
+                    ctx.moveTo(0, yCenter);
+                    let sliceWidth = canvasWidth / dataLength;
+                    let x = 0;
+                    
+                    for (let i = 0; i < dataLength; i++) {
+                        let val = (analyser && currentState.isRecording) ? dataArray[i] : (Math.sin((time/300) + i) * 40 + 50);
+                        let h = (val / 255) * (canvasHeight * 0.08);
+                        ctx.lineTo(x, yCenter - h);
+                        x += sliceWidth;
+                    }
+                    ctx.lineTo(canvasWidth, yCenter);
+                    ctx.fill();
+                    ctx.stroke();
                 }
                 ctx.restore();
             }
-
-            // طبقة التعتيم
-            let opEl = document.getElementById('bg-opacity');
-            let op = (opEl ? opEl.value : 40) / 100;
-            ctx.fillStyle = `rgba(0,0,0,${op})`;
-            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-
-            // الحصول على بيانات الصوت للمرئيات
-            if(analyser && currentState.isRecording) {
-                analyser.getByteFrequencyData(dataArray);
-                currentState.audioData = Array.from(dataArray);
-            } else if(!currentState.isRecording) {
-                // محاكاة البيانات للمعاينة
-                for(let i = 0; i < currentState.audioData.length; i++) {
-                    currentState.audioData[i] = 50 + Math.sin(time * 2 + i * 0.2) * 30;
-                }
-            }
-
-            // رسم المرئيات الصوتية على Canvas منفصل (Overlay)
-            renderVisualizer();
 
             // النصوص
             let alpha = 1;
             let fadeEl = document.getElementById('text-fade');
             if(fadeEl && fadeEl.checked && currentState.isRecording) {
-                let elapsed = (Date.now() - currentState.verseStartTime) / 1000;
-                if(elapsed < 1) alpha = Math.max(0.1, elapsed);
+                let elapsed = (Date.now() - currentState.verseStartTime)/1000;
+                if(elapsed < 1) alpha = Math.max(0, elapsed);
             }
-            
-            ctx.save();
             ctx.globalAlpha = alpha;
 
             let fontFamEl = document.getElementById('font-family');
-            let fontFamily = fontFamEl ? fontFamEl.value : "'Noto Naskh Arabic', serif";
+            let fontFamily = fontFamEl ? fontFamEl.value : "'Tajawal', sans-serif";
             
             let fontSzEl = document.getElementById('font-size');
             let fontSizeBase = fontSzEl ? parseInt(fontSzEl.value) : 100;
@@ -1003,197 +592,74 @@
             let shdColorEl = document.getElementById('shadow-color');
             let shadowColor = shdColorEl ? shdColorEl.value : '#000000';
 
-            // رسم النص العربي
             let textH = 0;
             if(currentState.textAr) {
-                let fSize = (fontSizeBase / 100) * (canvasWidth > 1500 ? 120 : 80);
+                let fSize = (fontSizeBase/100) * 85; 
+                if(canvasWidth > 1500) fSize *= 1.5;
                 ctx.font = `bold ${fSize}px ${fontFamily}`;
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
+                ctx.textAlign = "center"; ctx.textBaseline="middle"; 
                 ctx.fillStyle = textColor;
-                ctx.shadowColor = shadowColor;
-                ctx.shadowBlur = 20;
-                ctx.shadowOffsetX = 0;
-                ctx.shadowOffsetY = 4;
-                
-                textH = wrapText(ctx, currentState.textAr, canvasWidth / 2, canvasHeight / 2.5, canvasWidth * 0.8, fSize * 1.8);
+                ctx.shadowColor = shadowColor; ctx.shadowBlur = 15;
+                textH = wrapText(ctx, currentState.textAr, canvasWidth/2, canvasHeight/2.3, canvasWidth*0.85, fSize*1.6);
                 ctx.shadowBlur = 0;
             }
 
-            // رسم الترجمة
-            if(currentState.textTrans) {
-                let transSize = (fontSizeBase / 100) * (canvasWidth > 1500 ? 45 : 32);
-                ctx.font = `${transSize}px 'Tajawal', sans-serif`;
-                ctx.fillStyle = "rgba(255,255,255,0.85)";
-                ctx.shadowColor = "rgba(0,0,0,0.8)";
-                ctx.shadowBlur = 10;
-                wrapText(ctx, currentState.textTrans, canvasWidth / 2, (canvasHeight / 2.5) + (textH / 2) + (canvasHeight * 0.08), canvasWidth * 0.85, transSize * 1.6);
-                ctx.shadowBlur = 0;
+            if(currentState.textSec) {
+                let secSize = (fontSizeBase/100) * 40;
+                if(canvasWidth > 1500) secSize *= 1.5;
+                ctx.font = `500 ${secSize}px 'Tajawal', sans-serif`;
+                ctx.fillStyle = "#cbd5e1";
+                wrapText(ctx, currentState.textSec, canvasWidth/2, (canvasHeight/2.3)+(textH/2)+(canvasHeight*0.05), canvasWidth*0.85, secSize*1.5);
             }
-            
-            ctx.restore();
+            ctx.globalAlpha = 1;
 
-            // العلامة المائية
             let wmEl = document.getElementById('watermark');
             let wm = wmEl ? wmEl.value : '';
             if(wm) {
-                ctx.save();
-                ctx.fillStyle = "rgba(255,255,255,0.3)";
-                ctx.font = "bold 30px 'Tajawal'";
-                ctx.textAlign = "center";
-                ctx.fillText(wm, canvasWidth / 2, canvasHeight - 60);
-                ctx.restore();
+                ctx.fillStyle = "rgba(255,255,255,0.4)"; ctx.font = "35px 'Tajawal'"; ctx.fillText(wm, canvasWidth/2, 90);
             }
 
-            animationId = requestAnimationFrame(render);
-        }
-
-        function renderVisualizer() {
-            if(!vizCtx) return;
-            
-            vizCtx.clearRect(0, 0, canvasWidth, canvasHeight);
-            
-            let vizToggle = document.getElementById('toggle-visualizer');
-            if(!vizToggle || !vizToggle.checked) return;
-            
-            let vizStyle = document.getElementById('visualizer-style')?.value || 'particles';
-            let vizColor = document.getElementById('visualizer-color')?.value || '#6366f1';
-            
-            let data = currentState.audioData;
-            let time = Date.now() * 0.001;
-            
-            vizCtx.save();
-            
-            switch(vizStyle) {
-                case 'particles':
-                    // جسيمات متحركة تتفاعل مع الصوت
-                    particles.forEach((p, i) => {
-                        let audioVal = data[i % data.length] / 255;
-                        let size = p.size + (audioVal * 5);
-                        
-                        vizCtx.beginPath();
-                        vizCtx.arc(p.x, p.y, size, 0, Math.PI * 2);
-                        vizCtx.fillStyle = vizColor + Math.floor(p.opacity * 255).toString(16).padStart(2, '0');
-                        vizCtx.fill();
-                        
-                        // حركة الجسيمات
-                        p.x += p.speedX + (audioVal * 2);
-                        p.y += p.speedY;
-                        
-                        if(p.x < 0) p.x = canvasWidth;
-                        if(p.x > canvasWidth) p.x = 0;
-                        if(p.y < 0) p.y = canvasHeight;
-                        if(p.y > canvasHeight) p.y = 0;
-                    });
-                    break;
-                    
-                case 'orbital':
-                    // مدارات دائرية
-                    let centerX = canvasWidth / 2;
-                    let centerY = canvasHeight / 2;
-                    
-                    for(let i = 0; i < 3; i++) {
-                        let radius = 100 + i * 50;
-                        let audioVal = data[i * 10] / 255;
-                        
-                        vizCtx.beginPath();
-                        vizCtx.arc(centerX, centerY, radius + (audioVal * 30), 0, Math.PI * 2);
-                        vizCtx.strokeStyle = vizColor;
-                        vizCtx.lineWidth = 2 + (audioVal * 3);
-                        vizCtx.globalAlpha = 0.3 + (audioVal * 0.5);
-                        vizCtx.stroke();
-                    }
-                    break;
-                    
-                case 'liquid':
-                    // موجة سائلة في الأسفل
-                    vizCtx.beginPath();
-                    vizCtx.moveTo(0, canvasHeight);
-                    
-                    for(let x = 0; x <= canvasWidth; x += 10) {
-                        let dataIndex = Math.floor((x / canvasWidth) * data.length);
-                        let val = data[dataIndex] / 255;
-                        let y = canvasHeight - 100 - (val * 150) + Math.sin(x * 0.01 + time) * 20;
-                        vizCtx.lineTo(x, y);
-                    }
-                    
-                    vizCtx.lineTo(canvasWidth, canvasHeight);
-                    vizCtx.closePath();
-                    
-                    let gradient = vizCtx.createLinearGradient(0, canvasHeight - 200, 0, canvasHeight);
-                    gradient.addColorStop(0, vizColor + '00');
-                    gradient.addColorStop(1, vizColor + '80');
-                    vizCtx.fillStyle = gradient;
-                    vizCtx.fill();
-                    break;
-                    
-                case 'spectrum':
-                    // طيف ملون تقليدي but modern
-                    let barWidth = canvasWidth / data.length;
-                    
-                    for(let i = 0; i < data.length; i++) {
-                        let val = data[i] / 255;
-                        let barHeight = val * canvasHeight * 0.4;
-                        
-                        let hue = (i / data.length) * 360;
-                        vizCtx.fillStyle = `hsla(${hue}, 70%, 60%, ${0.3 + val * 0.7})`;
-                        vizCtx.fillRect(i * barWidth, canvasHeight - barHeight, barWidth - 2, barHeight);
-                    }
-                    break;
-            }
-            
-            vizCtx.restore();
+            requestAnimationFrame(render);
         }
 
         function drawCover(img, imgW, imgH) {
-            let scale = Math.max(canvasWidth / imgW, canvasHeight / imgH);
-            let w = imgW * scale;
-            let h = imgH * scale;
-            let x = (canvasWidth - w) / 2;
-            let y = (canvasHeight - h) / 2;
-            ctx.drawImage(img, x, y, w, h);
+            // رسم الصورة لتغطي الكانفاس بالكامل بدون تشويه
+            let r = Math.max(canvasWidth/imgW, canvasHeight/imgH);
+            let w = imgW * r;
+            let h = imgH * r;
+            let cx = (canvasWidth - w)/2; 
+            let cy = (canvasHeight - h)/2;
+            ctx.drawImage(img, 0, 0, imgW, imgH, cx, cy, w, h);
         }
 
         function wrapText(ctx, text, x, y, maxW, lineH) {
-            let words = text.split(' ');
-            let line = '';
-            let lines = [];
-            
-            for(let n = 0; n < words.length; n++) {
+            let words = text.split(' '); let line = ''; let lines =[];
+            for(let n=0; n<words.length; n++) {
                 let test = line + words[n] + ' ';
-                if(ctx.measureText(test).width > maxW && n > 0) {
-                    lines.push(line);
-                    line = words[n] + ' ';
-                } else {
-                    line = test;
-                }
+                if(ctx.measureText(test).width > maxW && n > 0) { lines.push(line); line = words[n] + ' '; }
+                else { line = test; }
             }
             lines.push(line);
-            
-            let startY = y - ((lines.length - 1) * lineH) / 2;
-            for(let i = 0; i < lines.length; i++) {
-                ctx.fillText(lines[i].trim(), x, startY + (i * lineH));
-            }
-            return lines.length * lineH;
+            let startY = y - (lines.length*lineH)/2;
+            for(let i=0; i<lines.length; i++) ctx.fillText(lines[i].trim(), x, startY + (i*lineH));
+            return lines.length*lineH;
         }
 
-        // === نظام الصوت ===
+        // === 5. نظام الصوت والاستيراد ===
         async function setupAudio() {
             window.AudioContext = window.AudioContext || window.webkitAudioContext;
             audioCtx = new AudioContext();
             destNode = audioCtx.createMediaStreamDestination();
             
-            let vr = document.getElementById('vol-reciter')?.value || 100;
+            let vr = document.getElementById('vol-reciter') ? document.getElementById('vol-reciter').value : 100;
             reciterGain = audioCtx.createGain();
             reciterGain.gain.value = vr / 100;
-            reciterGain.connect(destNode);
-            reciterGain.connect(audioCtx.destination);
+            reciterGain.connect(destNode); reciterGain.connect(audioCtx.destination);
 
-            let vb = document.getElementById('vol-bg')?.value || 30;
+            let vb = document.getElementById('vol-bg') ? document.getElementById('vol-bg').value : 20;
             bgGain = audioCtx.createGain();
             bgGain.gain.value = vb / 100;
-            bgGain.connect(destNode);
-            bgGain.connect(audioCtx.destination);
+            bgGain.connect(destNode); bgGain.connect(audioCtx.destination);
 
             analyser = audioCtx.createAnalyser();
             analyser.fftSize = 128;
@@ -1207,60 +673,41 @@
             }
         }
 
-        async function fetchAudioWithCORSBypass(audioUrl) {
-            const proxies = [
-                audioUrl,
-                "https://corsproxy.io/?" + encodeURIComponent(audioUrl),
-                "https://api.allorigins.win/raw?url=" + encodeURIComponent(audioUrl)
+        async function fetchAudioWithCORSBypass(audioUrl, audioCtx) {
+            const proxies =[
+                audioUrl, 
+                "https://api.allorigins.win/raw?url=" + encodeURIComponent(audioUrl),
+                "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(audioUrl)
             ];
-            
-            for(let proxy of proxies) {
+            for (let i = 0; i < proxies.length; i++) {
                 try {
-                    let res = await fetch(proxy);
+                    let res = await fetch(proxies[i]);
                     if(res.ok) {
                         let arrayBuffer = await res.arrayBuffer();
-                        if(arrayBuffer.byteLength > 5000) {
-                            return await audioCtx.decodeAudioData(arrayBuffer);
-                        }
+                        if (arrayBuffer.byteLength > 5000) return await audioCtx.decodeAudioData(arrayBuffer);
                     }
-                } catch(e) {
-                    console.log("Trying next proxy...");
-                }
+                } catch(e) { }
             }
-            throw new Error("فشل تحميل الصوت. تأكد من الاتصال بالإنترنت.");
+            throw new Error("تأكد من اختيار قارئ يتوفر لديه تسجيل لهذه السورة، أو تحقق من اتصالك.");
         }
 
-        async function fetchTranslation(surah, ayah, edition) {
-            if(edition === 'none') return "";
-            try {
-                let res = await fetch(`https://api.alquran.cloud/v1/ayah/${surah}:${ayah}/${edition}`);
-                let data = await res.json();
-                return data.data ? data.data.text : "";
-            } catch(e) {
-                console.error("Translation fetch error:", e);
-                return "";
-            }
-        }
-
-        // === نظام التصدير ===
+        // === 6. محرك التصدير (التسجيل والتغليف) ===
         let ffmpeg = null;
 
         async function initFFmpeg() {
-            if(ffmpeg) return;
+            if (ffmpeg) return;
             const { createFFmpeg } = window.FFmpeg;
-            ffmpeg = createFFmpeg({ 
-                log: true,
-                corePath: "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js"
-            });
+            ffmpeg = createFFmpeg({ log: true, corePath: "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js" });
             
             ffmpeg.setProgress(({ ratio }) => {
                 const percent = Math.min(Math.round(ratio * 100), 100);
-                if(percent > 0) {
-                    document.getElementById('status-text').innerText = `جاري التصدير... ${percent}%`;
+                if (percent > 0) {
+                    document.getElementById('status-text').innerText = `⚙️ جاري التغليف النهائي... (${percent}%)`;
                     document.getElementById('progress-bar').style.width = `${percent}%`;
                 }
             });
 
+            document.getElementById('status-text').innerText = "📦 جاري تهيئة المحرك...";
             await ffmpeg.load();
         }
 
@@ -1268,23 +715,22 @@
             document.getElementById('generate-btn').addEventListener('click', async () => {
                 const btn = document.getElementById('generate-btn');
                 const status = document.getElementById('status-box');
+                const pBar = document.getElementById('progress-bar');
                 const downloadBtn = document.getElementById('download-btn');
 
                 const surah = document.getElementById('surah').value;
                 const reciterFolder = document.getElementById('reciter').value;
                 const startAyah = parseInt(document.getElementById('start-ayah').value);
                 const endAyah = parseInt(document.getElementById('end-ayah').value);
-                const transEdition = document.getElementById('translation').value;
 
-                btn.disabled = true;
+                btn.disabled = true; btn.classList.add('opacity-50');
+                downloadBtn.classList.add('hidden'); 
                 status.classList.remove('hidden');
-                downloadBtn.classList.add('hidden');
 
                 try {
                     await setupAudio();
-                    await initFFmpeg();
+                    await initFFmpeg(); 
 
-                    // تشغيل الصوت الخلفي إن وجد
                     let bgSourceNode;
                     if(bgAudioBuffer) {
                         bgSourceNode = audioCtx.createBufferSource();
@@ -1294,115 +740,117 @@
                         bgSourceNode.start(0);
                     }
 
-                    document.getElementById('status-text').innerText = "جاري جلب البيانات...";
+                    document.getElementById('status-text').innerText = "⏳ جاري جلب الآيات والترجمة...";
+                    pBar.style.width = '10%';
                     
-                    // جلب نص القرآن
-                    let textRes = await fetch(`https://api.alquran.cloud/v1/surah/${surah}/quran-uthmani`);
-                    let textData = await textRes.json();
+                    // إصلاح جلب الترجمة لدمجها حقيقياً في الفيديو المصدّر
+                    let transId = document.getElementById('translation').value;
+                    let reqs =[ fetch(`https://api.alquran.cloud/v1/surah/${surah}/quran-uthmani`) ];
+                    if(transId !== 'none') {
+                        reqs.push(fetch(`https://api.alquran.cloud/v1/surah/${surah}/${transId}`));
+                    }
+                    
+                    let responses = await Promise.all(reqs);
+                    let textData = await responses[0].json();
+                    let transData = transId !== 'none' ? await responses[1].json() : null;
+
                     let textAyahs = textData.data.ayahs.filter(a => a.numberInSurah >= startAyah && a.numberInSurah <= endAyah);
+                    let transAyahs = transData ? transData.data.ayahs.filter(a => a.numberInSurah >= startAyah && a.numberInSurah <= endAyah) : [];
 
-                    // جلب الترجمات إذا طُلبت
-                    let playlist = [];
-                    for(let i = 0; i < textAyahs.length; i++) {
-                        let ayah = textAyahs[i];
-                        let transText = "";
-                        
-                        if(transEdition !== 'none') {
-                            transText = await fetchTranslation(surah, ayah.numberInSurah, transEdition);
-                        }
-                        
-                        let audioUrl = `https://everyayah.com/data/${reciterFolder}/${pad3(surah)}${pad3(ayah.numberInSurah)}.mp3`;
-                        let buffer = await fetchAudioWithCORSBypass(audioUrl);
-                        
-                        playlist.push({
-                            textAr: ayah.text + " ﴿" + toArabicNumber(ayah.numberInSurah) + "﴾",
-                            textTrans: transText,
-                            num: ayah.numberInSurah,
-                            buffer: buffer
+                    let playlist =[];
+                    for (let i = 0; i < textAyahs.length; i++) {
+                        let num = textAyahs[i].numberInSurah;
+                        let url = `https://everyayah.com/data/${reciterFolder}/${pad3(surah)}${pad3(num)}.mp3`;
+                        let buffer = await fetchAudioWithCORSBypass(url, audioCtx);
+                        playlist.push({ 
+                            textAr: textAyahs[i].text, 
+                            textSec: transData ? transAyahs[i].text : "", 
+                            num: num, 
+                            buffer: buffer 
                         });
-                        
-                        document.getElementById('progress-bar').style.width = `${((i + 1) / textAyahs.length) * 30}%`;
+                        pBar.style.width = `${10 + ((i+1)/textAyahs.length)*40}%`;
                     }
 
-                    document.getElementById('status-text').innerText = "جاري التسجيل...";
+                    document.getElementById('status-text').innerText = "🔴 جاري التسجيل الحي للمشهد...";
+                    pBar.style.width = '50%';
                     
-                    if(currentState.bgType === 'video') {
-                        currentState.bgVideo.currentTime = 0;
-                        currentState.bgVideo.play();
-                    }
+                    if(currentState.bgType === 'video') { currentState.bgVideo.currentTime = 0; currentState.bgVideo.play(); }
                     
                     currentState.isRecording = true;
                     
                     const canvasStream = canvas.captureStream(30);
                     const finalStream = new MediaStream([...canvasStream.getVideoTracks(), ...destNode.stream.getAudioTracks()]);
 
-                    let options = { mimeType: 'video/webm; codecs=vp9', videoBitsPerSecond: 8000000 };
-                    if(!MediaRecorder.isTypeSupported(options.mimeType)) {
-                        options = { mimeType: 'video/webm; codecs=vp8', videoBitsPerSecond: 8000000 };
-                    }
+                    let options = { mimeType: 'video/webm' };
+                    let isH264Supported = MediaRecorder.isTypeSupported('video/webm; codecs=h264');
+                    if (isH264Supported) { options = { mimeType: 'video/webm; codecs=h264', videoBitsPerSecond: 8000000 }; } 
+                    else { options = { mimeType: 'video/webm; codecs=vp8', videoBitsPerSecond: 8000000 }; }
 
                     const mediaRecorder = new MediaRecorder(finalStream, options);
-                    let recordedChunks = [];
-                    
-                    mediaRecorder.ondataavailable = e => {
-                        if(e.data.size > 0) recordedChunks.push(e.data);
-                    };
+                    let recordedChunks =[];
+                    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
                     
                     mediaRecorder.onstop = async () => {
                         currentState.isRecording = false;
                         if(bgSourceNode) bgSourceNode.stop();
                         if(currentState.bgType === 'video') currentState.bgVideo.pause();
                         
-                        document.getElementById('status-text').innerText = "جاري التحويل إلى MP4...";
-                        
+                        document.getElementById('status-text').innerText = "⚙️ جاري التغليف إلى MP4 (ثواني معدودة)...";
+                        pBar.style.width = '80%';
+
                         const webmBlob = new Blob(recordedChunks, { type: 'video/webm' });
                         const webmData = new Uint8Array(await webmBlob.arrayBuffer());
 
                         try {
                             ffmpeg.FS('writeFile', 'input.webm', webmData);
-                            await ffmpeg.run('-y', '-i', 'input.webm', '-c:v', 'libx264', '-preset', 'fast', '-crf', '23', '-c:a', 'aac', '-b:a', '128k', 'output.mp4');
+                            let ffmpegArgs =['-y', '-i', 'input.webm', '-fflags', '+genpts'];
+
+                            if (isH264Supported) { ffmpegArgs.push('-c:v', 'copy'); } 
+                            else { ffmpegArgs.push('-threads', '4', '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '28'); }
                             
+                            ffmpegArgs.push('-c:a', 'aac', '-b:a', '128k', 'output.mp4');
+
+                            await ffmpeg.run(...ffmpegArgs);
+
                             const mp4Data = ffmpeg.FS('readFile', 'output.mp4');
                             const mp4Blob = new Blob([mp4Data.buffer], { type: 'video/mp4' });
                             
                             downloadBtn.href = URL.createObjectURL(mp4Blob);
-                            downloadBtn.download = `Quran_Video_${Date.now()}.mp4`;
+                            downloadBtn.download = `QuranStudio_Pro_${Date.now()}.mp4`;
                             downloadBtn.classList.remove('hidden');
                             
-                            document.getElementById('status-text').innerText = "✅ تم التصدير بنجاح!";
+                            document.getElementById('status-text').innerText = "✅ اكتمل التصدير بنجاح وبأعلى جودة!";
+                            pBar.style.width = '100%';
                             
                             ffmpeg.FS('unlink', 'input.webm');
                             ffmpeg.FS('unlink', 'output.mp4');
                             
-                        } catch(err) {
-                            console.error(err);
-                            document.getElementById('status-text').innerText = "❌ خطأ في التحويل";
+                        } catch (err) {
+                            console.error("FFmpeg Error:", err);
+                            document.getElementById('status-text').innerText = "❌ حدث خطأ أثناء التغليف.";
+                        } finally {
+                            btn.disabled = false; btn.classList.remove('opacity-50');
                         }
-                        
-                        btn.disabled = false;
                     };
 
                     mediaRecorder.start();
                     
-                    for(let item of playlist) {
-                        await playSegment(item);
-                    }
+                    for (let item of playlist) { await playSegment(item); }
                     
-                    setTimeout(() => mediaRecorder.stop(), 1000);
+                    setTimeout(() => { mediaRecorder.stop(); }, 1000);
 
-                } catch(e) {
-                    console.error(e);
+                } catch (e) {
                     document.getElementById('status-text').innerText = "❌ خطأ: " + e.message;
-                    btn.disabled = false;
+                    btn.disabled = false; btn.classList.remove('opacity-50');
                     currentState.isRecording = false;
                 }
             });
         }
-
+		
         function playSegment(item) {
             return new Promise((resolve) => {
-                currentState.textAr = item.textAr;
-                currentState.textTrans = item.textTrans;
+                currentState.textAr = item.textAr + " ﴿" + toArabicNumber(item.num) + "﴾";
+                currentState.textSec = item.textSec;
                 currentState.verseStartTime = Date.now();
                 
                 const source = audioCtx.createBufferSource();
@@ -1411,13 +859,13 @@
                 source.onended = () => resolve();
                 source.start(0);
 
-                document.querySelectorAll('.timeline-clip').forEach(el => el.classList.remove('active'));
-                let clip = document.getElementById('clip-' + item.num);
+                document.querySelectorAll('.timeline-clip').forEach(el=>el.classList.remove('active'));
+                let clip = document.getElementById('clip-'+item.num);
                 if(clip) clip.classList.add('active');
             });
         }
 
-        // === حفظ واسترجاع ===
+        // حفظ واسترجاع الإعدادات
         window.savePreset = function() {
             let data = {
                 reciter: document.getElementById('reciter')?.value,
@@ -1425,41 +873,26 @@
                 bgOpacity: document.getElementById('bg-opacity')?.value,
                 textColor: document.getElementById('text-color')?.value,
                 vizColor: document.getElementById('visualizer-color')?.value,
-                watermark: document.getElementById('watermark')?.value,
-                translation: document.getElementById('translation')?.value
+                watermark: document.getElementById('watermark')?.value
             };
-            localStorage.setItem('quran_studio_preset', JSON.stringify(data));
-            
-            // إشعار بسيط
-            const btn = event.target;
-            const original = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-check"></i> تم الحفظ';
-            setTimeout(() => btn.innerHTML = original, 2000);
+            localStorage.setItem('qs_pro_preset', JSON.stringify(data));
+            alert("تم حفظ القالب بنجاح! 💾");
         }
 
         window.loadPreset = function() {
-            let raw = localStorage.getItem('quran_studio_preset');
-            if(!raw) {
-                alert("لا يوجد إعداد محفوظ");
-                return;
-            }
-            
+            let raw = localStorage.getItem('qs_pro_preset');
+            if(!raw) return alert("لا يوجد قالب محفوظ.");
             let data = JSON.parse(raw);
-            if(document.getElementById('reciter')) document.getElementById('reciter').value = data.reciter || '';
-            if(document.getElementById('surah')) document.getElementById('surah').value = data.surah || '1';
-            if(document.getElementById('bg-opacity')) {
-                document.getElementById('bg-opacity').value = data.bgOpacity || 40;
-                updateVal('bg-opacity', (data.bgOpacity || 40) + '%');
-            }
-            if(document.getElementById('text-color')) document.getElementById('text-color').value = data.textColor || '#ffffff';
-            if(document.getElementById('visualizer-color')) document.getElementById('visualizer-color').value = data.vizColor || '#6366f1';
-            if(document.getElementById('watermark')) document.getElementById('watermark').value = data.watermark || '';
-            if(document.getElementById('translation')) document.getElementById('translation').value = data.translation || 'none';
+            if(document.getElementById('reciter')) document.getElementById('reciter').value = data.reciter;
+            if(document.getElementById('surah')) document.getElementById('surah').value = data.surah;
+            if(document.getElementById('bg-opacity')) document.getElementById('bg-opacity').value = data.bgOpacity;
+            if(document.getElementById('text-color')) document.getElementById('text-color').value = data.textColor;
+            if(document.getElementById('visualizer-color')) document.getElementById('visualizer-color').value = data.vizColor;
+            if(document.getElementById('watermark')) document.getElementById('watermark').value = data.watermark;
+            alert("تم استرجاع الإعدادات! 📂");
         }
 
-        // === بدء التشغيل ===
-        initParticles();
-        render();
+        requestAnimationFrame(render);
     </script>
 </body>
 </html>
