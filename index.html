@@ -62,12 +62,10 @@
 
     <!-- 1. Left/Top: Preview Area -->
     <main class="flex-1 flex flex-col relative bg-[#09090b] p-3 md:p-5 h-[45vh] md:h-full">
-        <!-- Canvas -->
         <div class="flex-1 canvas-container mb-3 border border-[#27272a]">
             <canvas id="video-canvas" width="1080" height="1920"></canvas>
         </div>
 
-        <!-- Navigation -->
         <div class="h-14 bg-[#18181b] rounded-lg border border-[#27272a] flex items-center justify-between px-4 shrink-0 shadow-lg">
             <button onclick="changeAyah(-1)" class="text-white bg-rose-600 hover:bg-rose-700 px-4 py-1.5 rounded text-xs font-bold transition"><i class="fa-solid fa-chevron-right mr-1"></i> السابق</button>
             <div class="text-center">
@@ -80,12 +78,10 @@
 
     <!-- 2. Middle: Settings Panel -->
     <aside class="w-full md:w-[350px] bg-[#111113] border-l border-[#27272a] flex flex-col h-[55vh] md:h-full z-10 shrink-0">
-        <!-- Panel Header -->
         <div class="h-14 border-b border-[#27272a] flex items-center px-4 shrink-0 bg-[#18181b]">
             <h2 id="panel-title" class="font-bold text-sm text-white"><i class="fa-solid fa-quran text-rose-500 ml-2"></i> بيانات القرآن</h2>
         </div>
 
-        <!-- Scrollable Content -->
         <div class="flex-1 overflow-y-auto p-4 space-y-2">
             
             <!-- Tab 1: Quran Data -->
@@ -93,11 +89,12 @@
                 <div>
                     <label class="block text-xs text-zinc-400 mb-1">القارئ</label>
                     <select id="reciter" onchange="updatePreviewUI()">
-                        <option value="ar.alafasy">مشاري العفاسي</option>
-                        <option value="ar.abdulbasit">عبد الباسط عبد الصمد</option>
-                        <option value="ar.husary">محمود خليل الحصري</option>
-                        <option value="ar.minshawi">محمد صديق المنشاوي</option>
-                        <option value="ar.mahermuaiqly">ماهر المعيقلي</option>
+                        <!-- المجلدات الصحيحة المطابقة لخوادم الصوت -->
+                        <option value="Alafasy_128kbps">مشاري العفاسي</option>
+                        <option value="Abdul_Basit_Murattal_192kbps">عبد الباسط عبد الصمد</option>
+                        <option value="Husary_128kbps">محمود خليل الحصري</option>
+                        <option value="Minshawy_Murattal_128kbps">محمد صديق المنشاوي</option>
+                        <option value="MaherAlMuaiqly_128kbps">ماهر المعيقلي</option>
                     </select>
                 </div>
                 <div>
@@ -351,7 +348,7 @@
                     if(ayahAr) {
                         state.playlist.push({
                             num: i,
-                            absoluteNum: ayahAr.number, // Crucial for Audio API
+                            surah: sNum,
                             ar: ayahAr.text + ` ﴿${toArabicNumber(i)}﴾`,
                             trans: ayahTr ? ayahTr.text : ""
                         });
@@ -455,12 +452,12 @@
             if(s.wm) { ctx.font="25px 'Tajawal'"; ctx.fillStyle="rgba(255,255,255,0.5)"; ctx.fillText(s.wm, gX(s.wmX), gY(s.wmY)); }
 
             // Audio Wave
-            let vY = gY(s.vY); ctx.strokeStyle = "#e11d48"; ctx.lineWidth = 3; ctx.lineCap = "round";
+            let vY = gY(s.vY); ctx.strokeStyle = "#e11d48"; ctx.lineWidth = 4; ctx.lineCap = "round";
             ctx.beginPath(); let t = Date.now()/150;
-            for(let i=0; i<C_W; i+=20) {
+            for(let i=0; i<C_W; i+=25) {
                 let h = 5;
                 if(isExporting && analyser) h = (dataArray[i%dataArray.length]/255) * 60;
-                else h = Math.abs(Math.sin(t + i/40)) * 30 + 5; // Fake wave for preview
+                else h = Math.abs(Math.sin(t + i/40)) * 30 + 5; 
                 ctx.moveTo(i, vY - h); ctx.lineTo(i, vY + h);
             }
             ctx.stroke();
@@ -476,9 +473,37 @@
             for(let i=0; i<lines.length; i++) ctx.fillText(lines[i].trim(), x, sY + (i*lH));
         }
 
-        // === 5. EXPORT ENGINE (Fixed CORS & Sync) ===
+        // === 5. EXPORT ENGINE (MULTI-PROXY CORS BYPASS) ===
         const { createFFmpeg } = window.FFmpeg;
         const ffmpeg = createFFmpeg({ log: false, corePath: "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js" });
+
+        // المحرك الخارق لجلب الصوت وتخطي الحماية
+        async function fetchAudioWithBypass(surahNum, ayahNum, reciterFolder) {
+            const pad = (n) => n.toString().padStart(3, '0');
+            const targetUrl = `https://everyayah.com/data/${reciterFolder}/${pad(surahNum)}${pad(ayahNum)}.mp3`;
+
+            // قائمة من أقوى خوادم تخطي الحماية المتوافقة مع Vercel
+            const proxies = [
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+                `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`
+            ];
+
+            for (let proxy of proxies) {
+                try {
+                    let response = await fetch(proxy);
+                    if (response.ok) {
+                        let buffer = await response.arrayBuffer();
+                        if (buffer.byteLength > 5000) { // التأكد أن الملف ليس صفحة خطأ وهمية
+                            return buffer;
+                        }
+                    }
+                } catch (err) {
+                    console.warn("Proxy failed, trying next...");
+                }
+            }
+            throw new Error("فشل تحميل الصوت بسبب حماية CORS. تأكد من اتصالك أو جرب بعد قليل.");
+        }
 
         document.getElementById('btn-export').addEventListener('click', async () => {
             if(state.playlist.length === 0) return alert("لا توجد بيانات للتصدير");
@@ -494,69 +519,63 @@
                 window.AudioContext = window.AudioContext || window.webkitAudioContext;
                 audioCtx = new AudioContext();
                 let dest = audioCtx.createMediaStreamDestination();
+                
+                // تجهيز محلل الموجات (مهم لكي تعمل الموجة أثناء التسجيل)
                 analyser = audioCtx.createAnalyser(); 
                 analyser.fftSize = 256;
                 dataArray = new Uint8Array(analyser.frequencyBinCount);
 
-                msg.innerText = "جاري تحميل الصوتيات (100% بدون أخطاء CORS)...";
-                let reciter = val('reciter'); // ar.alafasy
+                msg.innerText = "جاري تحميل وتجهيز الصوتيات...";
+                let reciter = val('reciter'); // مثلاً Alafasy_128kbps
                 let audioBuffers = [];
 
-                // 🌟 الجلب المسبق لجميع الملفات لمنع أي تأخير أو خلل أثناء التسجيل 🌟
+                // الجلب المسبق للصوتيات باستخدام محرك تخطي الحماية
                 for(let i=0; i<state.playlist.length; i++) {
                     let item = state.playlist[i];
-                    // استخدام API رسمي يدعم Vercel تماماً
-                    let url = `https://cdn.islamic.network/quran/audio/128/${reciter}/${item.absoluteNum}.mp3`;
-                    
-                    let res = await fetch(url);
-                    if(!res.ok) throw new Error("فشل الاتصال بالخادم الصوتي");
-                    let buf = await res.arrayBuffer();
+                    let buf = await fetchAudioWithBypass(item.surah, item.num, reciter);
                     audioBuffers.push(await audioCtx.decodeAudioData(buf));
-                    
                     bar.style.width = `${10 + ((i+1)/state.playlist.length)*20}%`;
                 }
 
                 if(!ffmpeg.isLoaded()) await ffmpeg.load();
 
-                msg.innerText = "🔴 التسجيل الحي للمشاهد بدقة عالية...";
+                msg.innerText = "🔴 التسجيل الحي للفيديو والموجات...";
                 bar.style.width = "40%";
                 isExporting = true;
                 
-                // تشغيل الفيديوهات الخلفية
                 if(state.globalBg.type === 'video') state.globalBg.media.play();
                 Object.values(state.ayahBgs).forEach(b => { if(b.type === 'video') b.media.play(); });
 
                 const stream = new MediaStream([...canvas.captureStream(30).getVideoTracks(), ...dest.stream.getAudioTracks()]);
-                // استخدام webm المضمون في المتصفحات
                 const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
                 let chunks = []; 
                 recorder.ondataavailable = e => { if(e.data.size > 0) chunks.push(e.data); };
                 
                 recorder.onstop = async () => {
                     isExporting = false; 
-                    msg.innerText = "⚙️ التغليف النهائي وتحويل الصيغة لـ MP4..."; 
+                    msg.innerText = "⚙️ التغليف النهائي لـ MP4..."; 
                     bar.style.width = "80%";
                     
                     const webmData = new Uint8Array(await new Blob(chunks).arrayBuffer());
                     ffmpeg.FS('writeFile', 'in.webm', webmData);
                     
-                    // تحويل إلى mp4 (h264) قياسي يشتغل على كل مكان
+                    // استخدام ترميز libx264 لتجنب فيديو حجمه صفر وضمان عمله بكل مكان
                     await ffmpeg.run('-i', 'in.webm', '-c:v', 'libx264', '-preset', 'ultrafast', '-c:a', 'aac', '-b:a', '128k', 'out.mp4');
                     
                     const mp4 = ffmpeg.FS('readFile', 'out.mp4');
                     dLink.href = URL.createObjectURL(new Blob([mp4.buffer], {type: 'video/mp4'}));
-                    dLink.download = `Quran_Studio_Pro_${Date.now()}.mp4`; 
+                    dLink.download = `Quran_Video_${Date.now()}.mp4`; 
                     dLink.classList.remove('hidden');
                     
-                    msg.innerText = "✅ اكتمل التصدير بنجاح! حمل الفيديو الآن."; 
+                    msg.innerText = "✅ اكتمل بنجاح! حمل الفيديو."; 
                     bar.style.width = "100%"; 
                     btn.disabled = false;
                 };
 
-                // إجبار الميكس على إرسال البيانات فوراً (يمنع ملف الصفر بايت)
+                // إجبار الميكس على إرسال البيانات فوراً لعدم ضياع الإطارات
                 recorder.start(100);
 
-                // تشغيل الآيات بشكل متسلسل ومضبوط التزامن
+                // تشغيل الآيات واحدة تلو الأخرى بشكل متزامن
                 for(let i=0; i<state.playlist.length; i++) {
                     state.currentIndex = i; 
                     updatePreviewUI();
@@ -565,18 +584,17 @@
                         let source = audioCtx.createBufferSource(); 
                         source.buffer = audioBuffers[i];
                         
-                        // 🌟 التوصيل الصحيح لتشغيل الموجة ودمج الصوت في الفيديو 🌟
+                        // ربط الصوت بالمحلل ليحرك الموجات، وبمخرج الفيديو
                         source.connect(analyser); 
                         analyser.connect(dest); 
-                        analyser.connect(audioCtx.destination); // سماع الصوت أثناء المعالجة
+                        analyser.connect(audioCtx.destination); // لسماع الصوت وقت التسجيل
                         
                         source.onended = r; 
                         source.start(0);
                     });
                 }
                 
-                // إغلاق التسجيل بعد الانتهاء بثانية
-                setTimeout(() => recorder.stop(), 1000);
+                setTimeout(() => recorder.stop(), 500);
 
             } catch(e) { 
                 msg.innerText = "❌ حدث خطأ: " + e.message; 
