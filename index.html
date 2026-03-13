@@ -1337,7 +1337,9 @@ const canvas = await html2canvas(captureAreaDiv, {
     backgroundColor: null, // تأكد أنها null لضمان الشفافية
     logging: false 
 });
-                    
+        // ثم أعد إظهاره
+previewVideoEl.style.display = 'block';
+            
                     const textOverlayImageBase64 = canvas.toDataURL('image/png');
                     let backgroundInfo, currentBackgroundSource;
                     if (ayahData.customVideoPath && await window.electronAPI.fileExists(ayahData.customVideoPath)) {
