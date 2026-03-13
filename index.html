@@ -1722,14 +1722,15 @@ exportVideoBtn.addEventListener('click', async () => {
         });
         
         importGlobalVideoBtn.addEventListener('click', () => { globalVideoInput.click(); });
-        globalVideoInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                globalVideoPath = file.path; 
-                const previewVideoEl = document.getElementById('previewBackgroundLayer');
-                previewVideoEl.src = globalVideoPath;
-                previewVideoEl.style.display = 'block';
-                videoFileName.textContent = file.name;
+globalVideoInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        const videoUrl = URL.createObjectURL(file); // هذه هي الطريقة الصحيحة للمتصفح
+        globalVideoPath = videoUrl; // حفظ الرابط المؤقت
+        const previewVideoEl = document.getElementById('previewBackgroundLayer');
+        previewVideoEl.src = videoUrl;
+        previewVideoEl.style.display = 'block';
+        videoFileName.textContent = file.name;
                 removeGlobalVideoBtn.classList.remove('hidden');
                 displayUserMessage("تم تعيين خلفية الفيديو بنجاح.", "success");
                 globalBackgroundBase64 = null;
