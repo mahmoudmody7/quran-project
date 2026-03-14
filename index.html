@@ -363,109 +363,146 @@
         // =====================================
         // النظام الجديد لجلب الصوت والتوقيت (بدون أخطاء CORS)
         // =====================================
-        async function generateQuranAudio() {
-            const btnText = document.getElementById('btn-fetch-text');
-            const surah = parseInt(val('surah'));
-            const start = parseInt(val('start-ayah'));
-            const end = parseInt(val('end-ayah'));
-            const reciter = val('reciter'); // e.g., ar.alafasy
-            const tType = val('trans-type');
-            
-            if (end < start) return alert("الترتيب غير صحيح.");
+// 1. الدالة الخارقة لجلب الصوت بدون مشاكل CORS
+async function safeFetchAudio(surahNum, ayahNum, reciter) {
+    const pad = (n) => n.toString().padStart(3, '0');
+    
+    // تحويل أسماء القراء لتعمل مع سيرفرات EveryAyah المفتوحة
+    const reciterMap = {
+        'ar.alafasy': 'Alafasy_128kbps',
+        'ar.minshawi': 'Minshawy_Murattal_128kbps',
+        'ar.abdulbasitmurattal': 'Abdul_Basit_Murattal_64kbps',
+        'ar.husary': 'Husary_128kbps',
+        'ar.mahermuaiqly': 'MaherAlMuaiqly_128kbps'
+    };
+    
+    const folder = reciterMap[reciter] || 'Alafasy_128kbps';
+    const directUrl = `https://everyayah.com/data/${folder}/${pad(surahNum)}${pad(ayahNum)}.mp3`;
 
-            btnText.innerText = "جاري الاتصال بالسيرفرات...";
-            document.getElementById('btn-fetch-text').parentElement.classList.add('opacity-50', 'pointer-events-none');
+    // قائمة محاولات
+    const attempts = [
+        directUrl, 
+        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(directUrl)}`,
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(directUrl)}`
+    ];
 
-            try {
-                // جلب النص والترجمة (إن وجدت)
-                let[resAr, resTr] = await Promise.all([
-                    fetch(`https://api.alquran.cloud/v1/surah/${surah}/quran-uthmani`),
-                    tType !== 'none' ? fetch(`https://api.alquran.cloud/v1/surah/${surah}/${tType}`) : Promise.resolve(null)
-                ]);
-                
-                let dataAr = await resAr.json();
-let dataTr = resTr ? await resTr.json() : null;
-                window.AudioContext = window.AudioContext || window.webkitAudioContext;
-                state.audioCtx = new AudioContext();
-                let buffers = [];
-                let globalTime = 0;
-                state.phrases =[];
-
-                for (let i = start; i <= end; i++) {
-                    btnText.innerText = `جلب صوت الآية ${i}...`;
-                    
-                    // استخدام رابط لا يحتوي على CORS Problems
-                    let audioUrl = `https://cdn.islamic.network/quran/audio/128/${reciter}/${dataAr.data.ayahs[i-1].number}.mp3`;
-                    
-                    let audioRes = await fetch(audioUrl);
-                    let arrayBuffer = await audioRes.arrayBuffer();
-                    let decodedBuffer = await state.audioCtx.decodeAudioData(arrayBuffer);
-                    
-                    buffers.push(decodedBuffer);
-                    
-                    // تحضير النص
-                    let ayahText = dataAr.data.ayahs[i-1].text + ` ﴿${toArabicNumber(i)}﴾`;
-                    let transText = dataTr ? dataTr.data.ayahs[i-1].text : "";
-                    let wordsArr = ayahText.split(' ');
-                    let wordsData =[];
-                    
-                    // توزيع الوقت تلقائياً ورياضياً على الكلمات بشكل ذكي
-                    let duration = decodedBuffer.duration * 1000;
-                    let timePerWord = duration / wordsArr.length;
-                    
-                    wordsArr.forEach((wText, idx) => {
-                        let wStart = (globalTime * 1000) + (idx * timePerWord);
-                        let wEnd = wStart + timePerWord;
-                        wordsData.push({ text: wText, start: wStart, end: wEnd });
-                    });
-
-                    state.phrases.push({
-                        num: i,
-                        startTime: globalTime * 1000,
-                        endTime: (globalTime + decodedBuffer.duration) * 1000,
-                        words: wordsData,
-                        trans: transText
-                    });
-
-                    globalTime += decodedBuffer.duration;
-                }
-
-                btnText.innerText = "جاري دمج الملفات الصوتية...";
-                state.audioBuffer = mergeAudioBuffers(state.audioCtx, buffers);
-                let wavBlob = bufferToWave(state.audioBuffer);
-                audioPlayer.src = URL.createObjectURL(wavBlob);
-                
-                renderTimelineUI();
-                state.currentIndex = 0;
-                updatePreviewUI();
-                
-                btnText.innerText = "نجاح! تم جلب وتجهيز الآيات";
-                setTimeout(() => btnText.innerText = "جلب الآيات ودمج الصوت", 3000);
-
-                audioPlayer.ontimeupdate = () => {
-                    if(!state.isExporting) {
-                        document.getElementById('progress-bar-audio').value = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-                        document.getElementById('time-current').innerText = formatTime(audioPlayer.currentTime);
-                        document.getElementById('time-total').innerText = formatTime(audioPlayer.duration);
-                        
-                        // تحديث الاندكس الحالي بناءً على الوقت
-                        let timeMs = audioPlayer.currentTime * 1000;
-                        let activeIdx = state.phrases.findIndex(p => timeMs >= p.startTime && timeMs <= p.endTime);
-                        if(activeIdx !== -1 && activeIdx !== state.currentIndex) {
-                            state.currentIndex = activeIdx;
-                            updatePreviewUI();
-                        }
-                    }
-                };
-
-            } catch (e) {
-                console.error(e);
-                alert("حدث خطأ في الجلب. تأكد من اتصالك بالإنترنت.");
-                btnText.innerText = "جلب الآيات ودمج الصوت";
-            } finally {
-                document.getElementById('btn-fetch-text').parentElement.classList.remove('opacity-50', 'pointer-events-none');
+    for (let url of attempts) {
+        try {
+            let res = await fetch(url);
+            if (res.ok) {
+                let buffer = await res.arrayBuffer();
+                if (buffer.byteLength > 5000) return buffer;
             }
+        } catch (e) { console.log("محاولة جلب فشلت، ننتقل للبديل..."); }
+    }
+    throw new Error("تعذر جلب الصوت بسبب حماية المتصفح، تأكد من جودة الإنترنت.");
+}
+
+// 2. الدالة الرئيسية الكاملة (مصححة وبدون أخطاء)
+async function generateQuranAudio() {
+    const btnText = document.getElementById('btn-fetch-text');
+    const surah = parseInt(val('surah'));
+    const start = parseInt(val('start-ayah'));
+    const end = parseInt(val('end-ayah'));
+    const reciter = val('reciter'); 
+    const tType = val('trans-type');
+    
+    if (end < start) return alert("الترتيب غير صحيح.");
+
+    btnText.innerText = "جاري الاتصال بالسيرفرات...";
+    document.getElementById('btn-fetch-text').parentElement.classList.add('opacity-50', 'pointer-events-none');
+
+    try {
+        // جلب النص القرآني
+        let resAr = await fetch(`https://api.alquran.cloud/v1/surah/${surah}/quran-uthmani`);
+        let dataAr = await resAr.json();
+        
+        // جلب الترجمة (معالجة آمنة لـ dataTr)
+        let dataTr = null;
+        if (tType !== 'none') {
+            let resTr = await fetch(`https://api.alquran.cloud/v1/surah/${surah}/${tType}`);
+            dataTr = await resTr.json();
         }
+
+        window.AudioContext = window.AudioContext || window.webkitAudioContext;
+        state.audioCtx = new AudioContext();
+        let buffers = [];
+        let globalTime = 0;
+        state.phrases = [];
+
+        for (let i = start; i <= end; i++) {
+            btnText.innerText = `جلب صوت الآية ${i}...`;
+            
+            // جلب الصوت
+            let arrayBuffer = await safeFetchAudio(surah, i, reciter);
+            let decodedBuffer = await state.audioCtx.decodeAudioData(arrayBuffer);
+            
+            buffers.push(decodedBuffer);
+            
+            // تحضير النص والترجمة
+            let ayahText = dataAr.data.ayahs[i-1].text + ` ﴿${toArabicNumber(i)}﴾`;
+            let transText = dataTr ? dataTr.data.ayahs[i-1].text : "";
+            let wordsArr = ayahText.split(' ');
+            let wordsData = [];
+            
+            // الحساب الرياضي لتوقيت الكلمات (بدون الحاجة لملفات توقيت)
+            let durationMs = decodedBuffer.duration * 1000;
+            let timePerWord = durationMs / wordsArr.length;
+            
+            wordsArr.forEach((wText, idx) => {
+                let wStart = (globalTime * 1000) + (idx * timePerWord);
+                let wEnd = wStart + timePerWord;
+                wordsData.push({ text: wText, start: wStart, end: wEnd });
+            });
+
+            state.phrases.push({
+                num: i,
+                startTime: globalTime * 1000,
+                endTime: (globalTime + decodedBuffer.duration) * 1000,
+                words: wordsData,
+                trans: transText
+            });
+
+            globalTime += decodedBuffer.duration;
+        }
+
+        // دمج الصوتيات
+        state.audioBuffer = mergeAudioBuffers(state.audioCtx, buffers);
+        let wavBlob = bufferToWave(state.audioBuffer);
+        audioPlayer.src = URL.createObjectURL(wavBlob);
+        
+        // تحديث الواجهة
+        renderTimelineUI();
+        state.currentIndex = 0;
+        updatePreviewUI();
+        
+        btnText.innerText = "نجاح! تم جلب وتجهيز الآيات";
+        setTimeout(() => btnText.innerText = "جلب الآيات ودمج الصوت", 3000);
+
+        // إعداد مشغل الصوت وتحديث المعاينة
+        audioPlayer.ontimeupdate = () => {
+            if(!state.isExporting) {
+                document.getElementById('progress-bar-audio').value = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+                document.getElementById('time-current').innerText = formatTime(audioPlayer.currentTime);
+                document.getElementById('time-total').innerText = formatTime(audioPlayer.duration);
+                
+                let timeMs = audioPlayer.currentTime * 1000;
+                let activeIdx = state.phrases.findIndex(p => timeMs >= p.startTime && timeMs <= p.endTime);
+                if(activeIdx !== -1 && activeIdx !== state.currentIndex) {
+                    state.currentIndex = activeIdx;
+                    updatePreviewUI();
+                }
+            }
+        };
+
+    } catch (e) {
+        console.error(e);
+        alert("حدث خطأ أثناء المعالجة: " + e.message);
+        btnText.innerText = "جلب الآيات ودمج الصوت";
+    } finally {
+        document.getElementById('btn-fetch-text').parentElement.classList.remove('opacity-50', 'pointer-events-none');
+    }
+}
 
         // دوال مساعدة للصوت
         function mergeAudioBuffers(ctx, buffers) {
