@@ -384,8 +384,7 @@
                 ]);
                 
                 let dataAr = await resAr.json();
-                let dataTr = dataTr ? await resTr.json() : null;
-
+let dataTr = resTr ? await resTr.json() : null;
                 window.AudioContext = window.AudioContext || window.webkitAudioContext;
                 state.audioCtx = new AudioContext();
                 let buffers = [];
