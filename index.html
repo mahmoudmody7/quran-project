@@ -3,283 +3,300 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Quran Studio - Pro Perfect Edition</title>
+    <title>Quran Studio - Ruby Pro Edition</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Cairo:wght@400;700;900&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Noto+Naskh+Arabic:wght@400;700&family=Cairo:wght@400;700;900&family=Tajawal:wght@400;500;700&family=Reem+Kufi:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- FFmpeg Library -->
     <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
 
     <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #09090b; color: #f4f4f5; margin:0; overflow: hidden; height: 100dvh; display: flex; flex-direction: column; }
+        /* Ruby Edition Theme */
+        body { font-family: 'Tajawal', sans-serif; background-color: #09090b; color: #f4f4f5; margin:0; overflow: hidden; }
         
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #e11d48; }
 
-        input[type="range"] { -webkit-appearance: none; width: 100%; height: 6px; background: #3f3f46; border-radius: 4px; outline: none; margin: 8px 0; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #e11d48; cursor: pointer; box-shadow: 0 0 8px rgba(225, 29, 72, 0.6); }
-        select, input[type="text"], input[type="number"], input[type="color"] { width: 100%; padding: 10px; background: #18181b; border: 1px solid #27272a; border-radius: 6px; color: white; font-size: 12px; outline: none; transition: 0.2s; }
+        /* Custom Inputs */
+        input[type="range"] { -webkit-appearance: none; width: 100%; height: 4px; background: #3f3f46; border-radius: 4px; outline: none; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: #e11d48; cursor: pointer; box-shadow: 0 0 5px rgba(225, 29, 72, 0.5); }
+        select, input[type="text"], input[type="number"], input[type="color"] { width: 100%; padding: 8px; background: #18181b; border: 1px solid #27272a; border-radius: 6px; color: white; font-size: 11px; outline: none; transition: 0.2s; }
         select:focus, input:focus { border-color: #e11d48; }
-        
+        option { background: #18181b; color: white; }
+
+        /* Accordions */
         details { background: #18181b; border: 1px solid #27272a; border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
-        summary { padding: 14px; font-size: 13px; font-weight: bold; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; color: #cbd5e1; user-select: none; }
+        summary { padding: 12px; font-size: 11px; font-weight: bold; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; color: #cbd5e1; user-select: none; }
         summary::-webkit-details-marker { display: none; }
         summary::after { content: '\f078'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: #52525b; transition: 0.3s; }
         details[open] summary::after { transform: rotate(180deg); color: #e11d48; }
-        details[open] summary { border-bottom: 1px solid #27272a; color: #e11d48; background: rgba(225, 29, 72, 0.05); }
-        .details-body { padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+        details[open] summary { border-bottom: 1px solid #27272a; color: #e11d48; }
+        .details-body { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
 
-        .canvas-container { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background-image: radial-gradient(#27272a 1px, transparent 1px); background-size: 15px 15px; background-color: #000; border-radius: 8px; overflow: hidden; }
-        canvas { max-width: 100%; max-height: 100%; object-fit: contain; box-shadow: 0 5px 20px rgba(0,0,0,0.8); }
+        /* Layout & Canvas */
+        .canvas-container { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #000; border-radius: 8px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        canvas { max-width: 100%; max-height: 100%; object-fit: contain; }
 
-        .panel-section { display: none; animation: fadeIn 0.3s ease; }
-        .panel-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        .tab-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 10px; font-weight: bold; color: #a1a1aa; transition: 0.2s; cursor: pointer; flex: 1; padding: 10px 4px; border-bottom: 3px solid transparent; }
+        /* Navigation Tabs */
+        .tab-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 12px 8px; font-size: 10px; font-weight: bold; color: #a1a1aa; transition: 0.2s; border-right: 3px solid transparent; cursor: pointer; }
         .tab-btn:hover { color: #fff; background: rgba(255,255,255,0.02); }
-        .tab-btn.active { color: #fbbf24; border-bottom-color: #f59e0b; background: #18181b; }
-
-        @media (min-width: 768px) {
-            body { flex-direction: row; }
-            .tab-btn { border-bottom: none; border-right: 3px solid transparent; padding: 15px 8px; }
-            .tab-btn.active { border-right-color: #f59e0b; border-bottom-color: transparent; }
+        .tab-btn.active { color: #fda4af; border-right-color: #e11d48; background: #18181b; }
+        @media (max-width: 768px) {
+            .tab-btn { border-right: none; border-bottom: 3px solid transparent; flex: 1; padding: 10px 4px; }
+            .tab-btn.active { border-right-color: transparent; border-bottom-color: #e11d48; }
         }
 
-        .file-btn { position: relative; overflow: hidden; text-align: center; cursor: pointer; font-size: 11px; font-weight: bold; padding: 12px; border-radius: 6px; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .panel-section { display: none; }
+        .panel-section.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .file-btn { position: relative; overflow: hidden; text-align: center; cursor: pointer; font-size: 10px; font-weight: bold; padding: 10px; border-radius: 6px; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .file-btn input[type=file] { position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-        
-        .segment-block { margin-bottom: 8px; background: #18181b; border-radius: 6px; border: 1px solid #27272a; overflow: hidden; transition: 0.3s; }
-        .segment-block.active { border-color: #f59e0b; box-shadow: 0 0 10px rgba(245, 158, 11, 0.2); transform: scale(1.02); }
     </style>
 </head>
-<body>
+<body class="flex flex-col md:flex-row h-[100dvh]">
 
-    <!-- الجزء 1: شاشة العرض (الكانفاس) والتنقل -->
-    <main class="flex-none md:flex-1 h-[45vh] md:h-full flex flex-col relative bg-[#09090b] p-2 md:p-4 z-10 shadow-md border-b md:border-b-0 md:border-l border-[#27272a]">
-        
-        <div class="flex-1 canvas-container mb-2 border border-[#27272a]">
+    <!-- 1. Left/Top: Preview Area -->
+    <main class="flex-1 flex flex-col relative bg-[#09090b] p-3 md:p-5 h-[45vh] md:h-full">
+        <div class="flex-1 canvas-container mb-3 border border-[#27272a]">
             <canvas id="video-canvas" width="1080" height="1920"></canvas>
         </div>
 
-        <!-- أزرار التنقل والتحكم -->
-        <div class="h-16 bg-[#18181b] rounded-lg border border-[#27272a] flex items-center justify-between px-3 shrink-0">
-            <button onclick="changeAyah(-1)" class="text-white bg-[#27272a] hover:bg-amber-600 px-3 py-2 rounded text-xs font-bold transition"><i class="fa-solid fa-chevron-right"></i> الآية السابقة</button>
-            
-            <div class="flex-1 px-4 text-center">
-                <div class="flex justify-between text-[10px] text-zinc-400 mb-1">
-                    <span id="time-current">00:00</span>
-                    <span id="time-total">00:00</span>
-                </div>
-                <input type="range" id="progress-bar-audio" min="0" max="100" value="0" class="w-full !h-1.5 !m-0 !accent-amber-500" onchange="seekAudio(this.value)">
-                <span id="preview-ayah-label" class="block text-[10px] text-amber-500 font-bold mt-1">المعاينة متوقفة</span>
+        <div class="h-14 bg-[#18181b] rounded-lg border border-[#27272a] flex items-center justify-between px-4 shrink-0 shadow-lg">
+            <button onclick="changeAyah(-1)" class="text-white bg-rose-600 hover:bg-rose-700 px-4 py-1.5 rounded text-xs font-bold transition"><i class="fa-solid fa-chevron-right mr-1"></i> السابق</button>
+            <div class="text-center">
+                <span id="preview-surah" class="block text-[10px] text-rose-300">سورة الفاتحة</span>
+                <span id="preview-ayah" class="block text-sm font-bold text-white">الآية 1</span>
             </div>
-
-            <button onclick="changeAyah(1)" class="text-white bg-[#27272a] hover:bg-amber-600 px-3 py-2 rounded text-xs font-bold transition">الآية التالية <i class="fa-solid fa-chevron-left"></i></button>
-            
-            <!-- زر التشغيل -->
-            <button onclick="togglePlay()" id="play-btn" class="w-10 h-10 rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center transition shadow-lg ml-2">
-                <i class="fa-solid fa-play"></i>
-            </button>
+            <button onclick="changeAyah(1)" class="text-white bg-rose-600 hover:bg-rose-700 px-4 py-1.5 rounded text-xs font-bold transition">التالي <i class="fa-solid fa-chevron-left ml-1"></i></button>
         </div>
-        
-        <audio id="audio-player" class="hidden"></audio>
     </main>
 
-    <!-- الجزء 2: الإعدادات والتحكم -->
-    <aside class="flex-1 md:w-[400px] bg-[#111113] flex flex-col overflow-hidden relative">
-        <div class="h-12 border-b border-[#27272a] flex items-center px-4 shrink-0 bg-[#18181b] shadow-sm z-10 justify-between">
-            <h2 id="panel-title" class="font-bold text-sm text-white"><i class="fa-solid fa-book-open text-amber-500 ml-2"></i> المحتوى والآيات</h2>
+    <!-- 2. Middle: Settings Panel -->
+    <aside class="w-full md:w-[350px] bg-[#111113] border-l border-[#27272a] flex flex-col h-[55vh] md:h-full z-10 shrink-0">
+        <div class="h-14 border-b border-[#27272a] flex items-center px-4 shrink-0 bg-[#18181b]">
+            <h2 id="panel-title" class="font-bold text-sm text-white"><i class="fa-solid fa-quran text-rose-500 ml-2"></i> بيانات القرآن</h2>
         </div>
 
-        <div class="flex-1 overflow-y-auto p-3 space-y-2 pb-20 md:pb-4 custom-scrollbar">
+        <div class="flex-1 overflow-y-auto p-4 space-y-2">
             
-            <!-- القسم الأول: القرآن -->
-            <div id="tab-quran" class="panel-section active space-y-3">
-                <div class="bg-[#18181b] p-3 rounded-lg border border-[#27272a]">
-                    <label class="block text-xs font-bold text-zinc-300 mb-2">اختر القارئ (سيرفرات AlQuran Cloud)</label>
-                    <select id="reciter">
-                        <option value="ar.alafasy">مشاري العفاسي</option>
-                        <option value="ar.minshawi">محمد صديق المنشاوي</option>
-                        <option value="ar.abdulbasitmurattal">عبد الباسط عبد الصمد</option>
-                        <option value="ar.husary">محمود خليل الحصري</option>
-                        <option value="ar.mahermuaiqly">ماهر المعيقلي</option>
+            <!-- Tab 1: Quran Data -->
+            <div id="tab-quran" class="panel-section active space-y-4">
+                <div>
+                    <label class="block text-xs text-zinc-400 mb-1">القارئ</label>
+                    <select id="reciter" onchange="updatePreviewUI()">
+                        <!-- المجلدات الصحيحة المطابقة لخوادم الصوت -->
+                        <option value="Alafasy_128kbps">مشاري العفاسي</option>
+                        <option value="Abdul_Basit_Murattal_192kbps">عبد الباسط عبد الصمد</option>
+                        <option value="Husary_128kbps">محمود خليل الحصري</option>
+                        <option value="Minshawy_Murattal_128kbps">محمد صديق المنشاوي</option>
+                        <option value="MaherAlMuaiqly_128kbps">ماهر المعيقلي</option>
                     </select>
                 </div>
-                <div class="bg-[#18181b] p-3 rounded-lg border border-[#27272a]">
-                    <label class="block text-xs font-bold text-zinc-300 mb-2">السورة والآيات</label>
-                    <select id="surah" class="mb-3"></select>
-                    <div class="grid grid-cols-2 gap-3 mb-3">
-                        <div>
-                            <label class="block text-[10px] text-zinc-500 mb-1">من آية</label>
-                            <input type="number" id="start-ayah" value="1" min="1">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] text-zinc-500 mb-1">إلى آية</label>
-                            <input type="number" id="end-ayah" value="3" min="1">
-                        </div>
+                <div>
+                    <label class="block text-xs text-zinc-400 mb-1">السورة</label>
+                    <select id="surah" onchange="fetchQuranData()"></select>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs text-zinc-400 mb-1">من آية</label>
+                        <input type="number" id="start-ayah" value="1" min="1" onchange="fetchQuranData()">
                     </div>
-                    
-                    <select id="trans-type" class="mb-3">
-                        <option value="none">بدون ترجمة</option>
-                        <option value="en.asad">English Translation</option>
-                        <option value="ar.muyassar">التفسير الميسر</option>
-                    </select>
-
-                    <button onclick="generateQuranAudio()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded transition text-xs shadow-lg shadow-amber-600/20 flex justify-center items-center gap-2">
-                        <i class="fa-solid fa-cloud-arrow-down"></i> <span id="btn-fetch-text">جلب الآيات ودمج الصوت</span>
-                    </button>
+                    <div>
+                        <label class="block text-xs text-zinc-400 mb-1">إلى آية</label>
+                        <input type="number" id="end-ayah" value="3" min="1" onchange="fetchQuranData()">
+                    </div>
                 </div>
             </div>
 
-            <!-- القسم الثاني: الخلفيات -->
-            <div id="tab-bg" class="panel-section space-y-3">
+            <!-- Tab 2: Backgrounds -->
+            <div id="tab-bg" class="panel-section space-y-4">
                 <div class="bg-[#18181b] p-3 rounded-lg border border-[#27272a]">
-                    <h3 class="text-xs font-bold text-white mb-3"><i class="fa-solid fa-globe text-amber-500 ml-1"></i> خلفية عامة للمشروع</h3>
+                    <h3 class="text-xs font-bold text-white mb-3 flex items-center gap-2"><i class="fa-solid fa-globe text-rose-500"></i> خلفية عامة للكل</h3>
                     <div class="grid grid-cols-2 gap-2">
                         <div class="file-btn bg-[#27272a] hover:bg-[#3f3f46] text-zinc-200">
-                            <i class="fa-solid fa-image text-xl mb-1"></i> رفع صورة
+                            <i class="fa-solid fa-image text-lg"></i>صورة
                             <input type="file" accept="image/*" onchange="setBg('global', 'image', this)">
                         </div>
                         <div class="file-btn bg-[#27272a] hover:bg-[#3f3f46] text-zinc-200">
-                            <i class="fa-solid fa-video text-xl mb-1"></i> رفع فيديو
+                            <i class="fa-solid fa-video text-lg"></i>فيديو
                             <input type="file" accept="video/*" onchange="setBg('global', 'video', this)">
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-amber-950/20 p-3 rounded-lg border border-amber-900/40">
-                    <h3 class="text-xs font-bold text-amber-300 mb-3 flex items-center"><i class="fa-solid fa-bullseye text-amber-500 ml-1"></i> خلفية خاصة بـ (<span id="bg-ayah-label">الآية 1</span>)</h3>
+                <div class="bg-rose-950/20 p-3 rounded-lg border border-rose-900/30">
+                    <h3 class="text-xs font-bold text-rose-300 mb-3 flex items-center gap-2"><i class="fa-solid fa-bullseye text-rose-500"></i> خلفية مخصصة (<span id="bg-ayah-label">الآية 1</span>)</h3>
                     <div class="grid grid-cols-2 gap-2">
-                        <div class="file-btn bg-amber-900/30 hover:bg-amber-800/50 text-amber-100 border border-amber-800">
-                            <i class="fa-solid fa-image text-lg mb-1"></i> تخصيص صورة
+                        <div class="file-btn bg-rose-900/40 hover:bg-rose-800/60 text-rose-100 border border-rose-800">
+                            <i class="fa-solid fa-image text-lg"></i>صورة
                             <input type="file" accept="image/*" onchange="setBg('ayah', 'image', this)">
                         </div>
-                        <div class="file-btn bg-amber-900/30 hover:bg-amber-800/50 text-amber-100 border border-amber-800">
-                            <i class="fa-solid fa-video text-lg mb-1"></i> تخصيص فيديو
+                        <div class="file-btn bg-rose-900/40 hover:bg-rose-800/60 text-rose-100 border border-rose-800">
+                            <i class="fa-solid fa-video text-lg"></i>فيديو
                             <input type="file" accept="video/*" onchange="setBg('ayah', 'video', this)">
                         </div>
                     </div>
-                    <button id="btn-clear-ayah-bg" onclick="clearAyahBg()" class="hidden w-full mt-3 bg-red-900/50 hover:bg-red-800 text-red-200 text-xs py-2 rounded border border-red-800 transition"><i class="fa-solid fa-trash ml-1"></i> حذف خلفية هذه الآية</button>
+                    <button id="btn-clear-ayah-bg" onclick="clearAyahBg()" class="hidden w-full mt-2 bg-red-950 hover:bg-red-900 text-red-300 text-[10px] py-2 rounded border border-red-900 transition"><i class="fa-solid fa-trash ml-1"></i> حذف خلفية هذه الآية</button>
+                </div>
+
+                <div class="bg-[#18181b] p-3 rounded-lg border border-[#27272a]">
+                    <label class="flex justify-between text-[10px] text-zinc-400 mb-2"><span>تعتيم الفيديو (Opacity)</span> <span id="op-val">60%</span></label>
+                    <input type="range" id="bg-opacity" min="0" max="100" value="60" oninput="updateSettings(); document.getElementById('op-val').innerText=this.value+'%';">
                 </div>
             </div>
 
-            <!-- القسم الثالث: التصميم -->
-            <div id="tab-design" class="panel-section space-y-2">
+            <!-- Tab 3: Texts -->
+            <div id="tab-text" class="panel-section space-y-2">
                 <details open>
-                    <summary><i class="fa-solid fa-paintbrush text-amber-500"></i> نمط الكلمات والألوان</summary>
+                    <summary><i class="fa-solid fa-quran text-rose-500"></i> النص القرآني</summary>
                     <div class="details-body">
-                        <select id="highlight-style" onchange="updateSettings()">
-                            <option value="quran-gold">✨ تلوين ذهبي للكلمة المقروءة</option>
-                            <option value="center-focus">👁️ إظهار كلمة بكلمة في المنتصف</option>
-                            <option value="nur-glow">🌟 إضاءة نورانية متوهجة</option>
-                            <option value="quran-dim">🌑 إضاءة خافتة للباقي</option>
-                        </select>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div><label class="text-[10px] text-zinc-500 block mb-1">اللون الأساسي</label><input type="color" id="base-color" value="#ffffff" oninput="updateSettings()" class="h-10 p-0 border-0"></div>
-                            <div><label class="text-[10px] text-zinc-500 block mb-1">لون التمييز</label><input type="color" id="highlight-color" value="#fbbf24" oninput="updateSettings()" class="h-10 p-0 border-0"></div>
-                        </div>
-                    </div>
-                </details>
-
-                <details open>
-                    <summary><i class="fa-solid fa-font text-amber-500"></i> النصوص والمواقع</summary>
-                    <div class="details-body">
-                        <select id="font-family" onchange="updateSettings()">
-                            <option value="'Amiri Quran', serif">الخط الأميري (عثماني)</option>
+                        <select id="quran-font" onchange="updateSettings()">
+                            <option value="'Amiri Quran', serif">الخط الأميري (مصحف)</option>
+                            <option value="'Noto Naskh Arabic', serif">خط Noto Naskh</option>
                             <option value="'Tajawal', sans-serif">خط تجوال</option>
-                            <option value="'Cairo', sans-serif">خط كايرو</option>
                         </select>
-                        <div>
-                            <label class="flex justify-between text-[10px] text-zinc-500 mb-1"><span>حجم الخط القرآني</span> <span id="q-size-val">90</span></label>
-                            <input type="range" id="font-size" min="40" max="150" value="90" oninput="updateSettings(); document.getElementById('q-size-val').innerText=this.value;">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div><label class="text-[9px] text-zinc-500">اللون</label><input type="color" id="quran-color" value="#ffffff" oninput="updateSettings()" class="h-8 p-0 border-0 cursor-pointer"></div>
+                            <div><label class="text-[9px] text-zinc-500">الظل</label><input type="color" id="quran-shadow" value="#000000" oninput="updateSettings()" class="h-8 p-0 border-0 cursor-pointer"></div>
                         </div>
-                        <div class="bg-[#09090b] p-3 rounded border border-[#27272a]">
-                            <label class="text-[10px] text-zinc-300 flex flex-col gap-1 mb-2">ارتفاع الآية (Y): <input type="range" id="pos-y" min="0" max="100" value="45" oninput="updateSettings()"></label>
-                            <label class="text-[10px] text-zinc-300 flex flex-col gap-1">ارتفاع الترجمة (Y): <input type="range" id="trans-y" min="0" max="100" value="70" oninput="updateSettings()"></label>
+                        <div><label class="text-[9px] text-zinc-500">الحجم</label><input type="range" id="quran-size" min="30" max="150" value="85" oninput="updateSettings()"></div>
+                        <div class="bg-[#09090b] p-2 rounded border border-[#27272a]">
+                            <label class="text-[9px] text-zinc-500 flex gap-2 mb-2">يمين/يسار (X): <input type="range" id="quran-x" min="0" max="100" value="50" oninput="updateSettings()"></label>
+                            <label class="text-[9px] text-zinc-500 flex gap-2">أعلى/أسفل (Y): <input type="range" id="quran-y" min="0" max="100" value="40" oninput="updateSettings()"></label>
                         </div>
                     </div>
                 </details>
 
-                <div class="bg-[#18181b] p-3 rounded-lg border border-[#27272a] mt-2">
-                    <label class="flex justify-between text-xs font-bold text-zinc-300 mb-2"><span>تعتيم طبقة الفيديو</span></label>
-                    <input type="range" id="bg-opacity" min="0" max="100" value="60" oninput="updateSettings()">
-                </div>
+                <details>
+                    <summary><i class="fa-solid fa-language text-rose-500"></i> الترجمة / التفسير</summary>
+                    <div class="details-body">
+                        <select id="trans-type" onchange="fetchQuranData()">
+                            <option value="none">بدون ترجمة</option>
+                            <option value="en.asad" selected>English</option>
+                            <option value="ar.muyassar">التفسير الميسر</option>
+                        </select>
+                        <select id="trans-font" onchange="updateSettings()">
+                            <option value="'Tajawal', sans-serif">Tajawal</option>
+                            <option value="'Cairo', sans-serif">Cairo</option>
+                        </select>
+                        <div><label class="text-[9px] text-zinc-500">اللون</label><input type="color" id="trans-color" value="#cbd5e1" oninput="updateSettings()" class="h-8 p-0 border-0 cursor-pointer w-full"></div>
+                        <div><label class="text-[9px] text-zinc-500">الحجم</label><input type="range" id="trans-size" min="20" max="80" value="40" oninput="updateSettings()"></div>
+                        <div class="bg-[#09090b] p-2 rounded border border-[#27272a]">
+                            <label class="text-[9px] text-zinc-500 flex gap-2 mb-2">يمين/يسار (X): <input type="range" id="trans-x" min="0" max="100" value="50" oninput="updateSettings()"></label>
+                            <label class="text-[9px] text-zinc-500 flex gap-2">أعلى/أسفل (Y): <input type="range" id="trans-y" min="0" max="100" value="65" oninput="updateSettings()"></label>
+                        </div>
+                    </div>
+                </details>
             </div>
 
-            <!-- القسم الرابع: الخط الزمني -->
-            <div id="tab-timeline" class="panel-section">
-                <div class="bg-[#18181b] p-3 rounded-lg border border-[#27272a] mb-2 text-[10px] text-zinc-400">
-                    هنا تظهر الآيات المدمجة. يمكنك النقر على أي آية لسماعها ورؤية تأثير التلوين كلمة بكلمة في العرض الحي.
-                </div>
-                <div id="timeline-container" class="space-y-2">
-                    <p class="text-center text-xs text-zinc-500 py-10">قم بجلب الآيات أولاً.</p>
-                </div>
+            <!-- Tab 4: Scene & Info -->
+            <div id="tab-info" class="panel-section space-y-2">
+                <details open>
+                    <summary><i class="fa-solid fa-book-open text-rose-500"></i> اسم السورة</summary>
+                    <div class="details-body">
+                        <select id="surah-font" onchange="updateSettings()">
+                            <option value="'Reem Kufi', sans-serif">ريم كوفي</option>
+                            <option value="'Cairo', sans-serif">كايرو</option>
+                        </select>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div><label class="text-[9px] text-zinc-500">اللون</label><input type="color" id="surah-color" value="#ffffff" oninput="updateSettings()" class="h-8 p-0 border-0 cursor-pointer"></div>
+                            <div><label class="text-[9px] text-zinc-500">الحجم</label><input type="range" id="surah-size" min="20" max="80" value="35" oninput="updateSettings()"></div>
+                        </div>
+                        <div class="bg-[#09090b] p-2 rounded border border-[#27272a]">
+                            <label class="text-[9px] text-zinc-500 flex gap-2 mb-2">X: <input type="range" id="surah-x" min="0" max="100" value="50" oninput="updateSettings()"></label>
+                            <label class="text-[9px] text-zinc-500 flex gap-2">Y: <input type="range" id="surah-y" min="0" max="100" value="15" oninput="updateSettings()"></label>
+                        </div>
+                    </div>
+                </details>
+
+                <details open>
+                    <summary><i class="fa-solid fa-microphone text-rose-500"></i> اسم القارئ</summary>
+                    <div class="details-body">
+                        <select id="reciter-font" onchange="updateSettings()">
+                            <option value="'Cairo', sans-serif">كايرو</option>
+                            <option value="'Tajawal', sans-serif">تجوال</option>
+                        </select>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div><label class="text-[9px] text-zinc-500">اللون</label><input type="color" id="reciter-color" value="#ffffff" oninput="updateSettings()" class="h-8 p-0 border-0 cursor-pointer"></div>
+                            <div><label class="text-[9px] text-zinc-500">الحجم</label><input type="range" id="reciter-size" min="15" max="60" value="25" oninput="updateSettings()"></div>
+                        </div>
+                        <div class="bg-[#09090b] p-2 rounded border border-[#27272a]">
+                            <label class="text-[9px] text-zinc-500 flex gap-2 mb-2">X: <input type="range" id="reciter-x" min="0" max="100" value="50" oninput="updateSettings()"></label>
+                            <label class="text-[9px] text-zinc-500 flex gap-2">Y: <input type="range" id="reciter-y" min="0" max="100" value="85" oninput="updateSettings()"></label>
+                        </div>
+                    </div>
+                </details>
+                
+                <details>
+                    <summary><i class="fa-solid fa-wave-square text-rose-500"></i> الموجة الصوتية والشعار</summary>
+                    <div class="details-body">
+                        <label class="text-[9px] text-zinc-500">موقع الموجة الصوتية (Y)</label><input type="range" id="viz-y" min="0" max="100" value="75" oninput="updateSettings()">
+                        <hr class="border-[#27272a] my-1">
+                        <label class="text-[9px] text-zinc-500">نص الحقوق (Watermark)</label>
+                        <input type="text" id="watermark" placeholder="@YourName" oninput="updateSettings()">
+                        <div class="bg-[#09090b] p-2 rounded border border-[#27272a]">
+                            <label class="text-[9px] text-zinc-500 flex gap-2 mb-2">X: <input type="range" id="wm-x" min="0" max="100" value="50" oninput="updateSettings()"></label>
+                            <label class="text-[9px] text-zinc-500 flex gap-2">Y: <input type="range" id="wm-y" min="0" max="100" value="95" oninput="updateSettings()"></label>
+                        </div>
+                    </div>
+                </details>
             </div>
 
-            <!-- القسم الخامس: التصدير -->
-            <div id="tab-export" class="panel-section text-center p-2">
-                <div class="bg-amber-950/20 p-5 rounded-xl border border-amber-900/30 mb-4">
-                    <i class="fa-solid fa-clapperboard text-4xl text-amber-500 mb-3 block"></i>
-                    <h3 class="text-white font-bold mb-2">تصدير الفيديو</h3>
-                    <p class="text-[11px] text-zinc-400">تم التخلص من أخطاء السيرفرات. التسجيل الآن يعمل مباشرة وبدقة ممتازة لإنتاج MP4 صافي.</p>
+            <!-- Tab 5: Export -->
+            <div id="tab-export" class="panel-section text-center p-4">
+                <div class="bg-rose-950/20 p-6 rounded-xl border border-rose-900/30 mb-4">
+                    <i class="fa-solid fa-video text-4xl text-rose-500 mb-3 block"></i>
+                    <h3 class="text-white font-bold mb-2">جاهز للتصدير؟</h3>
+                    <p class="text-[10px] text-zinc-400">تأكد من اختيار الخلفيات ومراجعة النصوص قبل التصدير. سيتم استخراج فيديو MP4 بدقة عالية.</p>
                 </div>
                 
-                <button id="btn-export" onclick="startExport()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-4 rounded-xl transition shadow-lg shadow-amber-600/30 text-sm">
-                    <i class="fa-solid fa-rocket ml-1"></i> بدء معالجة الفيديو
+                <button id="btn-export" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-bold py-3.5 rounded-lg transition shadow-lg shadow-rose-600/30">
+                    <i class="fa-solid fa-play ml-1"></i> بدء معالجة الفيديو
                 </button>
 
-                <div id="export-status" class="mt-4 hidden text-right bg-[#18181b] p-4 rounded-xl border border-[#27272a]">
-                    <p id="status-msg" class="text-amber-400 text-xs font-bold mb-3 animate-pulse">جاري التحضير...</p>
-                    <div class="w-full bg-[#09090b] h-3 rounded-full overflow-hidden border border-[#27272a]">
-                        <div id="progress-bar-export" class="bg-amber-500 h-full w-0 transition-all duration-300"></div>
+                <div id="export-status" class="mt-4 hidden text-right bg-[#18181b] p-4 rounded-lg border border-[#27272a]">
+                    <p id="status-msg" class="text-rose-400 text-xs font-bold mb-3 animate-pulse">جاري التهيئة...</p>
+                    <div class="w-full bg-[#09090b] h-2 rounded-full overflow-hidden border border-[#27272a]">
+                        <div id="progress-bar" class="bg-rose-600 h-full w-0 transition-all duration-300"></div>
                     </div>
                 </div>
                 
-                <a id="download-link" class="hidden mt-4 w-full block bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl transition text-sm shadow-lg shadow-emerald-600/20 text-center">
-                    <i class="fa-solid fa-download ml-1"></i> تحميل الفيديو
+                <a id="download-link" class="hidden mt-4 w-full block bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-lg transition text-sm shadow-lg shadow-emerald-600/20 text-center">
+                    <i class="fa-solid fa-download ml-1"></i> حفظ الفيديو على جهازك
                 </a>
             </div>
 
         </div>
     </aside>
 
-    <!-- شريط التنقل السفلي/الجانبي -->
-    <nav class="w-full md:w-[70px] bg-[#09090b] border-t md:border-t-0 md:border-r border-[#27272a] flex md:flex-col overflow-x-auto shrink-0 z-20 absolute md:relative bottom-0 left-0 right-0">
-        <button onclick="switchTab('quran', 'المحتوى والآيات', this)" class="tab-btn active"><i class="fa-solid fa-book-open text-xl mb-1"></i>القرآن</button>
-        <button onclick="switchTab('bg', 'الخلفيات', this)" class="tab-btn"><i class="fa-solid fa-image text-xl mb-1"></i>الخلفية</button>
-        <button onclick="switchTab('design', 'التصميم والمشهد', this)" class="tab-btn"><i class="fa-solid fa-palette text-xl mb-1"></i>التصميم</button>
-        <button onclick="switchTab('timeline', 'الخط الزمني', this)" class="tab-btn"><i class="fa-solid fa-list-ol text-xl mb-1"></i>التوقيت</button>
-        <button onclick="switchTab('export', 'التصدير النهائي', this)" class="tab-btn text-amber-500"><i class="fa-solid fa-clapperboard text-xl mb-1"></i>إنتاج</button>
+    <!-- 3. Right/Bottom: Sidebar Icons -->
+    <nav class="w-full md:w-16 bg-[#09090b] border-t md:border-t-0 md:border-l border-[#27272a] flex md:flex-col overflow-x-auto shrink-0 z-20">
+        <div class="p-2 md:py-4 hidden md:flex justify-center border-b border-[#27272a] mb-2"><i class="fa-solid fa-kaaba text-rose-500 text-2xl"></i></div>
+        <button onclick="switchTab('quran', 'بيانات القرآن', this)" class="tab-btn active"><i class="fa-solid fa-book-open text-lg"></i>القرآن</button>
+        <button onclick="switchTab('bg', 'الخلفيات', this)" class="tab-btn"><i class="fa-solid fa-image text-lg"></i>الخلفية</button>
+        <button onclick="switchTab('text', 'النص والترجمة', this)" class="tab-btn"><i class="fa-solid fa-font text-lg"></i>النصوص</button>
+        <button onclick="switchTab('info', 'المشهد والأسماء', this)" class="tab-btn"><i class="fa-solid fa-layer-group text-lg"></i>المشهد</button>
+        <button onclick="switchTab('export', 'التصدير النهائي', this)" class="tab-btn mt-auto md:border-t border-[#27272a]"><i class="fa-solid fa-cloud-arrow-down text-lg"></i>التصدير</button>
     </nav>
 
-    <!-- السكربت الرئيسي المبرمج بدقة وبدون أخطاء -->
+    <!-- Application Script -->
     <script>
+        // === 1. State & UI ===
         const canvas = document.getElementById('video-canvas');
         const ctx = canvas.getContext('2d');
         const C_W = 1080; const C_H = 1920;
         
-        const surahs =["الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس","هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه","الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم","لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر","فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق","الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج","نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس","التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد","الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر","المسد","الإخلاص","الفلق","الناس"];
-        
-        let state = {
-            phrases:[],
-            currentIndex: 0,
-            globalBg: { type: 'none', media: null },
-            ayahBgs: {},
-            settings: {},
-            isExporting: false,
-            audioCtx: null,
-            destNode: null,
-            audioBuffer: null
-        };
-
-        const audioPlayer = document.getElementById('audio-player');
+        const surahs = ["الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس","هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه","الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم","لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر","فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق","الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج","نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس","التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد","الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر","المسد","الإخلاص","الفلق","الناس"];
         
         window.onload = () => {
             const sSelect = document.getElementById('surah');
             surahs.forEach((s, i) => sSelect.options.add(new Option(`${i+1}. ${s}`, i+1)));
+            fetchQuranData();
             updateSettings();
             requestAnimationFrame(renderLoop);
         };
@@ -289,28 +306,82 @@
             document.getElementById(`tab-${id}`).classList.add('active');
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             btn.classList.add('active');
-            document.getElementById('panel-title').innerHTML = `<i class="fa-solid fa-check-circle text-amber-500 ml-2"></i> ${title}`;
+            document.getElementById('panel-title').innerHTML = `<i class="fa-solid fa-circle-chevron-left text-rose-500 ml-2"></i> ${title}`;
         }
+
+        let state = {
+            playlist: [], currentIndex: 0,
+            settings: {},
+            globalBg: { type: 'none', media: null },
+            ayahBgs: {}
+        };
+        let audioCtx, analyser, dataArray;
+        let isExporting = false;
 
         const val = id => document.getElementById(id).value;
         const num = id => parseFloat(document.getElementById(id).value);
-
+        
         function updateSettings() {
             state.settings = {
-                style: val('highlight-style'),
-                baseC: val('base-color'),
-                hiC: val('highlight-color'),
-                fontF: val('font-family'),
-                fontS: num('font-size'),
-                posY: num('pos-y'),
-                transY: num('trans-y'),
-                bgOp: num('bg-opacity') / 100
+                bgOpacity: num('bg-opacity') / 100,
+                qF: val('quran-font'), qS: num('quran-size'), qC: val('quran-color'), qSh: val('quran-shadow'), qX: num('quran-x'), qY: num('quran-y'),
+                tF: val('trans-font'), tS: num('trans-size'), tC: val('trans-color'), tX: num('trans-x'), tY: num('trans-y'),
+                sF: val('surah-font'), sS: num('surah-size'), sC: val('surah-color'), sX: num('surah-x'), sY: num('surah-y'),
+                rF: val('reciter-font'), rS: num('reciter-size'), rC: val('reciter-color'), rX: num('reciter-x'), rY: num('reciter-y'),
+                vY: num('viz-y'), wm: val('watermark'), wmX: num('wm-x'), wmY: num('wm-y')
             };
         }
 
-        // =====================================
-        // التعامل مع الخلفيات المتعددة
-        // =====================================
+        // === 2. API Data ===
+        async function fetchQuranData() {
+            let sNum = val('surah'); let start = parseInt(val('start-ayah')); let end = parseInt(val('end-ayah')); let tType = val('trans-type');
+            try {
+                let resAr = await fetch(`https://api.alquran.cloud/v1/surah/${sNum}/quran-uthmani`);
+                let dataAr = await resAr.json();
+                let dataTr = null;
+                if(tType !== 'none') { let resTr = await fetch(`https://api.alquran.cloud/v1/surah/${sNum}/${tType}`); dataTr = await resTr.json(); }
+
+                state.playlist = [];
+                for(let i = start; i <= end; i++) {
+                    let ayahAr = dataAr.data.ayahs.find(a => a.numberInSurah === i);
+                    let ayahTr = dataTr ? dataTr.data.ayahs.find(a => a.numberInSurah === i) : null;
+                    if(ayahAr) {
+                        state.playlist.push({
+                            num: i,
+                            surah: sNum,
+                            ar: ayahAr.text + ` ﴿${toArabicNumber(i)}﴾`,
+                            trans: ayahTr ? ayahTr.text : ""
+                        });
+                    }
+                }
+                state.currentIndex = 0;
+                updatePreviewUI();
+            } catch(e) { console.error("Error fetching data", e); }
+        }
+
+        function toArabicNumber(n) { const d = {'0':'٠','1':'١','2':'٢','3':'٣','4':'٤','5':'٥','6':'٦','7':'٧','8':'٨','9':'٩'}; return n.toString().replace(/\d/g, m => d[m]); }
+
+        function changeAyah(step) {
+            if(state.playlist.length === 0) return;
+            state.currentIndex += step;
+            if(state.currentIndex < 0) state.currentIndex = 0;
+            if(state.currentIndex >= state.playlist.length) state.currentIndex = state.playlist.length - 1;
+            updatePreviewUI();
+        }
+
+        function updatePreviewUI() {
+            let item = state.playlist[state.currentIndex];
+            if(!item) return;
+            let sName = document.getElementById('surah').options[document.getElementById('surah').selectedIndex].text.split('. ')[1];
+            document.getElementById('preview-surah').innerText = "سورة " + sName;
+            document.getElementById('preview-ayah').innerText = "الآية " + item.num;
+            document.getElementById('bg-ayah-label').innerText = "الآية " + item.num;
+
+            let hasCustom = state.ayahBgs[item.num] && state.ayahBgs[item.num].type !== 'none';
+            document.getElementById('btn-clear-ayah-bg').style.display = hasCustom ? 'block' : 'none';
+        }
+
+        // === 3. Backgrounds ===
         function setBg(target, type, input) {
             const file = input.files[0]; if(!file) return;
             const url = URL.createObjectURL(file);
@@ -321,271 +392,27 @@
             if(target === 'global') {
                 state.globalBg = { type, media: mediaObj };
             } else {
-                if(state.phrases.length === 0) return alert("قم بجلب الآيات أولاً لتخصيص خلفية لآية معينة.");
-                let ayahNum = state.phrases[state.currentIndex].num;
-                state.ayahBgs[ayahNum] = { type, media: mediaObj };
+                let num = state.playlist[state.currentIndex].num;
+                state.ayahBgs[num] = { type, media: mediaObj };
                 updatePreviewUI();
             }
         }
         function clearAyahBg() {
-            if(state.phrases.length === 0) return;
-            let ayahNum = state.phrases[state.currentIndex].num;
-            delete state.ayahBgs[ayahNum];
+            let num = state.playlist[state.currentIndex].num;
+            delete state.ayahBgs[num];
             updatePreviewUI();
         }
 
-        function changeAyah(step) {
-            if(state.phrases.length === 0) return;
-            state.currentIndex += step;
-            if(state.currentIndex < 0) state.currentIndex = 0;
-            if(state.currentIndex >= state.phrases.length) state.currentIndex = state.phrases.length - 1;
-            
-            // تحريك الصوت إلى بداية الآية المحددة
-            audioPlayer.currentTime = state.phrases[state.currentIndex].startTime / 1000;
-            updatePreviewUI();
-        }
-
-        function updatePreviewUI() {
-            if(state.phrases.length === 0) return;
-            let item = state.phrases[state.currentIndex];
-            document.getElementById('preview-ayah-label').innerText = `معاينة الآية: ${item.num}`;
-            document.getElementById('bg-ayah-label').innerText = `الآية ${item.num}`;
-            
-            let hasCustom = state.ayahBgs[item.num] && state.ayahBgs[item.num].type !== 'none';
-            document.getElementById('btn-clear-ayah-bg').style.display = hasCustom ? 'block' : 'none';
-            
-            // إضاءة التايم لاين
-            document.querySelectorAll('.segment-block').forEach(b => b.classList.remove('active'));
-            let block = document.getElementById(`block-${state.currentIndex}`);
-            if(block) block.classList.add('active');
-        }
-
-        // =====================================
-        // النظام الجديد لجلب الصوت والتوقيت (بدون أخطاء CORS)
-        // =====================================
-// 1. الدالة الخارقة لجلب الصوت بدون مشاكل CORS
-async function safeFetchAudio(surahNum, ayahNum, reciter) {
-    const pad = (n) => n.toString().padStart(3, '0');
-    
-    // تحويل أسماء القراء لتعمل مع سيرفرات EveryAyah المفتوحة
-    const reciterMap = {
-        'ar.alafasy': 'Alafasy_128kbps',
-        'ar.minshawi': 'Minshawy_Murattal_128kbps',
-        'ar.abdulbasitmurattal': 'Abdul_Basit_Murattal_64kbps',
-        'ar.husary': 'Husary_128kbps',
-        'ar.mahermuaiqly': 'MaherAlMuaiqly_128kbps'
-    };
-    
-    const folder = reciterMap[reciter] || 'Alafasy_128kbps';
-    const directUrl = `https://everyayah.com/data/${folder}/${pad(surahNum)}${pad(ayahNum)}.mp3`;
-
-    // قائمة محاولات
-    const attempts = [
-        directUrl, 
-        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(directUrl)}`,
-        `https://api.allorigins.win/raw?url=${encodeURIComponent(directUrl)}`
-    ];
-
-    for (let url of attempts) {
-        try {
-            let res = await fetch(url);
-            if (res.ok) {
-                let buffer = await res.arrayBuffer();
-                if (buffer.byteLength > 5000) return buffer;
-            }
-        } catch (e) { console.log("محاولة جلب فشلت، ننتقل للبديل..."); }
-    }
-    throw new Error("تعذر جلب الصوت بسبب حماية المتصفح، تأكد من جودة الإنترنت.");
-}
-
-// 2. الدالة الرئيسية الكاملة (مصححة وبدون أخطاء)
-async function generateQuranAudio() {
-    const btnText = document.getElementById('btn-fetch-text');
-    const surah = parseInt(val('surah'));
-    const start = parseInt(val('start-ayah'));
-    const end = parseInt(val('end-ayah'));
-    const reciter = val('reciter'); 
-    const tType = val('trans-type');
-    
-    if (end < start) return alert("الترتيب غير صحيح.");
-
-    btnText.innerText = "جاري الاتصال بالسيرفرات...";
-    document.getElementById('btn-fetch-text').parentElement.classList.add('opacity-50', 'pointer-events-none');
-
-    try {
-        // جلب النص القرآني
-        let resAr = await fetch(`https://api.alquran.cloud/v1/surah/${surah}/quran-uthmani`);
-        let dataAr = await resAr.json();
-        
-        // جلب الترجمة (معالجة آمنة لـ dataTr)
-        let dataTr = null;
-        if (tType !== 'none') {
-            let resTr = await fetch(`https://api.alquran.cloud/v1/surah/${surah}/${tType}`);
-            dataTr = await resTr.json();
-        }
-
-        window.AudioContext = window.AudioContext || window.webkitAudioContext;
-        state.audioCtx = new AudioContext();
-        let buffers = [];
-        let globalTime = 0;
-        state.phrases = [];
-
-        for (let i = start; i <= end; i++) {
-            btnText.innerText = `جلب صوت الآية ${i}...`;
-            
-            // جلب الصوت
-            let arrayBuffer = await safeFetchAudio(surah, i, reciter);
-            let decodedBuffer = await state.audioCtx.decodeAudioData(arrayBuffer);
-            
-            buffers.push(decodedBuffer);
-            
-            // تحضير النص والترجمة
-            let ayahText = dataAr.data.ayahs[i-1].text + ` ﴿${toArabicNumber(i)}﴾`;
-            let transText = dataTr ? dataTr.data.ayahs[i-1].text : "";
-            let wordsArr = ayahText.split(' ');
-            let wordsData = [];
-            
-            // الحساب الرياضي لتوقيت الكلمات (بدون الحاجة لملفات توقيت)
-            let durationMs = decodedBuffer.duration * 1000;
-            let timePerWord = durationMs / wordsArr.length;
-            
-            wordsArr.forEach((wText, idx) => {
-                let wStart = (globalTime * 1000) + (idx * timePerWord);
-                let wEnd = wStart + timePerWord;
-                wordsData.push({ text: wText, start: wStart, end: wEnd });
-            });
-
-            state.phrases.push({
-                num: i,
-                startTime: globalTime * 1000,
-                endTime: (globalTime + decodedBuffer.duration) * 1000,
-                words: wordsData,
-                trans: transText
-            });
-
-            globalTime += decodedBuffer.duration;
-        }
-
-        // دمج الصوتيات
-        state.audioBuffer = mergeAudioBuffers(state.audioCtx, buffers);
-        let wavBlob = bufferToWave(state.audioBuffer);
-        audioPlayer.src = URL.createObjectURL(wavBlob);
-        
-        // تحديث الواجهة
-        renderTimelineUI();
-        state.currentIndex = 0;
-        updatePreviewUI();
-        
-        btnText.innerText = "نجاح! تم جلب وتجهيز الآيات";
-        setTimeout(() => btnText.innerText = "جلب الآيات ودمج الصوت", 3000);
-
-        // إعداد مشغل الصوت وتحديث المعاينة
-        audioPlayer.ontimeupdate = () => {
-            if(!state.isExporting) {
-                document.getElementById('progress-bar-audio').value = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-                document.getElementById('time-current').innerText = formatTime(audioPlayer.currentTime);
-                document.getElementById('time-total').innerText = formatTime(audioPlayer.duration);
-                
-                let timeMs = audioPlayer.currentTime * 1000;
-                let activeIdx = state.phrases.findIndex(p => timeMs >= p.startTime && timeMs <= p.endTime);
-                if(activeIdx !== -1 && activeIdx !== state.currentIndex) {
-                    state.currentIndex = activeIdx;
-                    updatePreviewUI();
-                }
-            }
-        };
-
-    } catch (e) {
-        console.error(e);
-        alert("حدث خطأ أثناء المعالجة: " + e.message);
-        btnText.innerText = "جلب الآيات ودمج الصوت";
-    } finally {
-        document.getElementById('btn-fetch-text').parentElement.classList.remove('opacity-50', 'pointer-events-none');
-    }
-}
-
-        // دوال مساعدة للصوت
-        function mergeAudioBuffers(ctx, buffers) {
-            let totalLength = 0;
-            buffers.forEach(b => totalLength += b.length);
-            const tmp = ctx.createBuffer(buffers[0].numberOfChannels, totalLength, buffers[0].sampleRate);
-            let offset = 0;
-            buffers.forEach(buffer => {
-                for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
-                    tmp.getChannelData(channel).set(buffer.getChannelData(channel), offset);
-                }
-                offset += buffer.length;
-            });
-            return tmp;
-        }
-
-        function bufferToWave(abuffer) {
-            let numOfChan = abuffer.numberOfChannels, length = abuffer.length * numOfChan * 2 + 44, buffer = new ArrayBuffer(length), view = new DataView(buffer), channels =[], i, sample, offset = 0, pos = 0;
-            const setUint16 = (d) => { view.setUint16(pos, d, true); pos += 2; };
-            const setUint32 = (d) => { view.setUint32(pos, d, true); pos += 4; };
-            setUint32(0x46464952); setUint32(length - 8); setUint32(0x45564157); setUint32(0x20746d66); setUint32(16); setUint16(1); setUint16(numOfChan); setUint32(abuffer.sampleRate); setUint32(abuffer.sampleRate * 2 * numOfChan); setUint16(numOfChan * 2); setUint16(16); setUint32(0x61746164); setUint32(length - pos - 4);
-            for(i = 0; i < abuffer.numberOfChannels; i++) channels.push(abuffer.getChannelData(i));
-            while(pos < length) {
-                for(i = 0; i < numOfChan; i++) {
-                    sample = Math.max(-1, Math.min(1, channels[i][offset])); sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767)|0; view.setInt16(pos, sample, true); pos += 2;
-                } offset++;
-            }
-            return new Blob([buffer], {type: "audio/wav"});
-        }
-
-        function toArabicNumber(n) { const d = {'0':'٠','1':'١','2':'٢','3':'٣','4':'٤','5':'٥','6':'٦','7':'٧','8':'٨','9':'٩'}; return n.toString().replace(/\d/g, m => d[m]); }
-        function formatTime(secs) { if(isNaN(secs)) return "00:00"; let m = Math.floor(secs / 60); let s = Math.floor(secs % 60); return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
-
-        function togglePlay() {
-            if(!audioPlayer.src) return alert("قم بجلب الآيات أولاً.");
-            if (audioPlayer.paused) { 
-                let playPromise = audioPlayer.play(); 
-                if(playPromise) playPromise.catch(e => console.error(e));
-                document.getElementById('play-btn').innerHTML = '<i class="fa-solid fa-pause"></i>'; 
-            } else { 
-                audioPlayer.pause(); 
-                document.getElementById('play-btn').innerHTML = '<i class="fa-solid fa-play"></i>'; 
-            }
-        }
-        function seekAudio(val) { if(audioPlayer.src) audioPlayer.currentTime = (val / 100) * audioPlayer.duration; }
-
-        function renderTimelineUI() {
-            const container = document.getElementById('timeline-container');
-            container.innerHTML = '';
-            state.phrases.forEach((p, i) => {
-                let div = document.createElement('div');
-                div.className = 'segment-block cursor-pointer';
-                div.id = `block-${i}`;
-                div.onclick = () => { audioPlayer.currentTime = p.startTime/1000; state.currentIndex = i; updatePreviewUI(); };
-                div.innerHTML = `
-                    <div class="segment-header">
-                        <span>الآية ${p.num}</span>
-                        <span>${formatTime(p.startTime/1000)}</span>
-                    </div>
-                    <div class="p-2 text-center text-sm text-zinc-300 leading-relaxed font-bold" style="font-family: 'Amiri Quran', serif; direction:rtl;">
-                        ${p.words.map(w => `<span class="inline-block px-1">${w.text}</span>`).join(' ')}
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        // ==========================================
-        // محرك الرسم (Word by Word) - خالي من الأخطاء
-        // ==========================================
+        // === 4. Render Engine ===
         function renderLoop() {
             ctx.clearRect(0, 0, C_W, C_H);
+            let item = state.playlist[state.currentIndex];
             let s = state.settings;
-            let timeMs = state.isExporting ? (window.exportTimeMs || 0) : (audioPlayer.currentTime * 1000);
 
-            // تحديد الخلفية الحالية (الخاصة بالآية إن وجدت، أو العامة)
-            let activePhrase = state.phrases.find(p => timeMs >= p.startTime && timeMs <= p.endTime);
+            // Background
             let bg = state.globalBg;
-            if(activePhrase && state.ayahBgs[activePhrase.num] && state.ayahBgs[activePhrase.num].type !== 'none') {
-                bg = state.ayahBgs[activePhrase.num];
-            }
-
-            // رسم الخلفية
+            if(item && state.ayahBgs[item.num] && state.ayahBgs[item.num].type !== 'none') bg = state.ayahBgs[item.num];
+            
             if(bg.type !== 'none' && bg.media) {
                 if(bg.type === 'video' && bg.media.readyState >= 2) drawCover(bg.media, bg.media.videoWidth, bg.media.videoHeight);
                 else if(bg.type === 'image') drawCover(bg.media, bg.media.width, bg.media.height);
@@ -593,184 +420,188 @@ async function generateQuranAudio() {
                 let grad = ctx.createLinearGradient(0,0,0,C_H); grad.addColorStop(0,"#18181b"); grad.addColorStop(1,"#09090b");
                 ctx.fillStyle = grad; ctx.fillRect(0,0,C_W,C_H);
             }
-            ctx.fillStyle = `rgba(0,0,0,${s.bgOp})`; ctx.fillRect(0,0,C_W,C_H);
+            
+            ctx.fillStyle = `rgba(0,0,0,${s.bgOpacity})`; ctx.fillRect(0,0,C_W,C_H);
 
-            if (activePhrase) {
-                // رسم القرآن
-                ctx.font = `bold ${s.fontS}px ${s.fontF}`;
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-                
-                let lines = [];
-                let currentLine =[];
-                let currentWidth = 0;
-                let spaceW = ctx.measureText(" ").width;
-                let maxW = C_W * 0.85;
+            if(!item) { requestAnimationFrame(renderLoop); return; }
 
-                activePhrase.words.forEach(w => {
-                    let wWidth = ctx.measureText(w.text).width;
-                    if (currentWidth + wWidth + spaceW > maxW && currentLine.length > 0) {
-                        lines.push({ words: currentLine, width: currentWidth });
-                        currentLine = [w]; currentWidth = wWidth;
-                    } else {
-                        currentLine.push(w);
-                        currentWidth += wWidth + (currentLine.length > 1 ? spaceW : 0);
-                    }
-                });
-                if(currentLine.length > 0) lines.push({ words: currentLine, width: currentWidth });
+            const gX = p => C_W * (p/100); const gY = p => C_H * (p/100);
+            ctx.textAlign = "center"; ctx.textBaseline = "middle";
 
-                let lineH = s.fontS * 1.6;
-                let startY = (C_H * (s.posY/100)) - ((lines.length - 1) * lineH) / 2;
+            // Surah
+            let sName = "سُورَةُ " + document.getElementById('surah').options[document.getElementById('surah').selectedIndex].text.split('. ')[1];
+            ctx.font = `bold ${s.sS}px ${s.sF}`; ctx.fillStyle = s.sC; ctx.fillText(sName, gX(s.sX), gY(s.sY));
 
-                lines.forEach((line, i) => {
-                    let y = startY + (i * lineH);
-                    let startX = (C_W / 2) + (line.width / 2); 
-                    
-                    line.words.forEach(w => {
-                        let wWidth = ctx.measureText(w.text).width;
-                        let centerX = startX - (wWidth / 2);
-                        let isActive = timeMs >= w.start && timeMs <= w.end;
-                        
-                        if(s.style === 'center-focus') {
-                            if(isActive) { ctx.fillStyle = s.hiC; ctx.fillText(w.text, C_W/2, C_H * (s.posY/100)); }
-                        } else {
-                            ctx.shadowBlur = 0;
-                            if(isActive) {
-                                ctx.fillStyle = s.hiC;
-                                if(s.style === 'nur-glow') { ctx.shadowColor = s.hiC; ctx.shadowBlur = 25; }
-                            } else {
-                                ctx.fillStyle = s.baseC;
-                                ctx.globalAlpha = (s.style === 'quran-dim') ? 0.2 : 0.85;
-                            }
-                            ctx.fillText(w.text, centerX, y);
-                            ctx.globalAlpha = 1;
-                        }
-                        startX -= (wWidth + spaceW);
-                    });
-                });
+            // Reciter
+            let rName = document.getElementById('reciter').options[document.getElementById('reciter').selectedIndex].text;
+            ctx.font = `bold ${s.rS}px ${s.rF}`; ctx.fillStyle = s.rC; ctx.fillText(rName, gX(s.rX), gY(s.rY));
 
-                // رسم الترجمة إن وجدت
-                if(activePhrase.trans) {
-                    ctx.font = `500 ${s.fontS * 0.45}px 'Tajawal', sans-serif`;
-                    ctx.fillStyle = "#cbd5e1";
-                    ctx.shadowBlur = 0;
-                    wrapTextLine(ctx, activePhrase.trans, C_W/2, C_H * (s.transY/100), maxW, s.fontS * 0.6);
-                }
+            // Quran
+            ctx.font = `bold ${s.qS}px ${s.qF}`; ctx.fillStyle = s.qC;
+            ctx.shadowColor = s.qSh; ctx.shadowBlur = 15;
+            wrapText(ctx, item.ar, gX(s.qX), gY(s.qY), C_W * 0.9, s.qS * 1.6);
+            ctx.shadowBlur = 0;
+
+            // Trans
+            if(item.trans) {
+                ctx.font = `bold ${s.tS}px ${s.tF}`; ctx.fillStyle = s.tC;
+                wrapText(ctx, item.trans, gX(s.tX), gY(s.tY), C_W * 0.85, s.tS * 1.4);
             }
 
-            // رسم اسم السورة والقارئ ثوابت للجمال
-            let sName = document.getElementById('surah').options[document.getElementById('surah').selectedIndex].text.split('. ')[1];
-            let rName = document.getElementById('reciter').options[document.getElementById('reciter').selectedIndex].text;
-            ctx.font = `bold 30px 'Tajawal', sans-serif`; ctx.fillStyle = "rgba(255,255,255,0.6)";
-            ctx.fillText(`سورة ${sName}`, C_W/2, 80);
-            ctx.font = `20px 'Tajawal', sans-serif`;
-            ctx.fillText(rName, C_W/2, 120);
+            // Watermark
+            if(s.wm) { ctx.font="25px 'Tajawal'"; ctx.fillStyle="rgba(255,255,255,0.5)"; ctx.fillText(s.wm, gX(s.wmX), gY(s.wmY)); }
+
+            // Audio Wave
+            let vY = gY(s.vY); ctx.strokeStyle = "#e11d48"; ctx.lineWidth = 4; ctx.lineCap = "round";
+            ctx.beginPath(); let t = Date.now()/150;
+            for(let i=0; i<C_W; i+=25) {
+                let h = 5;
+                if(isExporting && analyser) h = (dataArray[i%dataArray.length]/255) * 60;
+                else h = Math.abs(Math.sin(t + i/40)) * 30 + 5; 
+                ctx.moveTo(i, vY - h); ctx.lineTo(i, vY + h);
+            }
+            ctx.stroke();
 
             requestAnimationFrame(renderLoop);
         }
 
         function drawCover(img, w, h) { let r = Math.max(C_W/w, C_H/h); let cw = w*r, ch = h*r; ctx.drawImage(img, 0, 0, w, h, (C_W-cw)/2, (C_H-ch)/2, cw, ch); }
-        function wrapTextLine(ctx, t, x, y, mW, lH) {
+        function wrapText(ctx, t, x, y, mW, lH) {
             let w=t.split(' '), line='', lines=[];
             for(let n=0; n<w.length; n++) { let test=line+w[n]+' '; if(ctx.measureText(test).width>mW && n>0) { lines.push(line); line=w[n]+' '; } else line=test; }
             lines.push(line); let sY = y - ((lines.length-1)*lH)/2;
             for(let i=0; i<lines.length; i++) ctx.fillText(lines[i].trim(), x, sY + (i*lH));
         }
 
-        // ==========================================
-        // التصدير السريع والآمن بـ MediaRecorder & FFmpeg
-        // ==========================================
-        let ffmpeg = null;
-// نسخة التصدير المخففة والسريعة لمنع تعليق المتصفح
-async function startExport() {
-    if(state.phrases.length === 0 || !state.audioBuffer) return alert("قم بتجهيز الصوت أولاً.");
-    
-    const btn = document.getElementById('btn-export');
-    const msg = document.getElementById('status-msg');
-    const bar = document.getElementById('progress-bar-export');
-    const dLink = document.getElementById('download-link');
-    
-    // تعريف متغيرات التسجيل في النطاق الصحيح لتجنب خطأ ReferenceError
-    let recordedChunks = []; 
-    
-    btn.disabled = true; 
-    document.getElementById('export-status').classList.remove('hidden'); 
-    dLink.classList.add('hidden');
-    state.isExporting = true;
-    audioPlayer.pause();
+        // === 5. EXPORT ENGINE (MULTI-PROXY CORS BYPASS) ===
+        const { createFFmpeg } = window.FFmpeg;
+        const ffmpeg = createFFmpeg({ log: false, corePath: "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js" });
 
-    try {
-        if (!ffmpeg) {
-            const { createFFmpeg } = window.FFmpeg;
-            ffmpeg = createFFmpeg({ log: false, corePath: "https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js" });
-            msg.innerText = "جاري تحميل محرك التصدير...";
-            await ffmpeg.load();
+        // المحرك الخارق لجلب الصوت وتخطي الحماية
+        async function fetchAudioWithBypass(surahNum, ayahNum, reciterFolder) {
+            const pad = (n) => n.toString().padStart(3, '0');
+            const targetUrl = `https://everyayah.com/data/${reciterFolder}/${pad(surahNum)}${pad(ayahNum)}.mp3`;
+
+            // قائمة من أقوى خوادم تخطي الحماية المتوافقة مع Vercel
+            const proxies = [
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+                `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`
+            ];
+
+            for (let proxy of proxies) {
+                try {
+                    let response = await fetch(proxy);
+                    if (response.ok) {
+                        let buffer = await response.arrayBuffer();
+                        if (buffer.byteLength > 5000) { // التأكد أن الملف ليس صفحة خطأ وهمية
+                            return buffer;
+                        }
+                    }
+                } catch (err) {
+                    console.warn("Proxy failed, trying next...");
+                }
+            }
+            throw new Error("فشل تحميل الصوت بسبب حماية CORS. تأكد من اتصالك أو جرب بعد قليل.");
         }
 
-        msg.innerText = "🔴 جاري التسجيل (20 FPS)...";
-        bar.style.width = "20%";
-        
-        const stream = canvas.captureStream(20); 
-        const recorder = new MediaRecorder(stream, { 
-            mimeType: 'video/webm;codecs=vp8',
-            videoBitsPerSecond: 1000000 
-        });
-        
-        // إسناد البيانات للمتغير الصحيح
-        recorder.ondataavailable = (e) => { 
-            if(e.data && e.data.size > 0) recordedChunks.push(e.data); 
-        };
-        
-        recorder.onstop = async () => {
-            msg.innerText = "⚙️ جاري التغليف (العملية تستغرق وقتاً حسب طول الفيديو)..."; 
-            bar.style.width = "60%";
+        document.getElementById('btn-export').addEventListener('click', async () => {
+            if(state.playlist.length === 0) return alert("لا توجد بيانات للتصدير");
             
-            // التأكد من وجود البيانات قبل التحويل
-            if (recordedChunks.length === 0) {
-                msg.innerText = "❌ خطأ: لم يتم تسجيل أي بيانات!";
-                btn.disabled = false; return;
+            const btn = document.getElementById('btn-export');
+            const msg = document.getElementById('status-msg');
+            const bar = document.getElementById('progress-bar');
+            const dLink = document.getElementById('download-link');
+            
+            btn.disabled = true; document.getElementById('export-status').classList.remove('hidden'); dLink.classList.add('hidden');
+
+            try {
+                window.AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+                let dest = audioCtx.createMediaStreamDestination();
+                
+                // تجهيز محلل الموجات (مهم لكي تعمل الموجة أثناء التسجيل)
+                analyser = audioCtx.createAnalyser(); 
+                analyser.fftSize = 256;
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+                msg.innerText = "جاري تحميل وتجهيز الصوتيات...";
+                let reciter = val('reciter'); // مثلاً Alafasy_128kbps
+                let audioBuffers = [];
+
+                // الجلب المسبق للصوتيات باستخدام محرك تخطي الحماية
+                for(let i=0; i<state.playlist.length; i++) {
+                    let item = state.playlist[i];
+                    let buf = await fetchAudioWithBypass(item.surah, item.num, reciter);
+                    audioBuffers.push(await audioCtx.decodeAudioData(buf));
+                    bar.style.width = `${10 + ((i+1)/state.playlist.length)*20}%`;
+                }
+
+                if(!ffmpeg.isLoaded()) await ffmpeg.load();
+
+                msg.innerText = "🔴 التسجيل الحي للفيديو والموجات...";
+                bar.style.width = "40%";
+                isExporting = true;
+                
+                if(state.globalBg.type === 'video') state.globalBg.media.play();
+                Object.values(state.ayahBgs).forEach(b => { if(b.type === 'video') b.media.play(); });
+
+                const stream = new MediaStream([...canvas.captureStream(30).getVideoTracks(), ...dest.stream.getAudioTracks()]);
+                const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+                let chunks = []; 
+                recorder.ondataavailable = e => { if(e.data.size > 0) chunks.push(e.data); };
+                
+                recorder.onstop = async () => {
+                    isExporting = false; 
+                    msg.innerText = "⚙️ التغليف النهائي لـ MP4..."; 
+                    bar.style.width = "80%";
+                    
+                    const webmData = new Uint8Array(await new Blob(chunks).arrayBuffer());
+                    ffmpeg.FS('writeFile', 'in.webm', webmData);
+                    
+                    // استخدام ترميز libx264 لتجنب فيديو حجمه صفر وضمان عمله بكل مكان
+                    await ffmpeg.run('-i', 'in.webm', '-c:v', 'libx264', '-preset', 'ultrafast', '-c:a', 'aac', '-b:a', '128k', 'out.mp4');
+                    
+                    const mp4 = ffmpeg.FS('readFile', 'out.mp4');
+                    dLink.href = URL.createObjectURL(new Blob([mp4.buffer], {type: 'video/mp4'}));
+                    dLink.download = `Quran_Video_${Date.now()}.mp4`; 
+                    dLink.classList.remove('hidden');
+                    
+                    msg.innerText = "✅ اكتمل بنجاح! حمل الفيديو."; 
+                    bar.style.width = "100%"; 
+                    btn.disabled = false;
+                };
+
+                // إجبار الميكس على إرسال البيانات فوراً لعدم ضياع الإطارات
+                recorder.start(100);
+
+                // تشغيل الآيات واحدة تلو الأخرى بشكل متزامن
+                for(let i=0; i<state.playlist.length; i++) {
+                    state.currentIndex = i; 
+                    updatePreviewUI();
+                    
+                    await new Promise(r => {
+                        let source = audioCtx.createBufferSource(); 
+                        source.buffer = audioBuffers[i];
+                        
+                        // ربط الصوت بالمحلل ليحرك الموجات، وبمخرج الفيديو
+                        source.connect(analyser); 
+                        analyser.connect(dest); 
+                        analyser.connect(audioCtx.destination); // لسماع الصوت وقت التسجيل
+                        
+                        source.onended = r; 
+                        source.start(0);
+                    });
+                }
+                
+                setTimeout(() => recorder.stop(), 500);
+
+            } catch(e) { 
+                msg.innerText = "❌ حدث خطأ: " + e.message; 
+                btn.disabled = false; 
+                isExporting = false; 
             }
-
-            const webmBlob = new Blob(recordedChunks, { type: 'video/webm' });
-            const arrayBuffer = await webmBlob.arrayBuffer();
-            const webmData = new Uint8Array(arrayBuffer);
-            
-            ffmpeg.FS('writeFile', 'in.webm', webmData);
-            
-            await ffmpeg.run('-i', 'in.webm', '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '35', '-tune', 'zerolatency', '-c:a', 'aac', '-b:a', '96k', 'out.mp4');
-            
-            const mp4 = ffmpeg.FS('readFile', 'out.mp4');
-            dLink.href = URL.createObjectURL(new Blob([mp4.buffer], {type: 'video/mp4'}));
-            dLink.download = `Quran_Studio_${Date.now()}.mp4`; 
-            dLink.classList.remove('hidden');
-            
-            msg.innerText = "✅ اكتمل التصدير بنجاح!"; 
-            bar.style.width = "100%"; 
-            btn.disabled = false; 
-            state.isExporting = false;
-            
-            ffmpeg.FS('unlink', 'in.webm'); 
-            ffmpeg.FS('unlink', 'out.mp4');
-            recordedChunks = []; // مسح الذاكرة
-        };
-
-        recorder.start(100);
-
-        // تشغيل الصوت للتصدير
-        let ac = new (window.AudioContext || window.webkitAudioContext)();
-        let source = ac.createBufferSource();
-        source.buffer = state.audioBuffer;
-        source.connect(ac.destination);
-        source.onended = () => setTimeout(() => recorder.stop(), 500);
-        source.start(0);
-
-    } catch(e) { 
-        console.error(e);
-        msg.innerText = "❌ خطأ: قد يكون الفيديو طويلاً جداً أو فشل التصدير."; 
-        btn.disabled = false; state.isExporting = false; 
-    }
-}
-    
+        });
     </script>
 </body>
 </html>
