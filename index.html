@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Quran Studio - Ultimate Pro</title>
     
+    <!-- أيقونة التطبيق -->
+    <link rel="icon" type="image/png" href="icons/app_logo.png">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
@@ -126,8 +129,8 @@
                 <div class="bg-[#18181b] p-3 rounded-lg border border-[#27272a]">
                     <h3 class="text-xs font-bold text-white mb-3"><i class="fa-solid fa-image text-amber-500 ml-1"></i> الخلفية الأساسية</h3>
                     <div class="grid grid-cols-2 gap-2 mb-3">
-                        <div class="file-btn bg-[#27272a] hover:bg-[#3f3f46] text-zinc-200"><i class="fa-solid fa-image text-xl mb-1"></i> رفع صورة<input type="file" accept="image/*" onchange="setBg('image', this)"></div>
-                        <div class="file-btn bg-[#27272a] hover:bg-[#3f3f46] text-zinc-200"><i class="fa-solid fa-video text-xl mb-1"></i> رفع فيديو<input type="file" accept="video/*" onchange="setBg('video', this)"></div>
+                        <div class="file-btn bg-[#27272a] hover:bg-[#3f3f46] text-zinc-200"><i class="fa-solid fa-image text-xl mb-1"></i> خلفية صورة<input type="file" accept="image/*" onchange="setBg('image', this)"></div>
+                        <div class="file-btn bg-[#27272a] hover:bg-[#3f3f46] text-zinc-200"><i class="fa-solid fa-video text-xl mb-1"></i> خلفية فيديو<input type="file" accept="video/*" onchange="setBg('video', this)"></div>
                     </div>
                     <label class="flex justify-between text-[10px] text-zinc-300 mb-1"><span>تعتيم الفيديو</span></label>
                     <input type="range" id="bg-opacity" min="0" max="100" value="50" oninput="updateSettings()">
@@ -149,7 +152,7 @@
                 </details>
 
                 <details>
-                    <summary><i class="fa-solid fa-mask text-amber-500"></i> الفلاتر والزخارف</summary>
+                    <summary><i class="fa-solid fa-mask text-amber-500"></i> الفلاتر السينمائية</summary>
                     <div class="details-body">
                         <label class="text-[10px] text-zinc-500 block mb-1">الفلتر اللوني</label>
                         <select id="color-filter" onchange="updateSettings()">
@@ -158,15 +161,6 @@
                             <option value="warm">دافئ سينمائي</option>
                             <option value="cool">أزرق بارد</option>
                         </select>
-                        <label class="text-[10px] text-zinc-500 block mt-2 mb-1">زخارف إسلامية</label>
-                        <select id="pattern-type" onchange="updateSettings()">
-                            <option value="none">بدون</option>
-                            <option value="hex">شبكة سداسية</option>
-                            <option value="geo">هندسة إسلامية</option>
-                            <option value="stars">نجوم</option>
-                        </select>
-                        <label class="text-[10px] text-zinc-500 block mt-2 mb-1">شفافية الزخرفة</label>
-                        <input type="range" id="pattern-opacity" min="0" max="100" value="15" oninput="updateSettings()">
                     </div>
                 </details>
             </div>
@@ -259,7 +253,7 @@
             <div id="tab-export" class="panel-section text-center p-2">
                 <div class="bg-amber-950/20 p-5 rounded-xl border border-amber-900/30 mb-4">
                     <i class="fa-solid fa-clapperboard text-4xl text-amber-500 mb-3 block"></i>
-                    <h3 class="text-white font-bold mb-2">تصدير الفيديو</h3>
+                    <h3 class="text-white font-bold mb-2">تصدير الفيديو (MP4 صافي)</h3>
                 </div>
                 <button id="btn-export" onclick="startExport()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-4 rounded-xl transition shadow-lg shadow-amber-600/30 text-sm">
                     <i class="fa-solid fa-rocket ml-1"></i> بدء معالجة الفيديو
@@ -289,16 +283,10 @@
         const C_W = 1080; const C_H = 1920;
         
         const surahs =["الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس","هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه","الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم","لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر","فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق","الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج","نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس","التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد","الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر","المسد","الإخلاص","الفلق","الناس"];
-        
-        const patterns = {
-            'hex': 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTAgMjBsMjAtMTBtMCAyMGwtMjAgMTB6bTIwLTEwbDIwIDEwbTAgMjBsLTIwIDEweiIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiLz48L3N2Zz4=',
-            'geo': 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMjUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIi8+PHJlY3QgeD0iMTUiIHk9IjE1IiB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiB0cmFuc2Zvcm09InJvdGF0ZSg0NSAzMCAzMCkiLz48L3N2Zz4=',
-            'stars': 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTT二十 0l5 15 6-11-12 4z" stroke="#fff" fill="none"/></svg>'
-        };
 
         let state = {
             phrases:[], currentIndex: 0,
-            globalBg: { type: 'none', media: null }, patternImg: null,
+            globalBg: { type: 'none', media: null },
             settings: {}, isExporting: false,
             audioCtx: null, audioBuffer: null, mediaSource: null,
             analyser: null, dataArray: null,
@@ -351,7 +339,7 @@
                 bgOp: num('bg-opacity') / 100,
                 // الكاميرا والمشهد
                 camOn: document.getElementById('cam-enable').checked, camType: val('cam-type'),
-                filter: val('color-filter'), patternOp: num('pattern-opacity') / 100,
+                filter: val('color-filter'),
                 // الهوية
                 logoX: num('logo-x') / 100, logoY: num('logo-y') / 100,
                 infoOn: document.getElementById('info-enable').checked, infoFont: val('info-font'), infoColor: val('info-color'),
@@ -360,10 +348,6 @@
                 vizOn: document.getElementById('viz-enable').checked, vizStyle: val('viz-style'), vizColor: val('viz-color'),
                 vizX: num('viz-x') / 100, vizY: num('viz-y') / 100
             };
-
-            let pat = val('pattern-type');
-            if(pat === 'none') state.patternImg = null;
-            else if(patterns[pat]) { state.patternImg = new Image(); state.patternImg.src = patterns[pat]; }
         }
 
         function setBg(type, input) {
@@ -575,7 +559,7 @@
         }
         function seekAudio(val) { if(audioPlayer.src) audioPlayer.currentTime = (val / 100) * audioPlayer.duration; }
 
-        // --- محرك الرسم (الأنيميشن والصفحات) ---
+        // --- محرك الرسم (الأنيميشن والصفحات) معالجة الكانفاس الصلبة ---
         function renderLoop() {
             ctx.clearRect(0, 0, C_W, C_H);
             let s = state.settings;
@@ -603,19 +587,12 @@
             }
             ctx.restore();
 
-            // الفلاتر والزخارف والتعتيم
+            // الفلاتر والتعتيم
             if(s.filter === 'bw') { ctx.globalCompositeOperation='saturation'; ctx.fillStyle='white'; ctx.fillRect(0,0,C_W,C_H); ctx.globalCompositeOperation='source-over'; }
             if(s.filter === 'warm') { ctx.fillStyle='rgba(245, 158, 11, 0.15)'; ctx.fillRect(0,0,C_W,C_H); }
             if(s.filter === 'cool') { ctx.fillStyle='rgba(14, 165, 233, 0.15)'; ctx.fillRect(0,0,C_W,C_H); }
 
             ctx.fillStyle = `rgba(0,0,0,${s.bgOp})`; ctx.fillRect(0,0,C_W,C_H);
-
-            if(state.patternImg && s.patternOp > 0) {
-                ctx.globalAlpha = s.patternOp;
-                let pat = ctx.createPattern(state.patternImg, 'repeat');
-                ctx.fillStyle = pat; ctx.fillRect(0,0,C_W,C_H);
-                ctx.globalAlpha = 1.0;
-            }
 
             // 2. الموجات الصوتية
             if(s.vizOn && state.analyser && (!audioPlayer.paused || state.isExporting)) {
@@ -650,22 +627,21 @@
                 ctx.shadowBlur = 0;
             }
 
-            // 4. القرآن (نظام الصفحات Page Break)
+            // 4. القرآن (نظام الصفحات Page Break السليم)
             let activePhrase = state.phrases.find(p => timeMs >= p.startTime && timeMs <= p.endTime);
             if (activePhrase) {
-                // تقسيم كلمات الآية إلى شاشات بناءً على newPage
-                let pages = []; let currentPage = [];
+                let screens = []; let currentScreenWords = [];
                 activePhrase.words.forEach(w => {
-                    if (w.newPage && currentPage.length > 0) { pages.push(currentPage); currentPage = []; }
-                    currentPage.push(w);
+                    if (w.newPage && currentScreenWords.length > 0) {
+                        screens.push(currentScreenWords);
+                        currentScreenWords = [];
+                    }
+                    currentScreenWords.push(w);
                 });
-                if(currentPage.length > 0) pages.push(currentPage);
+                if(currentScreenWords.length > 0) screens.push(currentScreenWords);
 
-                // العثور على الشاشة الحالية التي يتحدث بها القارئ الآن
-                let activePage = pages[0];
-                for(let page of pages) {
-                    if(timeMs >= page[0].start && timeMs <= page[page.length-1].end) { activePage = page; break; }
-                }
+                // إيجاد الشاشة الحالية التي يقرأ منها
+                let activeScreen = screens.find(screen => screen.length > 0 && timeMs >= screen[0].start && timeMs <= screen[screen.length-1].end) || screens[0];
 
                 ctx.font = `bold ${s.fontS}px ${s.fontF}`;
                 ctx.textAlign = "center"; ctx.textBaseline = "middle";
@@ -673,8 +649,7 @@
                 let lines = []; let currentLine =[]; let currentWidth = 0;
                 let spaceW = ctx.measureText(" ").width; let maxW = C_W * 0.85;
 
-                // رسم الشاشة (activePage) فقط
-                activePage.forEach(w => {
+                activeScreen.forEach(w => {
                     let wWidth = ctx.measureText(w.text).width;
                     if (currentWidth + wWidth + spaceW > maxW && currentLine.length > 0) {
                         lines.push({ words: currentLine, width: currentWidth });
@@ -721,7 +696,7 @@
         function drawCover(img, w, h) { let r = Math.max(C_W/w, C_H/h); let cw = w*r, ch = h*r; ctx.drawImage(img, 0, 0, w, h, (C_W-cw)/2, (C_H-ch)/2, cw, ch); }
         function wrapTextLine(ctx, t, x, y, mW, lH) { let w=t.split(' '), line='', lines=[]; for(let n=0; n<w.length; n++) { let test=line+w[n]+' '; if(ctx.measureText(test).width>mW && n>0) { lines.push(line); line=w[n]+' '; } else line=test; } lines.push(line); let sY = y - ((lines.length-1)*lH)/2; for(let i=0; i<lines.length; i++) ctx.fillText(lines[i].trim(), x, sY + (i*lH)); }
 
-        // --- التصدير الآمن والمباشر المحدث ---
+        // --- تصدير MP4 صافي 100% بدون WebM ---
         let ffmpeg = null;
         async function startExport() {
             if(state.phrases.length === 0 || !state.audioBuffer) return alert("قم بتجهيز الصوت أولاً.");
@@ -735,14 +710,15 @@
                 if (!ffmpeg) {
                     const { createFFmpeg } = window.FFmpeg;
                     ffmpeg = createFFmpeg({ log: true, corePath: "https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js" });
-                    msg.innerText = "تحميل المحرك..."; await ffmpeg.load();
+                    msg.innerText = "تحميل محرك التصدير..."; await ffmpeg.load();
                 }
 
-                msg.innerText = "🔴 جاري التسجيل المباشر (المشهد يعمل الآن)..."; bar.style.width = "40%";
+                msg.innerText = "🔴 جاري التسجيل المباشر للفيديو..."; bar.style.width = "40%";
                 
                 let exportAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 let dest = exportAudioCtx.createMediaStreamDestination();
                 
+                // ربط الموجات بالتصدير
                 state.analyser = exportAudioCtx.createAnalyser();
                 state.analyser.fftSize = 128;
                 state.dataArray = new Uint8Array(state.analyser.frequencyBinCount);
@@ -750,50 +726,43 @@
                 const canvasStream = canvas.captureStream(30); 
                 const combinedStream = new MediaStream([ ...canvasStream.getVideoTracks(), ...dest.stream.getAudioTracks() ]); 
 
-                let mime = 'video/webm;codecs=vp8';
-                if (MediaRecorder.isTypeSupported('video/webm;codecs=h264')) mime = 'video/webm;codecs=h264';
-
-                const recorder = new MediaRecorder(combinedStream, { mimeType: mime, videoBitsPerSecond: 8000000 });
+                // التسجيل بأقصى جودة
+                const recorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm;codecs=vp8', videoBitsPerSecond: 8000000 });
                 let chunks = []; recorder.ondataavailable = e => { if(e.data.size > 0) chunks.push(e.data); };
                 
                 recorder.onstop = async () => {
                     state.isExporting = false;
-                    msg.innerText = "⚙️ جاري التغليف إلى MP4... (إن استغرق وقتاً طويلاً، سيظهر زر WebM)"; bar.style.width = "80%";
-                    const videoBlob = new Blob(chunks, { type: mime });
+                    msg.innerText = "⚙️ جاري التغليف إلى MP4 (يرجى الانتظار)..."; bar.style.width = "80%";
+                    const videoBlob = new Blob(chunks, { type: 'video/webm' });
                     
                     try {
                         const webmData = new Uint8Array(await videoBlob.arrayBuffer());
                         ffmpeg.FS('writeFile', 'in.webm', webmData);
                         
-                        let ffmpegArgs = [];
-                        if (mime.includes('h264')) ffmpegArgs = ['-i', 'in.webm', '-c', 'copy', 'out.mp4'];
-                        else ffmpegArgs = ['-i', 'in.webm', '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '28', '-vf', 'scale=720:-2', '-c:a', 'aac', '-b:a', '128k', 'out.mp4'];
-
-                        const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 120000));
-                        await Promise.race([ffmpeg.run(...ffmpegArgs), timeout]);
+                        // أمر ثابت وقوي للتحويل لـ MP4 يعمل على كل المنصات
+                        await ffmpeg.run('-i', 'in.webm', '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '28', '-c:a', 'aac', '-b:a', '128k', 'out.mp4');
                         
                         const mp4 = ffmpeg.FS('readFile', 'out.mp4');
                         dLink.href = URL.createObjectURL(new Blob([mp4.buffer], {type: 'video/mp4'}));
                         dLink.download = `Quran_Studio_Pro_${Date.now()}.mp4`; 
                         dLink.innerHTML = '<i class="fa-solid fa-download ml-1"></i> تحميل الفيديو (MP4)';
                         dLink.className = "mt-4 w-full block bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl transition text-sm text-center";
+                        dLink.classList.remove('hidden');
                         
                         msg.innerText = "✅ اكتمل التصدير بنجاح (MP4)!"; bar.style.width = "100%"; 
                         ffmpeg.FS('unlink', 'in.webm'); ffmpeg.FS('unlink', 'out.mp4');
                     } catch (err) {
-                        msg.innerText = "⚠️ تم استخراج فيديو WebM بنجاح (يمكنك رفعه للتيك توك/يوتيوب مباشرة)!"; msg.classList.replace('text-amber-400', 'text-emerald-400');
-                        dLink.href = URL.createObjectURL(videoBlob); dLink.download = `Quran_Studio_Pro_${Date.now()}.webm`; 
-                        dLink.innerHTML = '<i class="fa-solid fa-download ml-1"></i> تحميل الفيديو الأساسي (WebM)';
-                        dLink.className = "mt-4 w-full block bg-amber-600 hover:bg-amber-500 text-white font-bold py-4 rounded-xl transition text-sm text-center";
-                        bar.style.width = "100%"; 
+                        console.error(err);
+                        msg.innerText = "❌ حدث خطأ في التغليف.";
                     } finally { btn.disabled = false; }
                 };
 
-                recorder.start(100);
+                recorder.start();
 
                 let source = exportAudioCtx.createBufferSource();
                 source.buffer = state.audioBuffer;
                 
+                // توصيل مصدر الصوت للتصدير وللموجات
                 source.connect(state.analyser);
                 state.analyser.connect(dest); 
                 source.connect(exportAudioCtx.destination); 
