@@ -632,7 +632,8 @@
         // التعديل 2: دالة التصدير المكتملة والمصححة كلياً 
         // تقوم بدمج الصوت وإدخاله مع الفيديو للمسجل ليعمل التصدير بدون تهنيج
         // ==========================================
-        let ffmpeg = null;
+
+let ffmpeg = null;
         async function startExport() {
             if(state.phrases.length === 0 || !state.audioBuffer) return alert("قم بتجهيز الصوت أولاً.");
             
@@ -648,7 +649,8 @@
             try {
                 if (!ffmpeg) {
                     const { createFFmpeg } = window.FFmpeg;
-                    ffmpeg = createFFmpeg({ log: false, corePath: "https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js" });
+                    // تفعيل الـ log لنرى الأخطاء في الكونسول إن وجدت
+                    ffmpeg = createFFmpeg({ log: true, corePath: "https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js" });
                     msg.innerText = "جاري تحميل المحرك...";
                     await ffmpeg.load();
                 }
@@ -656,63 +658,97 @@
                 msg.innerText = "🔴 جاري التسجيل المباشر (استمتع بالمشاهدة ولا تغلق النافذة)...";
                 bar.style.width = "40%";
                 
-                // هنا الإصلاح الأكبر: دمج مسار الصوت مع مسار الفيديو ليتعرف عليه المُسجل
                 let exportAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 let dest = exportAudioCtx.createMediaStreamDestination();
                 
-                const canvasStream = canvas.captureStream(30); // أخذ الفيديو من الشاشة
-                const combinedStream = new MediaStream([ ...canvasStream.getVideoTracks(), ...dest.stream.getAudioTracks() ]); // دمجهم معاً
+                const canvasStream = canvas.captureStream(30); 
+                const combinedStream = new MediaStream([ ...canvasStream.getVideoTracks(), ...dest.stream.getAudioTracks() ]); 
+
+                // محاولة استخدام H.264 مباشرة من المتصفح لتخفيف العبء عن FFmpeg
+                let mime = 'video/webm;codecs=vp8';
+                if (MediaRecorder.isTypeSupported('video/webm;codecs=h264')) {
+                    mime = 'video/webm;codecs=h264';
+                }
 
                 const recorder = new MediaRecorder(combinedStream, { 
-                    mimeType: 'video/webm;codecs=vp8',
-                    videoBitsPerSecond: 5000000 
+                    mimeType: mime,
+                    videoBitsPerSecond: 8000000 
                 });
                 
                 let chunks = []; 
                 recorder.ondataavailable = e => { if(e.data.size > 0) chunks.push(e.data); };
                 
-                // عندما ينتهي التسجيل نقوم بإرساله للـ FFmpeg لتحويله لـ MP4
                 recorder.onstop = async () => {
                     state.isExporting = false;
-                    msg.innerText = "⚙️ جاري التغليف إلى MP4 (العملية تستغرق ثواني)..."; 
+                    msg.innerText = "⚙️ جاري التغليف... (إذا تأخر، سيتم استخراج WebM تلقائياً)"; 
                     bar.style.width = "80%";
                     
-                    const webmData = new Uint8Array(await new Blob(chunks).arrayBuffer());
-                    ffmpeg.FS('writeFile', 'in.webm', webmData);
+                    const videoBlob = new Blob(chunks, { type: mime });
                     
-                    // تحويل WebM (VP8) إلى MP4 (H264) المدعوم في كل مكان
-                    await ffmpeg.run('-i', 'in.webm', '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '32', '-c:a', 'aac', '-b:a', '128k', 'out.mp4');
-                    
-                    const mp4 = ffmpeg.FS('readFile', 'out.mp4');
-                    dLink.href = URL.createObjectURL(new Blob([mp4.buffer], {type: 'video/mp4'}));
-                    dLink.download = `Quran_Studio_Pro_${Date.now()}.mp4`; 
-                    dLink.classList.remove('hidden');
-                    
-                    msg.innerText = "✅ اكتمل التصدير بنجاح!"; 
-                    bar.style.width = "100%"; 
-                    btn.disabled = false; 
-                    ffmpeg.FS('unlink', 'in.webm'); ffmpeg.FS('unlink', 'out.mp4');
+                    try {
+                        const webmData = new Uint8Array(await videoBlob.arrayBuffer());
+                        ffmpeg.FS('writeFile', 'in.webm', webmData);
+                        
+                        let ffmpegArgs = [];
+                        if (mime.includes('h264')) {
+                            // إذا كان مسجل بـ H264، نقوم بتغيير الحاوية فقط لـ MP4 (عملية تستغرق ثانية واحدة ولا تستهلك رام)
+                            ffmpegArgs = ['-i', 'in.webm', '-c', 'copy', 'out.mp4'];
+                        } else {
+                            // إذا كان VP8، نقوم بالتحويل مع تقليل الدقة قليلاً لـ 720p لمنع انهيار المتصفح (OOM)
+                            ffmpegArgs = ['-i', 'in.webm', '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '28', '-vf', 'scale=720:-2', '-c:a', 'aac', '-b:a', '128k', 'out.mp4'];
+                        }
+
+                        // وضع مؤقت زمني، إذا علق FFmpeg لأكثر من دقيقتين، نكسر العملية
+                        const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("FFmpeg timeout")), 120000));
+                        await Promise.race([ffmpeg.run(...ffmpegArgs), timeout]);
+                        
+                        const mp4 = ffmpeg.FS('readFile', 'out.mp4');
+                        dLink.href = URL.createObjectURL(new Blob([mp4.buffer], {type: 'video/mp4'}));
+                        dLink.download = `Quran_Studio_Pro_${Date.now()}.mp4`; 
+                        dLink.innerHTML = '<i class="fa-solid fa-download ml-1"></i> تحميل الفيديو (MP4)';
+                        dLink.classList.remove('hidden');
+                        
+                        msg.innerText = "✅ اكتمل التصدير بنجاح (MP4)!"; 
+                        bar.style.width = "100%"; 
+                        ffmpeg.FS('unlink', 'in.webm'); ffmpeg.FS('unlink', 'out.mp4');
+
+                    } catch (ffmpegError) {
+                        console.error("FFmpeg Failed or Hanged:", ffmpegError);
+                        
+                        // الخطة البديلة (Fallback): إذا انهار FFmpeg نعطيك الملف الأصلي الممتاز
+                        msg.innerText = "⚠️ لم يتمكن المتصفح من ضغط MP4، تم استخراج فيديو WebM بنجاح!";
+                        msg.classList.replace('text-amber-400', 'text-emerald-400');
+                        
+                        dLink.href = URL.createObjectURL(videoBlob);
+                        dLink.download = `Quran_Studio_Pro_${Date.now()}.webm`; 
+                        dLink.innerHTML = '<i class="fa-solid fa-download ml-1"></i> تحميل الفيديو الأساسي (WebM)';
+                        dLink.classList.replace('bg-emerald-600', 'bg-amber-600');
+                        dLink.classList.replace('hover:bg-emerald-500', 'hover:bg-amber-500');
+                        dLink.classList.remove('hidden');
+                        bar.style.width = "100%"; 
+                    } finally {
+                        btn.disabled = false;
+                    }
                 };
 
-                recorder.start();
+                recorder.start(100);
 
-                // تشغيل الصوت الفعلي ليتم تسجيله 
                 let source = exportAudioCtx.createBufferSource();
                 source.buffer = state.audioBuffer;
-                source.connect(dest); // إرساله للمُسجل
-                source.connect(exportAudioCtx.destination); // إرساله للسماعات لتسمعه
+                source.connect(dest); 
+                source.connect(exportAudioCtx.destination); 
 
-                window.exportStartTime = Date.now(); // تفعيل حركة تلوين الكلمات
+                window.exportStartTime = Date.now(); 
                 
                 source.onended = () => {
-                    setTimeout(() => recorder.stop(), 500); // إيقاف التسجيل فور إنتهاء الصوت
+                    setTimeout(() => recorder.stop(), 500); 
                 };
                 
                 source.start(0);
 
             } catch(e) { 
                 console.error(e);
-                msg.innerText = "❌ حدث خطأ أثناء التصدير."; 
+                msg.innerText = "❌ حدث خطأ أثناء التحضير للتسجيل."; 
                 btn.disabled = false; state.isExporting = false; 
             }
         }
