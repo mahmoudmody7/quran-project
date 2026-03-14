@@ -715,25 +715,44 @@ async function startExport() {
         let chunks = []; 
         recorder.ondataavailable = e => { if(e.data.size > 0) chunks.push(e.data); };
         
-        recorder.onstop = async () => {
-            msg.innerText = "⚙️ جاري التغليف (العملية تستغرق وقتاً حسب طول الفيديو)..."; 
-            bar.style.width = "60%";
+recorder.onstop = async () => {
+            msg.innerText = "⚙️ معالجة البيانات (تغليف سريع)..."; 
+            bar.style.width = "70%";
             
-            const webmData = new Uint8Array(await new Blob(chunks).arrayBuffer());
-            ffmpeg.FS('writeFile', 'in.webm', webmData);
+            // تحويل الـ Chunks إلى Buffer واحد بطريقة أكثر كفاءة
+            const webmBlob = new Blob(recordedChunks, { type: 'video/webm' });
+            const arrayBuffer = await webmBlob.arrayBuffer();
+            const webmData = new Uint8Array(arrayBuffer);
             
-            // تحويل فائق السرعة
-            await ffmpeg.run('-i', 'in.webm', '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '35', '-c:a', 'aac', '-b:a', '96k', 'out.mp4');
+            ffmpeg.FS('writeFile', 'input.webm', webmData);
             
-            const mp4 = ffmpeg.FS('readFile', 'out.mp4');
-            dLink.href = URL.createObjectURL(new Blob([mp4.buffer], {type: 'video/mp4'}));
-            dLink.download = `Quran_Studio_${Date.now()}.mp4`; 
-            dLink.classList.remove('hidden');
+            // إعدادات FFmpeg للأجهزة الضعيفة (ULTRAFAST)
+            // نستخدم -crf 35 لتقليل الضغط على المعالج
+            await ffmpeg.run('-i', 'input.webm', 
+                '-c:v', 'libx264', 
+                '-preset', 'ultrafast', 
+                '-crf', '35', 
+                '-tune', 'zerolatency', // هذا الأمر يسرع التغليف جداً
+                '-c:a', 'aac', 
+                '-b:a', '96k', 
+                'output.mp4'
+            );
+            
+            const mp4Data = ffmpeg.FS('readFile', 'output.mp4');
+            const mp4Blob = new Blob([mp4Data.buffer], { type: 'video/mp4' });
+            
+            downloadBtn.href = URL.createObjectURL(mp4Blob);
+            downloadBtn.download = `Quran_Studio_${Date.now()}.mp4`; 
+            downloadBtn.classList.remove('hidden');
             
             msg.innerText = "✅ اكتمل التصدير بنجاح!"; 
             bar.style.width = "100%"; 
             btn.disabled = false; state.isExporting = false;
-            ffmpeg.FS('unlink', 'in.webm'); ffmpeg.FS('unlink', 'out.mp4');
+            
+            // تنظيف الذاكرة فوراً بعد الانتهاء
+            ffmpeg.FS('unlink', 'input.webm');
+            ffmpeg.FS('unlink', 'output.mp4');
+            recordedChunks = []; // تفريغ الذاكرة
         };
 
         recorder.start(100);
