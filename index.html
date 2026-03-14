@@ -681,87 +681,77 @@ async function generateQuranAudio() {
         // التصدير السريع والآمن بـ MediaRecorder & FFmpeg
         // ==========================================
         let ffmpeg = null;
-        async function startExport() {
-            if(state.phrases.length === 0 || !state.audioBuffer) return alert("قم بجلب الآيات وتجهيز المشروع أولاً.");
-            
-            const btn = document.getElementById('btn-export');
-            const msg = document.getElementById('status-msg');
-            const bar = document.getElementById('progress-bar-export');
-            const dLink = document.getElementById('download-link');
-            
-            btn.disabled = true; document.getElementById('export-status').classList.remove('hidden'); dLink.classList.add('hidden');
-            state.isExporting = true;
-            audioPlayer.pause();
+async function startExport() {
+    if(state.phrases.length === 0 || !state.audioBuffer) return alert("قم بتجهيز الصوت أولاً.");
+    
+    const btn = document.getElementById('btn-export');
+    const msg = document.getElementById('status-msg');
+    const bar = document.getElementById('progress-bar-export');
+    const dLink = document.getElementById('download-link');
+    
+    btn.disabled = true; document.getElementById('export-status').classList.remove('hidden'); dLink.classList.add('hidden');
+    state.isExporting = true;
+    audioPlayer.pause();
 
-            try {
-                if (!ffmpeg) {
-                    const { createFFmpeg } = window.FFmpeg;
-                    ffmpeg = createFFmpeg({ log: false, corePath: "https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js" });
-                    msg.innerText = "تحميل محرك التصدير...";
-                    await ffmpeg.load();
-                }
-
-                state.destNode = state.audioCtx.createMediaStreamDestination();
-
-                msg.innerText = "🔴 جاري التسجيل الحي للفيديو والتلوين (الرجاء عدم إغلاق النافذة)...";
-                bar.style.width = "40%";
-                
-                // تشغيل فيديوهات الخلفية من البداية
-                if(state.globalBg.type === 'video') { state.globalBg.media.currentTime=0; state.globalBg.media.play(); }
-                Object.values(state.ayahBgs).forEach(b => { if(b.type === 'video') { b.media.currentTime=0; b.media.play(); }});
-
-                const stream = new MediaStream([...canvas.captureStream(30).getVideoTracks(), ...state.destNode.stream.getAudioTracks()]);
-                const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
-                let chunks =[]; 
-                recorder.ondataavailable = e => { if(e.data.size > 0) chunks.push(e.data); };
-                
-                recorder.onstop = async () => {
-                    msg.innerText = "⚙️ جاري التغليف النهائي وتحسين الجودة لملف MP4..."; 
-                    bar.style.width = "80%";
-                    
-                    const webmData = new Uint8Array(await new Blob(chunks).arrayBuffer());
-                    ffmpeg.FS('writeFile', 'in.webm', webmData);
-                    
-                    // تحويل إلى MP4 بأقصى سرعة ممكنة
-                    await ffmpeg.run('-y', '-i', 'in.webm', '-c:v', 'libx264', '-preset', 'ultrafast', '-c:a', 'aac', '-b:a', '128k', 'out.mp4');
-                    
-                    const mp4 = ffmpeg.FS('readFile', 'out.mp4');
-                    dLink.href = URL.createObjectURL(new Blob([mp4.buffer], {type: 'video/mp4'}));
-                    dLink.download = `Quran_Pro_${Date.now()}.mp4`; 
-                    dLink.classList.remove('hidden');
-                    
-                    msg.innerText = "✅ اكتمل التصدير بنجاح! حمل الفيديو."; 
-                    bar.style.width = "100%"; 
-                    btn.disabled = false; state.isExporting = false;
-                    ffmpeg.FS('unlink', 'in.webm'); ffmpeg.FS('unlink', 'out.mp4');
-                };
-
-                recorder.start(100);
-
-                // التحكم بالتسجيل ومزامنة التلوين (Word by word) بشكل مثالي
-                let source = state.audioCtx.createBufferSource();
-                source.buffer = state.audioBuffer;
-                source.connect(state.destNode);
-                source.connect(state.audioCtx.destination); // لسماع الصوت وقت التصدير
-                
-                let startTime = state.audioCtx.currentTime;
-                let exportTimer = setInterval(() => {
-                    window.exportTimeMs = (state.audioCtx.currentTime - startTime) * 1000;
-                }, 16); 
-
-                source.onended = () => {
-                    clearInterval(exportTimer);
-                    setTimeout(() => recorder.stop(), 500);
-                };
-                
-                source.start(0);
-
-            } catch(e) { 
-                console.error(e);
-                msg.innerText = "❌ حدث خطأ أثناء المعالجة."; 
-                btn.disabled = false; state.isExporting = false; 
-            }
+    try {
+        if (!ffmpeg) {
+            const { createFFmpeg } = window.FFmpeg;
+            ffmpeg = createFFmpeg({ log: false, corePath: "https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js" });
+            msg.innerText = "جاري تحميل المحرك...";
+            await ffmpeg.load();
         }
+
+        msg.innerText = "🔴 جاري التسجيل (يرجى الانتظار)...";
+        bar.style.width = "20%";
+        
+        // إعدادات أخف للمتصفح لمنع الانهيار
+        const stream = canvas.captureStream(20); // تقليل FPS إلى 20 لتقليل الضغط
+        const recorder = new MediaRecorder(stream, { 
+            mimeType: 'video/webm;codecs=vp8',
+            videoBitsPerSecond: 1500000 // تقليل الجودة لضمان سرعة المعالجة
+        });
+        
+        let chunks = []; 
+        recorder.ondataavailable = e => { if(e.data.size > 0) chunks.push(e.data); };
+        
+        recorder.onstop = async () => {
+            msg.innerText = "⚙️ جاري التغليف (العملية تستغرق وقتاً حسب طول الفيديو)..."; 
+            bar.style.width = "60%";
+            
+            const webmData = new Uint8Array(await new Blob(chunks).arrayBuffer());
+            ffmpeg.FS('writeFile', 'in.webm', webmData);
+            
+            // تحسين أوامر FFmpeg لتكون أسرع وأخف
+            await ffmpeg.run('-i', 'in.webm', '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '35', '-c:a', 'aac', '-b:a', '96k', 'out.mp4');
+            
+            const mp4 = ffmpeg.FS('readFile', 'out.mp4');
+            dLink.href = URL.createObjectURL(new Blob([mp4.buffer], {type: 'video/mp4'}));
+            dLink.download = `Quran_Studio_${Date.now()}.mp4`; 
+            dLink.classList.remove('hidden');
+            
+            msg.innerText = "✅ اكتمل التصدير بنجاح!"; 
+            bar.style.width = "100%"; 
+            btn.disabled = false; state.isExporting = false;
+            ffmpeg.FS('unlink', 'in.webm'); ffmpeg.FS('unlink', 'out.mp4');
+        };
+
+        recorder.start(100);
+
+        // تشغيل الصوت للتصدير
+        let ac = new (window.AudioContext || window.webkitAudioContext)();
+        let source = ac.createBufferSource();
+        source.buffer = state.audioBuffer;
+        source.connect(ac.destination);
+        source.onended = () => setTimeout(() => recorder.stop(), 500);
+        source.start(0);
+
+    } catch(e) { 
+        console.error(e);
+        msg.innerText = "❌ حدث خطأ: قد يكون الفيديو طويلاً جداً على المتصفح."; 
+        btn.disabled = false; state.isExporting = false; 
+    }
+}
+    
     </script>
 </body>
 </html>
