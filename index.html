@@ -690,7 +690,12 @@ async function startExport() {
     const bar = document.getElementById('progress-bar-export');
     const dLink = document.getElementById('download-link');
     
-    btn.disabled = true; document.getElementById('export-status').classList.remove('hidden'); dLink.classList.add('hidden');
+    // تعريف متغيرات التسجيل في النطاق الصحيح لتجنب خطأ ReferenceError
+    let recordedChunks = []; 
+    
+    btn.disabled = true; 
+    document.getElementById('export-status').classList.remove('hidden'); 
+    dLink.classList.add('hidden');
     state.isExporting = true;
     audioPlayer.pause();
 
@@ -702,61 +707,56 @@ async function startExport() {
             await ffmpeg.load();
         }
 
-        msg.innerText = "🔴 جاري التسجيل (20 FPS لضمان السرعة)...";
+        msg.innerText = "🔴 جاري التسجيل (20 FPS)...";
         bar.style.width = "20%";
         
-        // إعدادات تصدير خفيفة جداً على الرامات
         const stream = canvas.captureStream(20); 
         const recorder = new MediaRecorder(stream, { 
             mimeType: 'video/webm;codecs=vp8',
-            videoBitsPerSecond: 1000000 // تقليل جودة الفيديو لزيادة السرعة
+            videoBitsPerSecond: 1000000 
         });
         
-        let chunks = []; 
-        recorder.ondataavailable = e => { if(e.data.size > 0) chunks.push(e.data); };
+        // إسناد البيانات للمتغير الصحيح
+        recorder.ondataavailable = (e) => { 
+            if(e.data && e.data.size > 0) recordedChunks.push(e.data); 
+        };
         
-recorder.onstop = async () => {
-            msg.innerText = "⚙️ معالجة البيانات (تغليف سريع)..."; 
-            bar.style.width = "70%";
+        recorder.onstop = async () => {
+            msg.innerText = "⚙️ جاري التغليف (العملية تستغرق وقتاً حسب طول الفيديو)..."; 
+            bar.style.width = "60%";
             
-            // تحويل الـ Chunks إلى Buffer واحد بطريقة أكثر كفاءة
+            // التأكد من وجود البيانات قبل التحويل
+            if (recordedChunks.length === 0) {
+                msg.innerText = "❌ خطأ: لم يتم تسجيل أي بيانات!";
+                btn.disabled = false; return;
+            }
+
             const webmBlob = new Blob(recordedChunks, { type: 'video/webm' });
             const arrayBuffer = await webmBlob.arrayBuffer();
             const webmData = new Uint8Array(arrayBuffer);
             
-            ffmpeg.FS('writeFile', 'input.webm', webmData);
+            ffmpeg.FS('writeFile', 'in.webm', webmData);
             
-            // إعدادات FFmpeg للأجهزة الضعيفة (ULTRAFAST)
-            // نستخدم -crf 35 لتقليل الضغط على المعالج
-            await ffmpeg.run('-i', 'input.webm', 
-                '-c:v', 'libx264', 
-                '-preset', 'ultrafast', 
-                '-crf', '35', 
-                '-tune', 'zerolatency', // هذا الأمر يسرع التغليف جداً
-                '-c:a', 'aac', 
-                '-b:a', '96k', 
-                'output.mp4'
-            );
+            await ffmpeg.run('-i', 'in.webm', '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '35', '-tune', 'zerolatency', '-c:a', 'aac', '-b:a', '96k', 'out.mp4');
             
-            const mp4Data = ffmpeg.FS('readFile', 'output.mp4');
-            const mp4Blob = new Blob([mp4Data.buffer], { type: 'video/mp4' });
-            
-            downloadBtn.href = URL.createObjectURL(mp4Blob);
-            downloadBtn.download = `Quran_Studio_${Date.now()}.mp4`; 
-            downloadBtn.classList.remove('hidden');
+            const mp4 = ffmpeg.FS('readFile', 'out.mp4');
+            dLink.href = URL.createObjectURL(new Blob([mp4.buffer], {type: 'video/mp4'}));
+            dLink.download = `Quran_Studio_${Date.now()}.mp4`; 
+            dLink.classList.remove('hidden');
             
             msg.innerText = "✅ اكتمل التصدير بنجاح!"; 
             bar.style.width = "100%"; 
-            btn.disabled = false; state.isExporting = false;
+            btn.disabled = false; 
+            state.isExporting = false;
             
-            // تنظيف الذاكرة فوراً بعد الانتهاء
-            ffmpeg.FS('unlink', 'input.webm');
-            ffmpeg.FS('unlink', 'output.mp4');
-            recordedChunks = []; // تفريغ الذاكرة
+            ffmpeg.FS('unlink', 'in.webm'); 
+            ffmpeg.FS('unlink', 'out.mp4');
+            recordedChunks = []; // مسح الذاكرة
         };
 
         recorder.start(100);
 
+        // تشغيل الصوت للتصدير
         let ac = new (window.AudioContext || window.webkitAudioContext)();
         let source = ac.createBufferSource();
         source.buffer = state.audioBuffer;
@@ -766,7 +766,7 @@ recorder.onstop = async () => {
 
     } catch(e) { 
         console.error(e);
-        msg.innerText = "❌ خطأ: قد يكون الفيديو طويلاً جداً."; 
+        msg.innerText = "❌ خطأ: قد يكون الفيديو طويلاً جداً أو فشل التصدير."; 
         btn.disabled = false; state.isExporting = false; 
     }
 }
