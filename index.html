@@ -45,7 +45,7 @@
         details[open] summary { border-bottom: 1px solid #27272a; color: #e11d48; background: rgba(225, 29, 72, 0.05); }
         .details-body { padding: 14px; display: flex; flex-direction: column; gap: 12px; }
 
-        .canvas-container { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background-image: radial-gradient(#27272a 1px, transparent 1px); background-size: 15px 15px; background-color: #000; border-radius: 8px; overflow: hidden; }
+        .canvas-container { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background-image: radial-gradient(#27272a 1px, transparent 1px); background-size: 15px 15px; background-color: #000; border-radius: 8px; overflow: hidden; transition: aspect-ratio 0.3s; }
         canvas { max-width: 100%; max-height: 100%; object-fit: contain; box-shadow: 0 5px 20px rgba(0,0,0,0.8); }
 
         .panel-section { display: none; animation: fadeIn 0.3s ease; }
@@ -64,7 +64,6 @@
         .segment-block { margin-bottom: 8px; background: #18181b; border-radius: 6px; border: 1px solid #27272a; overflow: hidden; transition: 0.3s; }
         .segment-block.active { border-color: #f59e0b; box-shadow: 0 0 10px rgba(245, 158, 11, 0.2); }
 
-        /* ستايل تقسيم الصفحات بالضغط على Enter */
         .tl-word { display: inline-block; padding: 2px 4px; border-radius: 4px; cursor: pointer; transition: 0.2s; border-bottom: 2px solid transparent; }
         .tl-word:hover { background: #3f3f46; }
         .tl-word.selected { background: rgba(245, 158, 11, 0.3); border-bottom-color: #f59e0b; }
@@ -76,7 +75,7 @@
 
     <!-- العرض الحي والمشغل -->
     <main class="flex-none md:flex-1 h-[45vh] md:h-full flex flex-col relative bg-[#09090b] p-2 md:p-4 z-10 shadow-md border-b md:border-b-0 md:border-l border-[#27272a]">
-        <div class="flex-1 canvas-container mb-2 border border-[#27272a]">
+        <div class="flex-1 canvas-container mb-2 border border-[#27272a]" id="main-canvas-container">
             <canvas id="video-canvas" width="1080" height="1920"></canvas>
         </div>
         <div class="h-16 bg-[#18181b] rounded-lg border border-[#27272a] flex items-center justify-between px-3 shrink-0">
@@ -135,6 +134,17 @@
             <!-- 2. الخلفيات والكاميرا -->
             <div id="tab-bg" class="panel-section space-y-3">
                 
+                <!-- أبعاد ومقاس الفيديو الجديد -->
+                <div class="bg-amber-900/20 p-3 rounded-lg border border-amber-800/40">
+                    <h3 class="text-xs font-bold text-amber-300 mb-2"><i class="fa-solid fa-crop text-amber-500 ml-1"></i> أبعاد ومقاس الفيديو</h3>
+                    <select id="video-ratio" onchange="changeResolution()" class="w-full bg-amber-950/50 text-amber-100 border border-amber-800/50">
+                        <option value="1080x1920">طولي - ريلز / تيك توك / شورتس (1080×1920)</option>
+                        <option value="1920x1080">عرضي - يوتيوب (1920×1080)</option>
+                        <option value="1080x1080">مربع - انستجرام / فيسبوك (1080×1080)</option>
+                        <option value="1080x1350">بورتريه - انستجرام بوست (1080×1350)</option>
+                    </select>
+                </div>
+
                 <!-- الخلفية العامة -->
                 <div class="bg-[#18181b] p-3 rounded-lg border border-[#27272a]">
                     <h3 class="text-xs font-bold text-white mb-3"><i class="fa-solid fa-globe text-amber-500 ml-1"></i> خلفية الفيديو العامة</h3>
@@ -147,14 +157,14 @@
                 </div>
 
                 <!-- خلفية خاصة بالآية -->
-                <div class="bg-amber-950/20 p-3 rounded-lg border border-amber-900/40">
-                    <h3 class="text-xs font-bold text-amber-300 mb-3 flex items-center"><i class="fa-solid fa-bullseye text-amber-500 ml-1"></i> خلفية خاصة بـ (<span id="bg-ayah-label">الآية 1</span>)</h3>
+                <div class="bg-[#18181b] p-3 rounded-lg border border-[#27272a]">
+                    <h3 class="text-xs font-bold text-zinc-300 mb-3 flex items-center"><i class="fa-solid fa-bullseye text-amber-500 ml-1"></i> خلفية خاصة بـ (<span id="bg-ayah-label">الآية 1</span>)</h3>
                     <div class="grid grid-cols-2 gap-2">
-                        <div class="file-btn bg-amber-900/30 hover:bg-amber-800/50 text-amber-100 border border-amber-800">
+                        <div class="file-btn bg-[#27272a] hover:bg-[#3f3f46] text-zinc-200 border border-[#3f3f46]">
                             <i class="fa-solid fa-image text-lg mb-1"></i> تخصيص صورة
                             <input type="file" accept="image/*" onchange="setBg('ayah', 'image', this)">
                         </div>
-                        <div class="file-btn bg-amber-900/30 hover:bg-amber-800/50 text-amber-100 border border-amber-800">
+                        <div class="file-btn bg-[#27272a] hover:bg-[#3f3f46] text-zinc-200 border border-[#3f3f46]">
                             <i class="fa-solid fa-video text-lg mb-1"></i> تخصيص فيديو
                             <input type="file" accept="video/*" onchange="setBg('ayah', 'video', this)">
                         </div>
@@ -318,7 +328,7 @@
                                     <input type="range" id="anim-speed" min="0.5" max="3" step="0.1" value="1.5" oninput="updateSettings(); document.getElementById('anim-speed-val').innerText=this.value;">
                                 </div>
                             </div>
-                            <p class="text-[9px] text-amber-400 mt-3 text-center">💡 الحركات تُطبق فقط على الكلمة النشطة حالياً مع التوقيت الصوتي لجذب العين بذكاء عبقري!</p>
+                            <p class="text-[9px] text-amber-400 mt-3 text-center">💡 الحركات تُطبق فقط على الكلمة النشطة حالياً. وتم استثناء رقم الآية من التأثير الحركي بناءً على طلبك.</p>
                         </div>
                     </details>
                 </div>
@@ -339,7 +349,7 @@
                 <div class="bg-emerald-900/20 p-5 rounded-xl border border-emerald-900/30 mb-4">
                     <i class="fa-solid fa-clapperboard text-4xl text-emerald-500 mb-3 block"></i>
                     <h3 class="text-white font-bold mb-2">إنتاج وتصدير الفيديو</h3>
-                    <p class="text-[11px] text-zinc-400">نظام ذكي: سيتم إنتاج MP4 بسرعة. وإذا كان متصفحك لا يدعم ذلك، سيتم استخراج WebM فوراً بدون أي تعليق أو انتظار.</p>
+                    <p class="text-[11px] text-zinc-400">نظام ذكي: سيتم إنتاج MP4 بسرعة. تم تقليل معدل البت لتصغير الحجم وملاءمته لمواقع التواصل.</p>
                 </div>
                 
                 <button id="btn-export" onclick="startExport()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl transition shadow-lg shadow-emerald-600/30 text-sm">
@@ -369,9 +379,11 @@
     </nav>
 
     <script>
+        // تغيير المتغيرات لتصبح قابلة للتعديل عند تغيير مقاس الفيديو
+        let C_W = 1080; 
+        let C_H = 1920;
         const canvas = document.getElementById('video-canvas');
         const ctx = canvas.getContext('2d');
-        const C_W = 1080; const C_H = 1920;
         
         const surahs =["الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس","هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه","الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم","لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر","فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق","الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج","نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس","التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد","الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر","المسد","الإخلاص","الفلق","الناس"];
         
@@ -392,7 +404,6 @@
             updateSettings();
             requestAnimationFrame(renderLoop);
             
-            // مستمع لوحة المفاتيح لإضافة تقسيم الصفحة (Page Break)
             document.addEventListener('keydown', (e) => {
                 if(e.key === 'Enter' && state.selectedWord) {
                     let w = state.selectedWord;
@@ -403,6 +414,21 @@
                 }
             });
         };
+
+        // دالة تغيير أبعاد ومقاس الفيديو
+        function changeResolution() {
+            const val = document.getElementById('video-ratio').value.split('x');
+            C_W = parseInt(val[0]);
+            C_H = parseInt(val[1]);
+            canvas.width = C_W;
+            canvas.height = C_H;
+            
+            // تعديل أبعاد عرض الحاوية لتتناسب مع المقاس
+            const container = document.getElementById('main-canvas-container');
+            container.style.aspectRatio = `${C_W} / ${C_H}`;
+            
+            updateSettings();
+        }
 
         function switchTab(id, title, btn) {
             document.querySelectorAll('.panel-section').forEach(el => el.classList.remove('active'));
@@ -429,29 +455,20 @@
 
         function updateSettings() {
             state.settings = {
-                // الكلمات
                 style: val('highlight-style'), baseC: val('base-color'), hiC: val('highlight-color'),
                 fontF: val('font-family'), fontS: num('font-size'), posY: num('pos-y'), transY: num('trans-y'),
                 bgOp: num('bg-opacity') / 100,
-                // الكاميرا والمشهد
-                camOn: document.getElementById('cam-enable').checked, camType: val('cam-type'),
-                filter: val('color-filter'),
-                // اللوجو والعلامات
+                camOn: document.getElementById('cam-enable').checked, camType: val('cam-type'), filter: val('color-filter'),
                 wmText: val('watermark-text'), logoX: num('logo-x') / 100, logoY: num('logo-y') / 100,
                 infoOn: document.getElementById('info-enable').checked, infoFont: val('info-font'), infoColor: val('info-color'),
                 infoX: num('info-x') / 100, infoY: num('info-y') / 100,
-                // الموجات
                 vizOn: document.getElementById('viz-enable').checked, vizStyle: val('viz-style'), vizColor: val('viz-color'),
                 vizX: num('viz-x') / 100, vizY: num('viz-y') / 100,
-                // الأنيميشن الجديد
                 animOn: document.getElementById('anim-enable').checked,
-                animStyle: val('anim-style'),
-                animInt: num('anim-intensity') / 100,
-                animSpeed: num('anim-speed')
+                animStyle: val('anim-style'), animInt: num('anim-intensity') / 100, animSpeed: num('anim-speed')
             };
         }
 
-        // التعامل مع الخلفيات (العامة والخاصة بالآية)
         function setBg(target, type, input) {
             const file = input.files[0]; if(!file) return;
             const url = URL.createObjectURL(file);
@@ -462,7 +479,7 @@
             if(target === 'global') {
                 state.globalBg = { type, media: mediaObj };
             } else {
-                if(state.phrases.length === 0) return alert("قم بجلب الآيات أولاً لتخصيص خلفية لآية معينة.");
+                if(state.phrases.length === 0) return alert("قم بجلب الآيات أولاً.");
                 let ayahNum = state.phrases[state.currentIndex].num;
                 state.ayahBgs[ayahNum] = { type, media: mediaObj };
                 updatePreviewUI();
@@ -488,22 +505,17 @@
         function updatePreviewUI() {
             if(state.phrases.length === 0) return;
             let item = state.phrases[state.currentIndex];
-            
-            // تحديث نصوص المعاينة
             let lbl = document.getElementById('preview-ayah-label');
             if(lbl) lbl.innerText = `معاينة الآية: ${item.num}`;
-            
             let bgLbl = document.getElementById('bg-ayah-label');
             if(bgLbl) bgLbl.innerText = `الآية ${item.num}`;
             
-            // إظهار أو إخفاء زر مسح خلفية الآية
             let btnClear = document.getElementById('btn-clear-ayah-bg');
             if(btnClear) {
                 let hasCustom = state.ayahBgs[item.num] && state.ayahBgs[item.num].type !== 'none';
                 btnClear.style.display = hasCustom ? 'block' : 'none';
             }
 
-            // إضاءة التايم لاين
             document.querySelectorAll('.segment-block').forEach(b => b.classList.remove('active'));
             let block = document.getElementById(`block-${state.currentIndex}`);
             if(block) block.classList.add('active');
@@ -535,7 +547,6 @@
             const surah = parseInt(val('surah'));
             const start = parseInt(val('start-ayah'));
             const end = parseInt(val('end-ayah'));
-            
             const recSelect = document.getElementById('reciter');
             const timingFile = recSelect.value; 
             const audioFolder = recSelect.options[recSelect.selectedIndex].dataset.folder;
@@ -576,7 +587,8 @@
                     let decodedBuffer = await state.audioCtx.decodeAudioData(arrayBuffer);
                     buffers.push(decodedBuffer);
                     
-                    let ayahText = dataAr.data.ayahs[i-1].text + ` ﴿${toArabicNumber(i)}﴾`;
+                    // التعديل: إزالة الأقواس من رقم الآية والاعتماد على الرقم فقط
+                    let ayahText = dataAr.data.ayahs[i-1].text + ` ${toArabicNumber(i)}`;
                     let transText = dataTr ? dataTr.data.ayahs[i-1].text : "";
                     let wordsArr = ayahText.split(' ');
                     let wordsData = [];
@@ -594,7 +606,9 @@
                             wStart = globalTimeMs + (idx * timePerWord);
                             wEnd = wStart + timePerWord;
                         }
-                        wordsData.push({ text: wText, start: wStart, end: wEnd, newPage: false });
+                        // التعديل: تحديد ما إذا كانت هذه الكلمة هي رقم الآية (آخر كلمة) لاستثنائها من الأنيميشن
+                        let isNum = (idx === wordsArr.length - 1);
+                        wordsData.push({ text: wText, start: wStart, end: wEnd, newPage: false, isAyahNum: isNum });
                     });
 
                     state.phrases.push({ num: i, startTime: globalTimeMs, endTime: globalTimeMs + durationMs, words: wordsData, trans: transText });
@@ -706,9 +720,6 @@
         
         function seekAudio(val) { if(audioPlayer.src) audioPlayer.currentTime = (val / 100) * audioPlayer.duration; }
 
-        // ==========================================
-        // محرك الرسم المحدث مع أنيميشن النص القرآني الجديد
-        // ==========================================
         function renderLoop() {
             ctx.clearRect(0, 0, C_W, C_H);
             let s = state.settings;
@@ -787,7 +798,7 @@
                 ctx.shadowBlur = 0;
             }
 
-            // 4. النص القرآني مع أنيميشن عبقري جديد (الجزء المطور)
+            // 4. النص القرآني مع الأنيميشن
             if (activePhrase) {
                 let screens = []; let currentScreen = [];
                 activePhrase.words.forEach(w => {
@@ -832,8 +843,8 @@
                         let isActive = timeMs >= w.start && timeMs <= w.end;
                         let wordProgress = isActive ? Math.min(1, (timeMs - w.start) / Math.max(1, w.end - w.start)) : 0;
 
-                        // === الأنيميشن الجديد (حركات متعددة + تفعيل/إلغاء) ===
-                        let useAnim = s.animOn && s.animStyle !== 'none' && isActive;
+                        // التعديل: تعطيل الأنيميشن إذا كانت الكلمة عبارة عن رقم الآية (!w.isAyahNum)
+                        let useAnim = s.animOn && s.animStyle !== 'none' && isActive && !w.isAyahNum;
                         let drawScale = 1;
                         let drawOffsetY = 0;
                         let drawGlow = 0;
@@ -874,7 +885,6 @@
                             }
                         }
 
-                        // إعداد الألوان والظلال (يتوافق مع الستايلات القديمة)
                         ctx.shadowBlur = 0;
                         if (isActive) {
                             ctx.fillStyle = s.hiC;
@@ -886,7 +896,6 @@
                         }
                         ctx.globalAlpha *= drawAlpha;
 
-                        // رسم النص مع التحويلات (عبقري وجذاب)
                         if (s.style === 'center-focus') {
                             if (isActive) {
                                 tx = C_W / 2;
@@ -902,7 +911,6 @@
                                 }
                             }
                         } else {
-                            // الوضع العادي (متعدد الأسطر)
                             if (useAnim && (drawScale !== 1 || drawOffsetY !== 0)) {
                                 ctx.save();
                                 ctx.translate(tx, ty + drawOffsetY);
@@ -921,7 +929,6 @@
                     });
                 });
 
-                // الترجمة (بدون أنيميشن)
                 if(activePhrase.trans) {
                     ctx.font = `500 ${s.fontS * 0.45}px 'Cairo', sans-serif`; 
                     ctx.fillStyle = "#cbd5e1"; 
@@ -952,9 +959,6 @@
             for(let i=0; i<lines.length; i++) ctx.fillText(lines[i].trim(), x, sY + (i*lH));
         }
 
-        // ==========================================
-        // التصدير (بدون تغيير)
-        // ==========================================
         let ffmpeg = null;
         async function startExport() {
             if(state.phrases.length === 0 || !state.audioBuffer) return alert("قم بتجهيز الصوت أولاً.");
@@ -994,9 +998,10 @@
                     mime = 'video/webm;codecs=h264';
                 }
 
+                // التعديل: تخفيض معدل البت لتصغير حجم الفيديو الناتج ليصبح ممتاز للسوشيال ميديا
                 const recorder = new MediaRecorder(combinedStream, { 
                     mimeType: mime,
-                    videoBitsPerSecond: 8000000 
+                    videoBitsPerSecond: 5000000 
                 });
                 
                 let chunks = []; 
@@ -1025,7 +1030,7 @@
                         
                         const mp4 = ffmpeg.FS('readFile', 'out.mp4');
                         dLink.href = URL.createObjectURL(new Blob([mp4.buffer], {type: 'video/mp4'}));
-                        dLink.download = `Quran_Studio_Ultimate_${Date.now()}.mp4`; 
+                        dLink.download = `Quran_Studio_${Date.now()}.mp4`; 
                         dLink.innerHTML = '<i class="fa-solid fa-download ml-1"></i> تحميل الفيديو بصيغة MP4';
                         dLink.className = "mt-4 w-full block bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl transition text-sm text-center shadow-lg shadow-emerald-600/30";
                         dLink.classList.remove('hidden');
@@ -1037,7 +1042,7 @@
                         msg.innerText = "⚠️ تم استخراج فيديو WebM بنجاح (بديل سريع وآمن)!";
                         msg.classList.replace('text-emerald-400', 'text-amber-400');
                         dLink.href = URL.createObjectURL(videoBlob);
-                        dLink.download = `Quran_Studio_Ultimate_${Date.now()}.webm`; 
+                        dLink.download = `Quran_Studio_${Date.now()}.webm`; 
                         dLink.innerHTML = '<i class="fa-solid fa-download ml-1"></i> تحميل الفيديو الأساسي (WebM)';
                         dLink.className = "mt-4 w-full block bg-amber-600 hover:bg-amber-500 text-white font-bold py-4 rounded-xl transition text-sm text-center";
                         dLink.classList.remove('hidden');
