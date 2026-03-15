@@ -5,15 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Quran Studio - Ultimate Pro</title>
     
-    <!-- أيقونة التطبيق -->
     <link rel="icon" type="image/png" href="icons/app_logo.png">
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
 
     <style>
-        /* تعريف كافة الخطوط المحلية من صورتك */
         @font-face { font-family: 'Hafs'; src: url('./fonts/Hafs.ttf'); }
         @font-face { font-family: 'Kitab'; src: url('./fonts/Kitab-Bold.ttf'); }
         @font-face { font-family: 'QuranKarim'; src: url('./fonts/Qurankarim114.ttf'); }
@@ -46,7 +43,7 @@
         .details-body { padding: 14px; display: flex; flex-direction: column; gap: 12px; }
 
         .canvas-container { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background-image: radial-gradient(#27272a 1px, transparent 1px); background-size: 15px 15px; background-color: #000; border-radius: 8px; overflow: hidden; transition: aspect-ratio 0.3s; }
-        canvas { max-width: 100%; max-height: 100%; object-fit: contain; box-shadow: 0 5px 20px rgba(0,0,0,0.8); }
+        canvas { max-width: 100%; max-height: 100%; object-fit: contain; box-shadow: 0 5px 20px rgba(0,0,0,0.8); will-change: transform; }
 
         .panel-section { display: none; animation: fadeIn 0.3s ease; }
         .panel-section.active { display: block; }
@@ -73,7 +70,6 @@
 </head>
 <body>
 
-    <!-- العرض الحي والمشغل -->
     <main class="flex-none md:flex-1 h-[45vh] md:h-full flex flex-col relative bg-[#09090b] p-2 md:p-4 z-10 shadow-md border-b md:border-b-0 md:border-l border-[#27272a]">
         <div class="flex-1 canvas-container mb-2 border border-[#27272a]" id="main-canvas-container">
             <canvas id="video-canvas" width="1080" height="1920"></canvas>
@@ -91,7 +87,6 @@
         <audio id="audio-player" class="hidden"></audio>
     </main>
 
-    <!-- لوحة التحكم -->
     <aside class="flex-1 md:w-[400px] bg-[#111113] flex flex-col overflow-hidden relative">
         <div class="h-12 border-b border-[#27272a] flex items-center px-4 shrink-0 bg-[#18181b] shadow-sm z-10 justify-between">
             <h2 id="panel-title" class="font-bold text-sm text-white"><i class="fa-solid fa-book-open text-amber-500 ml-2"></i> المحتوى والآيات</h2>
@@ -133,8 +128,6 @@
 
             <!-- 2. الخلفيات والكاميرا -->
             <div id="tab-bg" class="panel-section space-y-3">
-                
-                <!-- أبعاد ومقاس الفيديو الجديد -->
                 <div class="bg-amber-900/20 p-3 rounded-lg border border-amber-800/40">
                     <h3 class="text-xs font-bold text-amber-300 mb-2"><i class="fa-solid fa-crop text-amber-500 ml-1"></i> أبعاد ومقاس الفيديو</h3>
                     <select id="video-ratio" onchange="changeResolution()" class="w-full bg-amber-950/50 text-amber-100 border border-amber-800/50">
@@ -145,7 +138,6 @@
                     </select>
                 </div>
 
-                <!-- الخلفية العامة -->
                 <div class="bg-[#18181b] p-3 rounded-lg border border-[#27272a]">
                     <h3 class="text-xs font-bold text-white mb-3"><i class="fa-solid fa-globe text-amber-500 ml-1"></i> خلفية الفيديو العامة</h3>
                     <div class="grid grid-cols-2 gap-2 mb-3">
@@ -156,7 +148,6 @@
                     <input type="range" id="bg-opacity" min="0" max="100" value="60" oninput="updateSettings()">
                 </div>
 
-                <!-- خلفية خاصة بالآية -->
                 <div class="bg-[#18181b] p-3 rounded-lg border border-[#27272a]">
                     <h3 class="text-xs font-bold text-zinc-300 mb-3 flex items-center"><i class="fa-solid fa-bullseye text-amber-500 ml-1"></i> خلفية خاصة بـ (<span id="bg-ayah-label">الآية 1</span>)</h3>
                     <div class="grid grid-cols-2 gap-2">
@@ -172,19 +163,26 @@
                     <button id="btn-clear-ayah-bg" onclick="clearAyahBg()" class="hidden w-full mt-3 bg-red-900/50 hover:bg-red-800 text-red-200 text-xs py-2 rounded border border-red-800 transition"><i class="fa-solid fa-trash ml-1"></i> حذف خلفية هذه الآية</button>
                 </div>
 
-                <!-- الكاميرا والفلاتر -->
+                <!-- إعدادات الكاميرا المحدثة -->
                 <details open>
                     <summary><i class="fa-solid fa-video text-amber-500"></i> تأثيرات الكاميرا والفلاتر</summary>
                     <div class="details-body">
                         <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-2">
                             <input type="checkbox" id="cam-enable" onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
-                            <span class="text-[10px] text-zinc-300 font-bold">تفعيل حركة الكاميرا</span>
+                            <span class="text-[10px] text-zinc-300 font-bold">تفعيل حركة الكاميرا (ذهاب وعودة)</span>
                         </label>
+                        
+                        <label class="text-[10px] text-zinc-500 block mb-1">نوع الحركة</label>
                         <select id="cam-type" onchange="updateSettings()" class="mb-3">
-                            <option value="zoom">تكبير بطيء (Zoom In)</option>
-                            <option value="pan">تمرير يمين ويسار (Pan)</option>
-                            <option value="kenburns">زحف سينمائي دائري (Ken Burns)</option>
+                            <option value="zoom">تكبير وتصغير (Zoom In & Out)</option>
+                            <option value="pan">تمرير يمين ويسار (Pan L & R)</option>
+                            <option value="kenburns">زحف سينمائي (Ken Burns)</option>
+                            <option value="combined" selected>حركة عشوائية مركبة سينمائية (جديد)</option>
                         </select>
+                        
+                        <label class="flex justify-between text-[10px] text-zinc-500 mb-1"><span>سرعة حركة الكاميرا</span> <span id="cam-spd-val">15</span></label>
+                        <input type="range" id="cam-speed" min="1" max="50" value="15" class="mb-3" oninput="updateSettings(); document.getElementById('cam-spd-val').innerText=this.value;">
+
                         <label class="text-[10px] text-zinc-500 block mb-1">الفلتر اللوني</label>
                         <select id="color-filter" onchange="updateSettings()">
                             <option value="none">بدون فلتر</option>
@@ -296,11 +294,10 @@
                         <label class="text-[10px] text-zinc-300 flex flex-col gap-1">ارتفاع الترجمة (Y): <input type="range" id="trans-y" min="0" max="100" value="70" oninput="updateSettings()"></label>
                     </div>
 
-                    <!-- الأنيميشن الجديد - عبقري وجذاب -->
                     <details open class="mt-6 border border-amber-800/50 rounded-xl bg-amber-950/10">
                         <summary class="text-xs font-bold text-amber-300 flex items-center">
                             <i class="fa-solid fa-magic text-amber-500 mr-2"></i> 
-                            أنيميشن النص القرآني (حركات متعددة عبقرية)
+                            أنيميشن النص القرآني
                         </summary>
                         <div class="details-body pt-4 border-t border-amber-800/30">
                             <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-3">
@@ -308,14 +305,13 @@
                                 <span class="text-[10px] text-zinc-300 font-bold">تفعيل أنيميشن النص القرآني</span>
                             </label>
 
-                            <label class="text-[10px] text-zinc-500 block mb-1">نوع الحركة (لجعل الفيديو يجذب الأنظار بطريقة سينمائية)</label>
                             <select id="anim-style" onchange="updateSettings()" class="mb-3">
                                 <option value="none">بدون أنيميشن (ثابت)</option>
-                                <option value="pulse-glow" selected>✨ نبض ذهبي متوهج (Pulse Glow)</option>
-                                <option value="pop-scale">🔥 انفجار تكبير خفيف (Pop Scale)</option>
-                                <option value="slide-up">⬆️ انزلاق ناعم من الأسفل (Slide Up)</option>
-                                <option value="float-elegant">🌊 طفو أنيق مستمر (Elegant Float)</option>
-                                <option value="reveal-spark">🌟 كشف شراري ذهبي (Spark Reveal)</option>
+                                <option value="pulse-glow" selected>✨ نبض ذهبي متوهج</option>
+                                <option value="pop-scale">🔥 انفجار تكبير خفيف</option>
+                                <option value="slide-up">⬆️ انزلاق ناعم من الأسفل</option>
+                                <option value="float-elegant">🌊 طفو أنيق مستمر</option>
+                                <option value="reveal-spark">🌟 كشف شراري ذهبي</option>
                             </select>
 
                             <div class="grid grid-cols-2 gap-3">
@@ -324,11 +320,10 @@
                                     <input type="range" id="anim-intensity" min="0" max="100" value="70" oninput="updateSettings(); document.getElementById('anim-int-val').innerText=this.value;">
                                 </div>
                                 <div>
-                                    <label class="flex justify-between text-[10px] text-zinc-500 mb-1"><span>سرعة النبض</span> <span id="anim-speed-val">1.5</span></label>
+                                    <label class="flex justify-between text-[10px] text-zinc-500 mb-1"><span>السرعة</span> <span id="anim-speed-val">1.5</span></label>
                                     <input type="range" id="anim-speed" min="0.5" max="3" step="0.1" value="1.5" oninput="updateSettings(); document.getElementById('anim-speed-val').innerText=this.value;">
                                 </div>
                             </div>
-                            <p class="text-[9px] text-amber-400 mt-3 text-center">💡 الحركات تُطبق فقط على الكلمة النشطة حالياً. وتم استثناء رقم الآية من التأثير الحركي بناءً على طلبك.</p>
                         </div>
                     </details>
                 </div>
@@ -337,7 +332,7 @@
             <!-- 5. التوقيت وتقسيم الشاشات -->
             <div id="tab-timeline" class="panel-section">
                 <div class="bg-amber-900/20 p-3 rounded-lg border border-amber-800/40 mb-2 text-[11px] text-amber-200">
-                    💡 <b>تقسيم الشاشات (Page Break):</b> انقر على أي كلمة لتحديدها، ثم اضغط زر <b>Enter</b> من لوحة المفاتيح. سيختفي النص ويبدأ في صفحة جديدة تماماً من عند هذه الكلمة مع الحفاظ على التوقيت الصوتي!
+                    💡 <b>تقسيم الشاشات (Page Break):</b> انقر على أي كلمة لتحديدها، ثم اضغط زر <b>Enter</b> من لوحة المفاتيح.
                 </div>
                 <div id="timeline-container" class="space-y-2">
                     <p class="text-center text-xs text-zinc-500 py-10">قم بجلب الآيات أولاً.</p>
@@ -349,11 +344,11 @@
                 <div class="bg-emerald-900/20 p-5 rounded-xl border border-emerald-900/30 mb-4">
                     <i class="fa-solid fa-clapperboard text-4xl text-emerald-500 mb-3 block"></i>
                     <h3 class="text-white font-bold mb-2">إنتاج وتصدير الفيديو</h3>
-                    <p class="text-[11px] text-zinc-400">نظام ذكي: سيتم إنتاج MP4 بسرعة. تم تقليل معدل البت لتصغير الحجم وملاءمته لمواقع التواصل.</p>
+                    <p class="text-[11px] text-zinc-400">نظام ذكي لضمان سلاسة الفيديو بدون تقطيع. تم تحسين الأداء ليتناسب مع الخلفيات المتحركة.</p>
                 </div>
                 
                 <button id="btn-export" onclick="startExport()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl transition shadow-lg shadow-emerald-600/30 text-sm">
-                    <i class="fa-solid fa-rocket ml-1"></i> بدء تصدير الفيديو
+                    <i class="fa-solid fa-rocket ml-1"></i> بدء التصدير (بدون تقطيع)
                 </button>
 
                 <div id="export-status" class="mt-4 hidden text-right bg-[#18181b] p-4 rounded-xl border border-[#27272a]">
@@ -378,8 +373,7 @@
         <button onclick="switchTab('export', 'التصدير النهائي', this)" class="tab-btn text-emerald-500"><i class="fa-solid fa-clapperboard text-xl mb-1"></i>إنتاج</button>
     </nav>
 
-<script>
-        // تغيير المتغيرات لتصبح قابلة للتعديل عند تغيير مقاس الفيديو
+    <script>
         let C_W = 1080; 
         let C_H = 1920;
         const canvas = document.getElementById('video-canvas');
@@ -424,7 +418,6 @@
             
             const container = document.getElementById('main-canvas-container');
             container.style.aspectRatio = `${C_W} / ${C_H}`;
-            
             updateSettings();
         }
 
@@ -442,11 +435,7 @@
         function loadLogo(input) {
             if(input.files && input.files[0]) {
                 const reader = new FileReader();
-                reader.onload = e => {
-                    let img = new Image();
-                    img.src = e.target.result;
-                    state.logoImage = img;
-                };
+                reader.onload = e => { let img = new Image(); img.src = e.target.result; state.logoImage = img; };
                 reader.readAsDataURL(input.files[0]);
             }
         }
@@ -456,7 +445,13 @@
                 style: val('highlight-style'), baseC: val('base-color'), hiC: val('highlight-color'),
                 fontF: val('font-family'), fontS: num('font-size'), posY: num('pos-y'), transY: num('trans-y'),
                 bgOp: num('bg-opacity') / 100,
-                camOn: document.getElementById('cam-enable').checked, camType: val('cam-type'), filter: val('color-filter'),
+                
+                // متغيرات الكاميرا الجديدة
+                camOn: document.getElementById('cam-enable').checked, 
+                camType: val('cam-type'), 
+                camSpeed: num('cam-speed') / 10, // تحويل القيمة لمعامل سرعة
+                filter: val('color-filter'),
+                
                 wmText: val('watermark-text'), logoX: num('logo-x') / 100, logoY: num('logo-y') / 100,
                 infoOn: document.getElementById('info-enable').checked, infoFont: val('info-font'), infoColor: val('info-color'),
                 infoX: num('info-x') / 100, infoY: num('info-y') / 100,
@@ -467,7 +462,7 @@
             };
         }
 
-        // تم تحسين دالة رفع الخلفية لمنع تقطيع الفيديو
+        // تحسين تحميل الفيديو لمنع التقطيع
         function setBg(target, type, input) {
             const file = input.files[0]; if(!file) return;
             const url = URL.createObjectURL(file);
@@ -476,11 +471,13 @@
             if(type === 'video') { 
                 mediaObj.muted = true; 
                 mediaObj.loop = true; 
-                mediaObj.playsInline = true; // يحسن الأداء
-                mediaObj.preload = "auto"; // يجبر المتصفح على تحميل الفيديو لمنع التقطيع
+                mediaObj.playsInline = true;
+                mediaObj.preload = "auto";
+                // تعطيل الأجهزة العالية لمنع التحميل الزائد أثناء الرسم على المتصفح
+                mediaObj.disablePictureInPicture = true;
                 mediaObj.src = url; 
                 mediaObj.load();
-                mediaObj.play().catch(e => console.error("Video Play Error:", e)); 
+                mediaObj.play().catch(e => console.error(e)); 
             } else { 
                 mediaObj.src = url; 
             }
@@ -537,8 +534,7 @@
                 let text = await res.text();
                 let match = text.match(/\[\s*\{[\s\S]*\}\s*\]/);
                 if(match) return JSON.parse(match[0]);
-            } catch(e) { console.warn(`لم يتم العثور على ملف التوقيت ${fileName}`); }
-            return null;
+            } catch(e) {} return null;
         }
 
         async function safeFetchAudio(surahNum, ayahNum, folder) {
@@ -548,17 +544,14 @@
             for (let url of attempts) {
                 try { let res = await fetch(url); if (res.ok) { let buffer = await res.arrayBuffer(); if (buffer.byteLength > 5000) return buffer; } } catch (e) {}
             }
-            throw new Error("فشل في جلب الصوت.");
+            throw new Error("فشل");
         }
 
         async function generateQuranAudio() {
             const btnText = document.getElementById('btn-fetch-text');
-            const surah = parseInt(val('surah'));
-            const start = parseInt(val('start-ayah'));
-            const end = parseInt(val('end-ayah'));
+            const surah = parseInt(val('surah')); const start = parseInt(val('start-ayah')); const end = parseInt(val('end-ayah'));
             const recSelect = document.getElementById('reciter');
-            const timingFile = recSelect.value; 
-            const audioFolder = recSelect.options[recSelect.selectedIndex].dataset.folder;
+            const timingFile = recSelect.value; const audioFolder = recSelect.options[recSelect.selectedIndex].dataset.folder;
             const tType = val('trans-type');
             
             if (end < start) return alert("الترتيب غير صحيح.");
@@ -567,52 +560,33 @@
             btnText.parentElement.classList.add('opacity-50', 'pointer-events-none');
 
             try {
-                let resAr = await fetch(`https://api.alquran.cloud/v1/surah/${surah}/quran-uthmani`);
-                let dataAr = await resAr.json();
+                let resAr = await fetch(`https://api.alquran.cloud/v1/surah/${surah}/quran-uthmani`); let dataAr = await resAr.json();
                 let dataTr = null;
-                if (tType !== 'none') {
-                    let resTr = await fetch(`https://api.alquran.cloud/v1/surah/${surah}/${tType}`);
-                    dataTr = await resTr.json();
-                }
+                if (tType !== 'none') { let resTr = await fetch(`https://api.alquran.cloud/v1/surah/${surah}/${tType}`); dataTr = await resTr.json(); }
 
                 let fullTimingData = await fetchTimingFile(timingFile);
-
                 window.AudioContext = window.AudioContext || window.webkitAudioContext;
                 if(!state.audioCtx) state.audioCtx = new AudioContext();
-                
-                if(!state.analyser) {
-                    state.analyser = state.audioCtx.createAnalyser();
-                    state.analyser.fftSize = 128;
-                    state.dataArray = new Uint8Array(state.analyser.frequencyBinCount);
-                }
+                if(!state.analyser) { state.analyser = state.audioCtx.createAnalyser(); state.analyser.fftSize = 128; state.dataArray = new Uint8Array(state.analyser.frequencyBinCount); }
 
-                let buffers = [];
-                let globalTimeMs = 0;
-                state.phrases = [];
+                let buffers = []; let globalTimeMs = 0; state.phrases = [];
 
                 for (let i = start; i <= end; i++) {
                     btnText.innerText = `تحليل الآية ${i}...`;
                     let arrayBuffer = await safeFetchAudio(surah, i, audioFolder);
-                    let decodedBuffer = await state.audioCtx.decodeAudioData(arrayBuffer);
-                    buffers.push(decodedBuffer);
+                    let decodedBuffer = await state.audioCtx.decodeAudioData(arrayBuffer); buffers.push(decodedBuffer);
                     
                     let ayahText = dataAr.data.ayahs[i-1].text + ` ${toArabicNumber(i)}`;
                     let transText = dataTr ? dataTr.data.ayahs[i-1].text : "";
-                    let wordsArr = ayahText.split(' ');
-                    let wordsData = [];
-                    let durationMs = decodedBuffer.duration * 1000;
-                    
+                    let wordsArr = ayahText.split(' '); let wordsData = []; let durationMs = decodedBuffer.duration * 1000;
                     let ayahTiming = fullTimingData ? fullTimingData.find(d => d.surah == surah && d.ayah == i) : null;
 
                     wordsArr.forEach((wText, idx) => {
                         let wStart, wEnd;
                         if (ayahTiming && ayahTiming.segments && ayahTiming.segments[idx]) {
-                            wStart = globalTimeMs + ayahTiming.segments[idx][2];
-                            wEnd = globalTimeMs + ayahTiming.segments[idx][3];
+                            wStart = globalTimeMs + ayahTiming.segments[idx][2]; wEnd = globalTimeMs + ayahTiming.segments[idx][3];
                         } else {
-                            let timePerWord = durationMs / wordsArr.length;
-                            wStart = globalTimeMs + (idx * timePerWord);
-                            wEnd = wStart + timePerWord;
+                            let timePerWord = durationMs / wordsArr.length; wStart = globalTimeMs + (idx * timePerWord); wEnd = wStart + timePerWord;
                         }
                         let isNum = (idx === wordsArr.length - 1);
                         wordsData.push({ text: wText, start: wStart, end: wEnd, newPage: false, isAyahNum: isNum });
@@ -626,56 +600,38 @@
                 let wavBlob = bufferToWave(state.audioBuffer);
                 audioPlayer.src = URL.createObjectURL(wavBlob);
                 
-                renderTimelineUI();
-                state.currentIndex = 0;
-                updatePreviewUI();
-                
-                btnText.innerText = "اكتمل بنجاح!";
-                setTimeout(() => btnText.innerText = "جلب وتطبيق التوقيت", 3000);
+                renderTimelineUI(); state.currentIndex = 0; updatePreviewUI();
+                btnText.innerText = "اكتمل بنجاح!"; setTimeout(() => btnText.innerText = "جلب وتطبيق التوقيت", 3000);
 
                 audioPlayer.ontimeupdate = () => {
                     if(!state.isExporting) {
                         document.getElementById('progress-bar-audio').value = (audioPlayer.currentTime / audioPlayer.duration) * 100;
                         let tc = document.getElementById('time-current'); if(tc) tc.innerText = formatTime(audioPlayer.currentTime);
                         let tt = document.getElementById('time-total'); if(tt) tt.innerText = formatTime(audioPlayer.duration);
-                        
                         let timeMs = audioPlayer.currentTime * 1000;
                         let activeIdx = state.phrases.findIndex(p => timeMs >= p.startTime && timeMs <= p.endTime);
-                        if(activeIdx !== -1 && activeIdx !== state.currentIndex) {
-                            state.currentIndex = activeIdx;
-                            updatePreviewUI();
-                        }
+                        if(activeIdx !== -1 && activeIdx !== state.currentIndex) { state.currentIndex = activeIdx; updatePreviewUI(); }
                     }
                 };
-
-            } catch (e) {
-                console.error(e);
-            } finally {
-                btnText.parentElement.classList.remove('opacity-50', 'pointer-events-none');
-            }
+            } catch (e) { console.error(e); } finally { btnText.parentElement.classList.remove('opacity-50', 'pointer-events-none'); }
         }
 
         function selectWordForBreak(pIdx, wIdx, el) {
             document.querySelectorAll('.tl-word').forEach(n => n.classList.remove('selected'));
-            el.classList.add('selected');
-            state.selectedWord = { pIdx, wIdx };
+            el.classList.add('selected'); state.selectedWord = { pIdx, wIdx };
         }
 
         function renderTimelineUI() {
-            const container = document.getElementById('timeline-container');
-            container.innerHTML = '';
+            const container = document.getElementById('timeline-container'); container.innerHTML = '';
             state.phrases.forEach((p, i) => {
-                let div = document.createElement('div');
-                div.className = 'segment-block';
-                div.id = `block-${i}`;
+                let div = document.createElement('div'); div.className = 'segment-block'; div.id = `block-${i}`;
                 div.innerHTML = `
                     <div class="segment-header cursor-pointer" onclick="audioPlayer.currentTime = ${p.startTime/1000}; state.currentIndex = ${i}; updatePreviewUI();">
                         <span>الآية ${p.num}</span><span>${formatTime(p.startTime/1000)}</span>
                     </div>
                     <div class="p-3 text-center text-sm text-zinc-300 leading-relaxed font-bold" style="font-family: 'Amiri Quran', serif; direction:rtl;">
                         ${p.words.map((w, wIdx) => `<span class="tl-word ${w.newPage ? 'page-break' : ''}" onclick="selectWordForBreak(${i}, ${wIdx}, this)">${w.text}</span>`).join(' ')}
-                    </div>
-                `;
+                    </div>`;
                 container.appendChild(div);
             });
         }
@@ -702,27 +658,12 @@
 
         function togglePlay() {
             if(!audioPlayer.src) return alert("قم بجلب الآيات أولاً.");
-            
-            if (state.audioCtx && state.audioCtx.state === 'suspended') {
-                state.audioCtx.resume();
-            }
-            
+            if (state.audioCtx && state.audioCtx.state === 'suspended') state.audioCtx.resume();
             if(!window.isAudioConnectedToViz && state.audioCtx) {
-                try {
-                    let source = state.audioCtx.createMediaElementSource(audioPlayer);
-                    source.connect(state.analyser);
-                    state.analyser.connect(state.audioCtx.destination);
-                    window.isAudioConnectedToViz = true;
-                } catch(e) {}
+                try { let source = state.audioCtx.createMediaElementSource(audioPlayer); source.connect(state.analyser); state.analyser.connect(state.audioCtx.destination); window.isAudioConnectedToViz = true; } catch(e) {}
             }
-
-            if (audioPlayer.paused) { 
-                audioPlayer.play(); 
-                document.getElementById('play-btn').innerHTML = '<i class="fa-solid fa-pause"></i>'; 
-            } else { 
-                audioPlayer.pause(); 
-                document.getElementById('play-btn').innerHTML = '<i class="fa-solid fa-play"></i>'; 
-            }
+            if (audioPlayer.paused) { audioPlayer.play(); document.getElementById('play-btn').innerHTML = '<i class="fa-solid fa-pause"></i>'; 
+            } else { audioPlayer.pause(); document.getElementById('play-btn').innerHTML = '<i class="fa-solid fa-play"></i>'; }
         }
         
         function seekAudio(val) { if(audioPlayer.src) audioPlayer.currentTime = (val / 100) * audioPlayer.duration; }
@@ -734,15 +675,41 @@
 
             let activePhrase = state.phrases.find(p => timeMs >= p.startTime && timeMs <= p.endTime);
             
-            // 1. الخلفية + الكاميرا
+            // 1. الخلفية + الكاميرا (بالمعادلات المترددة Ping-Pong)
             ctx.save();
             if (s.camOn) {
-                let progress = (timeMs / 1000) * 0.05; 
+                // استخدام دالة الجيب Math.sin لعمل حركة ذهاب وعودة سلسة جداً
+                let speedMultiplier = s.camSpeed || 1.5;
+                let t = (timeMs / 1000) * 0.05 * speedMultiplier;
                 let scale = 1, tx = 0, ty = 0;
-                if (s.camType === 'zoom') scale = 1 + (progress % 0.3);
-                else if (s.camType === 'pan') tx = Math.sin(progress) * 80;
-                else if (s.camType === 'kenburns') { scale = 1 + (progress % 0.2); tx = Math.sin(progress) * 40; ty = Math.cos(progress) * 20; }
-                ctx.translate(C_W/2, C_H/2); ctx.scale(scale, scale); ctx.translate(-C_W/2 + tx, -C_H/2 + ty);
+
+                if (s.camType === 'zoom') {
+                    // تكبير وتصغير مستمر (من 1 إلى 1.3 ثم يعود إلى 1)
+                    scale = 1 + ((Math.sin(t * 2) + 1) / 2) * 0.3;
+                } 
+                else if (s.camType === 'pan') {
+                    // تمرير يمين ويسار بسلاسة
+                    tx = Math.sin(t * 2) * 80;
+                    scale = 1.15; // تكبير مبدئي لمنع ظهور حواف سوداء أثناء الحركة
+                } 
+                else if (s.camType === 'kenburns') {
+                    // زحف سينمائي دائري ناعم
+                    scale = 1 + ((Math.sin(t * 1.5) + 1) / 2) * 0.2;
+                    tx = Math.sin(t * 1.8) * 60;
+                    ty = Math.cos(t * 1.3) * 30;
+                    scale *= 1.1; 
+                }
+                else if (s.camType === 'combined') {
+                    // حركة عشوائية مركبة (مزيج معقد لا يتكرر ببساطة)
+                    scale = 1 + ((Math.sin(t * 2.2) * Math.cos(t * 1.5) + 1) / 2) * 0.35;
+                    tx = (Math.sin(t * 1.7) + Math.cos(t * 1.1)) * 50;
+                    ty = (Math.cos(t * 1.9) + Math.sin(t * 1.4)) * 30;
+                    scale *= 1.2; 
+                }
+
+                ctx.translate(C_W/2, C_H/2); 
+                ctx.scale(scale, scale); 
+                ctx.translate(-C_W/2 + tx, -C_H/2 + ty);
             }
 
             let bg = state.globalBg;
@@ -751,8 +718,12 @@
             }
 
             if(bg.type !== 'none' && bg.media) {
-                if(bg.type === 'video' && bg.media.readyState >= 2) drawCover(bg.media, bg.media.videoWidth, bg.media.videoHeight);
-                else if(bg.type === 'image') drawCover(bg.media, bg.media.width, bg.media.height);
+                // رسم الفيديو فقط إذا كان يعمل أو في وضع المعاينة لتخفيف التقطيع
+                if(bg.type === 'video' && bg.media.readyState >= 2) {
+                    drawCover(bg.media, bg.media.videoWidth, bg.media.videoHeight);
+                } else if(bg.type === 'image') {
+                    drawCover(bg.media, bg.media.width, bg.media.height);
+                }
             } else {
                 let grad = ctx.createLinearGradient(0,0,0,C_H); grad.addColorStop(0,"#18181b"); grad.addColorStop(1,"#09090b");
                 ctx.fillStyle = grad; ctx.fillRect(0,0,C_W,C_H);
@@ -829,11 +800,8 @@
                 activeScreen.forEach(w => {
                     let wWidth = ctx.measureText(w.text).width;
                     if (currentWidth + wWidth + spaceW > maxW && currentLine.length > 0) {
-                        lines.push({ words: currentLine, width: currentWidth });
-                        currentLine = [w]; currentWidth = wWidth;
-                    } else {
-                        currentLine.push(w); currentWidth += wWidth + (currentLine.length > 1 ? spaceW : 0);
-                    }
+                        lines.push({ words: currentLine, width: currentWidth }); currentLine = [w]; currentWidth = wWidth;
+                    } else { currentLine.push(w); currentWidth += wWidth + (currentLine.length > 1 ? spaceW : 0); }
                 });
                 if(currentLine.length > 0) lines.push({ words: currentLine, width: currentWidth });
 
@@ -851,94 +819,40 @@
                         let wordProgress = isActive ? Math.min(1, (timeMs - w.start) / Math.max(1, w.end - w.start)) : 0;
 
                         let useAnim = s.animOn && s.animStyle !== 'none' && isActive && !w.isAyahNum;
-                        let drawScale = 1;
-                        let drawOffsetY = 0;
-                        let drawGlow = 0;
-                        let drawAlpha = 1;
-                        let tx = centerX;
-                        let ty = y;
+                        let drawScale = 1, drawOffsetY = 0, drawGlow = 0, drawAlpha = 1, tx = centerX, ty = y;
 
                         if (useAnim) {
-                            const intensity = s.animInt || 0.7;
-                            const speed = s.animSpeed || 1.5;
+                            const intensity = s.animInt || 0.7; const speed = s.animSpeed || 1.5;
                             switch (s.animStyle) {
-                                case 'pulse-glow':
-                                    let pulse = Math.sin(wordProgress * Math.PI * 4 * speed) * 0.5 + 0.5;
-                                    drawScale = 1 + pulse * 0.12 * intensity;
-                                    drawGlow = 20 + pulse * 30 * intensity;
-                                    drawAlpha = 0.95 + pulse * 0.1;
-                                    break;
-                                case 'pop-scale':
-                                    let popEase = Math.pow(wordProgress, 0.4);
-                                    drawScale = 0.75 + popEase * 0.45 * intensity;
-                                    drawGlow = 15 * intensity;
-                                    break;
-                                case 'slide-up':
-                                    let slideEase = 1 - Math.pow(1 - wordProgress, 3);
-                                    drawOffsetY = (1 - slideEase) * 75 * intensity;
-                                    drawAlpha = slideEase * 0.4 + 0.6;
-                                    drawGlow = 18 * intensity;
-                                    break;
-                                case 'float-elegant':
-                                    drawOffsetY = Math.sin(timeMs / 650 * speed) * 14 * intensity;
-                                    drawGlow = 12 * intensity;
-                                    break;
-                                case 'reveal-spark':
-                                    drawScale = 0.82 + wordProgress * 0.28 * intensity;
-                                    drawGlow = wordProgress * 48 * intensity;
-                                    drawAlpha = wordProgress * 0.35 + 0.65;
-                                    break;
+                                case 'pulse-glow': let pulse = Math.sin(wordProgress * Math.PI * 4 * speed) * 0.5 + 0.5; drawScale = 1 + pulse * 0.12 * intensity; drawGlow = 20 + pulse * 30 * intensity; drawAlpha = 0.95 + pulse * 0.1; break;
+                                case 'pop-scale': let popEase = Math.pow(wordProgress, 0.4); drawScale = 0.75 + popEase * 0.45 * intensity; drawGlow = 15 * intensity; break;
+                                case 'slide-up': let slideEase = 1 - Math.pow(1 - wordProgress, 3); drawOffsetY = (1 - slideEase) * 75 * intensity; drawAlpha = slideEase * 0.4 + 0.6; drawGlow = 18 * intensity; break;
+                                case 'float-elegant': drawOffsetY = Math.sin(timeMs / 650 * speed) * 14 * intensity; drawGlow = 12 * intensity; break;
+                                case 'reveal-spark': drawScale = 0.82 + wordProgress * 0.28 * intensity; drawGlow = wordProgress * 48 * intensity; drawAlpha = wordProgress * 0.35 + 0.65; break;
                             }
                         }
 
                         ctx.shadowBlur = 0;
-                        if (isActive) {
-                            ctx.fillStyle = s.hiC;
-                            ctx.shadowColor = s.hiC;
-                            ctx.shadowBlur = (s.style === 'nur-glow' ? 25 : 0) + drawGlow;
-                        } else {
-                            ctx.fillStyle = s.baseC;
-                            ctx.globalAlpha = (s.style === 'quran-dim') ? 0.2 : 0.85;
-                        }
+                        if (isActive) { ctx.fillStyle = s.hiC; ctx.shadowColor = s.hiC; ctx.shadowBlur = (s.style === 'nur-glow' ? 25 : 0) + drawGlow;
+                        } else { ctx.fillStyle = s.baseC; ctx.globalAlpha = (s.style === 'quran-dim') ? 0.2 : 0.85; }
                         ctx.globalAlpha *= drawAlpha;
 
                         if (s.style === 'center-focus') {
-                            if (isActive) {
-                                tx = C_W / 2;
-                                ty = C_H * (s.posY / 100);
-                                if (useAnim && (drawScale !== 1 || drawOffsetY !== 0)) {
-                                    ctx.save();
-                                    ctx.translate(tx, ty + drawOffsetY);
-                                    ctx.scale(drawScale, drawScale);
-                                    ctx.fillText(w.text, 0, 0);
-                                    ctx.restore();
-                                } else {
-                                    ctx.fillText(w.text, tx, ty + drawOffsetY);
-                                }
+                            if (isActive) { tx = C_W / 2; ty = C_H * (s.posY / 100);
+                                if (useAnim && (drawScale !== 1 || drawOffsetY !== 0)) { ctx.save(); ctx.translate(tx, ty + drawOffsetY); ctx.scale(drawScale, drawScale); ctx.fillText(w.text, 0, 0); ctx.restore();
+                                } else { ctx.fillText(w.text, tx, ty + drawOffsetY); }
                             }
                         } else {
-                            if (useAnim && (drawScale !== 1 || drawOffsetY !== 0)) {
-                                ctx.save();
-                                ctx.translate(tx, ty + drawOffsetY);
-                                ctx.scale(drawScale, drawScale);
-                                ctx.fillText(w.text, 0, 0);
-                                ctx.restore();
-                            } else {
-                                ctx.fillText(w.text, tx, ty + drawOffsetY);
-                            }
+                            if (useAnim && (drawScale !== 1 || drawOffsetY !== 0)) { ctx.save(); ctx.translate(tx, ty + drawOffsetY); ctx.scale(drawScale, drawScale); ctx.fillText(w.text, 0, 0); ctx.restore();
+                            } else { ctx.fillText(w.text, tx, ty + drawOffsetY); }
                         }
 
-                        ctx.globalAlpha = 1;
-                        ctx.shadowBlur = 0;
-
-                        startX -= (wWidth + spaceW);
+                        ctx.globalAlpha = 1; ctx.shadowBlur = 0; startX -= (wWidth + spaceW);
                     });
                 });
 
                 if(activePhrase.trans) {
-                    ctx.font = `500 ${s.fontS * 0.45}px 'Cairo', sans-serif`; 
-                    ctx.fillStyle = "#cbd5e1"; 
-                    ctx.shadowBlur = 0;
+                    ctx.font = `500 ${s.fontS * 0.45}px 'Cairo', sans-serif`; ctx.fillStyle = "#cbd5e1"; ctx.shadowBlur = 0;
                     wrapTextLine(ctx, activePhrase.trans, C_W/2, C_H * (s.transY/100), maxW, s.fontS * 0.6);
                 }
             }
@@ -946,22 +860,18 @@
             requestAnimationFrame(renderLoop);
         }
 
+        // تحسين دالة رسم الكوفر لتقليل العبء على المعالج أثناء تصدير الفيديو
         function drawCover(img, w, h) { 
             let r = Math.max(C_W/w, C_H/h); 
-            let cw = w*r, ch = h*r; 
-            ctx.drawImage(img, 0, 0, w, h, (C_W-cw)/2, (C_H-ch)/2, cw, ch); 
+            // استخدام Math.floor لمنع التقطيع الناتج عن كسور البيكسل
+            let cw = Math.floor(w*r), ch = Math.floor(h*r); 
+            ctx.drawImage(img, 0, 0, w, h, Math.floor((C_W-cw)/2), Math.floor((C_H-ch)/2), cw, ch); 
         }
         
         function wrapTextLine(ctx, t, x, y, mW, lH) {
             let w=t.split(' '), line='', lines=[];
-            for(let n=0; n<w.length; n++) { 
-                let test=line+w[n]+' '; 
-                if(ctx.measureText(test).width>mW && n>0) { 
-                    lines.push(line); line=w[n]+' '; 
-                } else line=test; 
-            }
-            lines.push(line); 
-            let sY = y - ((lines.length-1)*lH)/2;
+            for(let n=0; n<w.length; n++) { let test=line+w[n]+' '; if(ctx.measureText(test).width>mW && n>0) { lines.push(line); line=w[n]+' '; } else line=test; }
+            lines.push(line); let sY = y - ((lines.length-1)*lH)/2;
             for(let i=0; i<lines.length; i++) ctx.fillText(lines[i].trim(), x, sY + (i*lH));
         }
 
@@ -992,11 +902,13 @@
                 // مزامنة وتهيئة فيديوهات الخلفية لتبدأ مع التسجيل بدون تقطيع
                 if (state.globalBg.type === 'video' && state.globalBg.media) {
                     state.globalBg.media.currentTime = 0;
+                    state.globalBg.media.playbackRate = 1.0;
                     state.globalBg.media.play();
                 }
                 for (let key in state.ayahBgs) {
                     if (state.ayahBgs[key].type === 'video' && state.ayahBgs[key].media) {
                         state.ayahBgs[key].media.currentTime = 0;
+                        state.ayahBgs[key].media.playbackRate = 1.0;
                         state.ayahBgs[key].media.play();
                     }
                 }
@@ -1016,10 +928,10 @@
                     mime = 'video/webm;codecs=h264';
                 }
 
-                // تخفيض معدل البت لمنع الضغط على المتصفح ومنع التقطيع (3 Mbps هو الأفضل)
+                // تخفيض معدل البت لمنع الضغط على المتصفح ومنع التقطيع (2.5 Mbps هو الأفضل والمثالي للسوشيال ميديا)
                 const recorder = new MediaRecorder(combinedStream, { 
                     mimeType: mime,
-                    videoBitsPerSecond: 3000000 
+                    videoBitsPerSecond: 2500000 
                 });
                 
                 let chunks = []; 
@@ -1090,6 +1002,5 @@
             }
         }
     </script>
-
 </body>
 </html>
