@@ -378,7 +378,7 @@
         <button onclick="switchTab('export', 'التصدير النهائي', this)" class="tab-btn text-emerald-500"><i class="fa-solid fa-clapperboard text-xl mb-1"></i>إنتاج</button>
     </nav>
 
-    <script>
+<script>
         // تغيير المتغيرات لتصبح قابلة للتعديل عند تغيير مقاس الفيديو
         let C_W = 1080; 
         let C_H = 1920;
@@ -415,7 +415,6 @@
             });
         };
 
-        // دالة تغيير أبعاد ومقاس الفيديو
         function changeResolution() {
             const val = document.getElementById('video-ratio').value.split('x');
             C_W = parseInt(val[0]);
@@ -423,7 +422,6 @@
             canvas.width = C_W;
             canvas.height = C_H;
             
-            // تعديل أبعاد عرض الحاوية لتتناسب مع المقاس
             const container = document.getElementById('main-canvas-container');
             container.style.aspectRatio = `${C_W} / ${C_H}`;
             
@@ -469,12 +467,23 @@
             };
         }
 
+        // تم تحسين دالة رفع الخلفية لمنع تقطيع الفيديو
         function setBg(target, type, input) {
             const file = input.files[0]; if(!file) return;
             const url = URL.createObjectURL(file);
             let mediaObj = type === 'video' ? document.createElement('video') : new Image();
-            if(type === 'video') { mediaObj.muted = true; mediaObj.loop = true; mediaObj.src = url; mediaObj.play(); } 
-            else { mediaObj.src = url; }
+            
+            if(type === 'video') { 
+                mediaObj.muted = true; 
+                mediaObj.loop = true; 
+                mediaObj.playsInline = true; // يحسن الأداء
+                mediaObj.preload = "auto"; // يجبر المتصفح على تحميل الفيديو لمنع التقطيع
+                mediaObj.src = url; 
+                mediaObj.load();
+                mediaObj.play().catch(e => console.error("Video Play Error:", e)); 
+            } else { 
+                mediaObj.src = url; 
+            }
             
             if(target === 'global') {
                 state.globalBg = { type, media: mediaObj };
@@ -587,7 +596,6 @@
                     let decodedBuffer = await state.audioCtx.decodeAudioData(arrayBuffer);
                     buffers.push(decodedBuffer);
                     
-                    // التعديل: إزالة الأقواس من رقم الآية والاعتماد على الرقم فقط
                     let ayahText = dataAr.data.ayahs[i-1].text + ` ${toArabicNumber(i)}`;
                     let transText = dataTr ? dataTr.data.ayahs[i-1].text : "";
                     let wordsArr = ayahText.split(' ');
@@ -606,7 +614,6 @@
                             wStart = globalTimeMs + (idx * timePerWord);
                             wEnd = wStart + timePerWord;
                         }
-                        // التعديل: تحديد ما إذا كانت هذه الكلمة هي رقم الآية (آخر كلمة) لاستثنائها من الأنيميشن
                         let isNum = (idx === wordsArr.length - 1);
                         wordsData.push({ text: wText, start: wStart, end: wEnd, newPage: false, isAyahNum: isNum });
                     });
@@ -843,7 +850,6 @@
                         let isActive = timeMs >= w.start && timeMs <= w.end;
                         let wordProgress = isActive ? Math.min(1, (timeMs - w.start) / Math.max(1, w.end - w.start)) : 0;
 
-                        // التعديل: تعطيل الأنيميشن إذا كانت الكلمة عبارة عن رقم الآية (!w.isAyahNum)
                         let useAnim = s.animOn && s.animStyle !== 'none' && isActive && !w.isAyahNum;
                         let drawScale = 1;
                         let drawOffsetY = 0;
@@ -982,6 +988,18 @@
 
                 msg.innerText = "🔴 جاري التسجيل المباشر للفيديو...";
                 bar.style.width = "40%";
+
+                // مزامنة وتهيئة فيديوهات الخلفية لتبدأ مع التسجيل بدون تقطيع
+                if (state.globalBg.type === 'video' && state.globalBg.media) {
+                    state.globalBg.media.currentTime = 0;
+                    state.globalBg.media.play();
+                }
+                for (let key in state.ayahBgs) {
+                    if (state.ayahBgs[key].type === 'video' && state.ayahBgs[key].media) {
+                        state.ayahBgs[key].media.currentTime = 0;
+                        state.ayahBgs[key].media.play();
+                    }
+                }
                 
                 let exportAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 let dest = exportAudioCtx.createMediaStreamDestination();
@@ -998,10 +1016,10 @@
                     mime = 'video/webm;codecs=h264';
                 }
 
-                // التعديل: تخفيض معدل البت لتصغير حجم الفيديو الناتج ليصبح ممتاز للسوشيال ميديا
+                // تخفيض معدل البت لمنع الضغط على المتصفح ومنع التقطيع (3 Mbps هو الأفضل)
                 const recorder = new MediaRecorder(combinedStream, { 
                     mimeType: mime,
-                    videoBitsPerSecond: 5000000 
+                    videoBitsPerSecond: 3000000 
                 });
                 
                 let chunks = []; 
@@ -1072,5 +1090,6 @@
             }
         }
     </script>
+
 </body>
 </html>
