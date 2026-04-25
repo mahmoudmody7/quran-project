@@ -206,7 +206,7 @@
                         <!-- إعدادات تأثير التموج لكامل الفيديو (بدون تهنيج) -->
                         <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-2 mt-4 border-t border-[#3f3f46] pt-4">
                             <input type="checkbox" id="ripple-enable" onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
-                            <span class="text-[10px] text-zinc-300 font-bold">تأثير التموج السائل / المائي لكامل الفيديو</span>
+                            <span class="text-[10px] text-zinc-300 font-bold">تأثير التموج السائل / المائي لكامل الفيديو (سريع جداً)</span>
                         </label>
                         <label class="flex justify-between text-[10px] text-zinc-500 mb-1"><span>قوة التموج</span> <span id="ripple-int-val">15</span></label>
                         <input type="range" id="ripple-intensity" min="0" max="50" value="15" class="mb-3" oninput="updateSettings(); document.getElementById('ripple-int-val').innerText=this.value;">
@@ -404,7 +404,7 @@
         const canvas = document.getElementById('video-canvas');
         const ctx = canvas.getContext('2d');
         
-        // خادم مخفي لرسم التأثيرات الثقيلة بدون تهنيج
+        // خادم مخفي لرسم التأثيرات الثقيلة (Optimized)
         const offCanvas = document.createElement('canvas');
         const offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
         
@@ -512,7 +512,7 @@
             if (quality === 720) { if (ratio === 'landscape') { C_W = 1280; C_H = 720; } else if (ratio === 'square') { C_W = 720; C_H = 720; } else { C_W = 720; C_H = 1280; } } 
             else { if (ratio === 'landscape') { C_W = 1920; C_H = 1080; } else if (ratio === 'square') { C_W = 1080; C_H = 1080; } else { C_W = 1080; C_H = 1920; } }
             canvas.width = C_W; canvas.height = C_H; 
-            offCanvas.width = C_W; offCanvas.height = C_H; // تحديث الخادم المخفي
+            offCanvas.width = C_W; offCanvas.height = C_H; 
             updateSettings();
         }
 
@@ -759,7 +759,6 @@
         }
 
         function renderLoop() {
-            // تنظيف الخادم المخفي للرسم النظيف
             offCtx.clearRect(0, 0, C_W, C_H);
             let s = state.settings;
             let timeMs = state.isExporting ? (Date.now() - (window.exportStartTime || Date.now())) : (audioPlayer.currentTime * 1000);
@@ -771,7 +770,6 @@
                 activePhrase = state.phrases.find(p => timeMs >= p.startTime && timeMs <= p.endTime);
             }
             
-            // الرسم على الخادم المخفي (offCtx) بدلا من الرئيسي (ctx) لتجنب التهنيج
             offCtx.save();
             if (s.camOn) {
                 let speedMultiplier = s.camSpeed || 1.5; let t = (timeMs / 1000) * 0.05 * speedMultiplier; let scale = 1, tx = 0, ty = 0;
@@ -927,25 +925,30 @@
             offCtx.globalAlpha = 1; 
 
             // ==========================================
-            // تطبيق تأثير التموج النهائي (بدون تهنيج - Slice/Raster Displacement)
+            // تطبيق تأثير التموج النهائي (مُحسن جداً بدون أي تهنيج)
             // ==========================================
             ctx.clearRect(0, 0, C_W, C_H);
             
-            if (s.rippleOn) {
+            if (s.rippleOn && (s.rippleInt || 15) > 0) {
                 let intensity = s.rippleInt || 15;
                 let speed = 0.003; 
                 let frequency = 0.01; 
-                let sliceHeight = 8; // ارتفاع كل شريحة (رقم مثالي للأداء والشكل)
+                
+                // 1. زيادة الشريحة لتقليل العمليات من 240 إلى 60 فقط (تخفيف هائل على المعالج)
+                let sliceHeight = 30; 
+                
+                // 2. حساب الوقت مرة واحدة فقط خارج الحلقة
+                let timePhase = timeMs * speed;
 
                 for (let y = 0; y < C_H; y += sliceHeight) {
-                    // حساب الإزاحة (يمين ويسار) بناء على موقع الشريحة والزمن
-                    let offsetX = Math.sin((y * frequency) + (timeMs * speed)) * intensity;
+                    // 3. استخدام Bitwise OR (| 0) لتحويل الرقم العشري إلى رقم صحيح (Integer)
+                    // هذا يمنع المتصفح من استخدام خاصية الـ Anti-Aliasing الثقيلة جداً للكسور
+                    let yInt = y | 0;
+                    let offsetX = (Math.sin((yInt * frequency) + timePhase) * intensity) | 0;
                     
-                    // رسم الشريحة من الخادم المخفي إلى الشاشة الحقيقية
-                    ctx.drawImage(offCanvas, 0, y, C_W, sliceHeight, offsetX, y, C_W, sliceHeight);
+                    ctx.drawImage(offCanvas, 0, yInt, C_W, sliceHeight, offsetX, yInt, C_W, sliceHeight);
                 }
             } else {
-                // إذا كان ملغى، ارسم اللوحة بالكامل مرة واحدة
                 ctx.drawImage(offCanvas, 0, 0);
             }
 
