@@ -77,6 +77,20 @@
 </head>
 <body>
 
+
+<!-- محرك تأثير التموج (Turbulent Displace) -->
+    <svg style="display: none;">
+        <defs>
+            <filter id="turbulent-displace">
+                <feTurbulence id="fe-turb" type="fractalNoise" baseFrequency="0.015" numOctaves="2" result="noise" />
+                <feDisplacementMap id="fe-disp" in="SourceGraphic" in2="noise" scale="30" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+        </defs>
+    </svg>
+
+
+
+    
     <div id="word-context-menu">
         <button class="menu-item text-blue-400" onclick="applyWordAction('lineBreak')"><i class="fa-solid fa-arrow-turn-down"></i> سطر جديد من هنا</button>
         <button class="menu-item text-pink-400" onclick="applyWordAction('pageBreak')"><i class="fa-solid fa-scissors"></i> شاشة جديدة من هنا</button>
@@ -202,6 +216,17 @@
                             <option value="warm">دافئ سينمائي</option>
                             <option value="cool">أزرق بارد</option>
                         </select>
+
+
+<label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-2 mt-4 border-t border-[#3f3f46] pt-4">
+    <input type="checkbox" id="ripple-enable" onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
+    <span class="text-[10px] text-zinc-300 font-bold">تأثير التموج المائي (Turbulent Displace)</span>
+</label>
+<label class="flex justify-between text-[10px] text-zinc-500 mb-1"><span>قوة التموج</span> <span id="ripple-int-val">30</span></label>
+<input type="range" id="ripple-intensity" min="0" max="150" value="30" class="mb-3" oninput="updateSettings(); document.getElementById('ripple-int-val').innerText=this.value;">
+
+
+                        
                     </div>
                 </details>
             </div>
@@ -323,7 +348,6 @@
                                 <option value="slide-up">⬆️ انزلاق ناعم من الأسفل</option>
                                 <option value="float-elegant">🌊 طفو أنيق مستمر</option>
                                 <option value="reveal-spark">🌟 كشف شراري ذهبي</option>
-                                <option value="flag-flutter">🏴 رفرفة العلم (تموج النص كاملاً)</option>
                             </select>
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
@@ -519,6 +543,7 @@
                 style: val('highlight-style'), baseC: val('base-color'), hiC: val('highlight-color'),
                 fontF: val('font-family'), fontS: num('font-size'), posY: num('pos-y'), transY: num('trans-y'), transColor: val('trans-color'), bgOp: num('bg-opacity') / 100,
                 camOn: document.getElementById('cam-enable').checked, camType: val('cam-type'), camSpeed: num('cam-speed') / 10, filter: val('color-filter'),
+rippleOn: document.getElementById('ripple-enable').checked, rippleInt: num('ripple-intensity'),
                 wmText: val('watermark-text'), logoX: num('logo-x') / 100, logoY: num('logo-y') / 100,
                 infoOn: document.getElementById('info-enable').checked, infoFont: val('info-font'), infoColor: val('info-color'), infoX: num('info-x') / 100, infoY: num('info-y') / 100,
                 vizOn: document.getElementById('viz-enable').checked, vizStyle: val('viz-style'), vizColor: val('viz-color'), vizX: num('viz-x') / 100, vizY: num('viz-y') / 100,
@@ -729,6 +754,17 @@
         function renderLoop() {
             ctx.clearRect(0, 0, C_W, C_H);
             let s = state.settings;
+            // تطبيق الـ Turbulent Displace على كامل الفيديو
+if (s.rippleOn) {
+    let turb = document.getElementById('fe-turb');
+    let disp = document.getElementById('fe-disp');
+    // تحريك التموج برفق بناءً على الوقت (Animation)
+    turb.setAttribute('baseFrequency', 0.015 + (Math.sin(timeMs / 1000) * 0.005));
+    disp.setAttribute('scale', s.rippleInt || 30);
+    ctx.filter = 'url(#turbulent-displace)';
+} else {
+    ctx.filter = 'none';
+}
             let timeMs = state.isExporting ? (Date.now() - (window.exportStartTime || Date.now())) : (audioPlayer.currentTime * 1000);
 
             let activePhrase = null;
@@ -862,11 +898,7 @@
                                 case 'slide-up': let slideEase = 1 - Math.pow(1 - wordProgress, 3); drawOffsetY = (1 - slideEase) * 75 * intensity; drawAlpha = slideEase * 0.4 + 0.6; drawGlow = 18 * intensity; break;
                                 case 'float-elegant': drawOffsetY = Math.sin(timeMs / 650 * speed) * 14 * intensity; drawGlow = 12 * intensity; break;
                                 case 'reveal-spark': drawScale = 0.82 + wordProgress * 0.28 * intensity; drawGlow = wordProgress * 48 * intensity; drawAlpha = wordProgress * 0.35 + 0.65; break;
-                                case 'flag-flutter': 
-                                    // تموج كامل للنص يعتمد على الوقت وموقع الكلمة (X) لتكوين موجة متصلة
-                                    let wavePhase = (tx / (C_W * 0.5)) * Math.PI * 2; 
-                                    drawOffsetY = Math.sin((timeMs / 400 * speed) + wavePhase) * 20 * intensity;
-                                    break;
+
                             }
                         }
 
