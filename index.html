@@ -236,7 +236,7 @@
                                 <option value="'ReemKufi'">خط ريم كوفي</option>
                                 <option value="'Hafs'">خط حفص</option>
                             </select>
-                            <input type="color" id="info-color" value="#ffffff" onchange="updateSettings()" class="h-10 p-0 border-0">
+                            <input type="color" id="info-color" value="#ffffff" onchange="updateSettings()" class="h-10 p-0 border-0 rounded">
                         </div>
                         <div class="grid grid-cols-2 gap-2">
                             <div><label class="text-[9px] text-zinc-500 block">موقع العرض (X)</label><input type="range" id="info-x" min="0" max="100" value="50" oninput="updateSettings()"></div>
@@ -254,7 +254,7 @@
                         </label>
                         <div class="grid grid-cols-2 gap-2 mb-2">
                             <select id="viz-style" onchange="updateSettings()"><option value="bars">أعمدة</option><option value="wave">موجة</option><option value="dots">نقاط</option></select>
-                            <input type="color" id="viz-color" value="#f59e0b" onchange="updateSettings()" class="h-10 p-0 border-0">
+                            <input type="color" id="viz-color" value="#f59e0b" onchange="updateSettings()" class="h-10 p-0 border-0 rounded">
                         </div>
                         <div class="grid grid-cols-2 gap-2">
                             <div><label class="text-[9px] text-zinc-500 block">موقع العرض (X)</label><input type="range" id="viz-x" min="0" max="100" value="50" oninput="updateSettings()"></div>
@@ -290,8 +290,8 @@
                     </select>
 
                     <div class="grid grid-cols-2 gap-3 mb-3">
-                        <div><label class="text-[10px] text-zinc-500 block mb-1">اللون الأساسي</label><input type="color" id="base-color" value="#ffffff" oninput="updateSettings()" class="h-10 p-0 border-0"></div>
-                        <div><label class="text-[10px] text-zinc-500 block mb-1">لون التمييز</label><input type="color" id="highlight-color" value="#fbbf24" oninput="updateSettings()" class="h-10 p-0 border-0"></div>
+                        <div><label class="text-[10px] text-zinc-500 block mb-1">اللون الأساسي</label><input type="color" id="base-color" value="#ffffff" oninput="updateSettings()" class="h-10 p-0 border-0 rounded"></div>
+                        <div><label class="text-[10px] text-zinc-500 block mb-1">لون التمييز</label><input type="color" id="highlight-color" value="#fbbf24" oninput="updateSettings()" class="h-10 p-0 border-0 rounded"></div>
                     </div>
 
                     <div>
@@ -301,7 +301,10 @@
                     
                     <div class="mt-3 bg-[#09090b] p-3 rounded border border-[#27272a]">
                         <label class="text-[10px] text-zinc-300 flex flex-col gap-1 mb-2">ارتفاع الآية (Y): <input type="range" id="pos-y" min="0" max="100" value="40" oninput="updateSettings()"></label>
-                        <label class="text-[10px] text-zinc-300 flex flex-col gap-1">ارتفاع الترجمة (Y): <input type="range" id="trans-y" min="0" max="100" value="55" oninput="updateSettings()"></label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="text-[10px] text-zinc-300 flex flex-col gap-1">ارتفاع الترجمة (Y): <input type="range" id="trans-y" min="0" max="100" value="55" oninput="updateSettings()"></label>
+                            <label class="text-[10px] text-zinc-300 flex flex-col gap-1">لون الترجمة: <input type="color" id="trans-color" value="#cbd5e1" oninput="updateSettings()" class="h-8 w-full p-0 border-0 rounded"></label>
+                        </div>
                     </div>
 
                     <details open class="mt-6 border border-amber-800/50 rounded-xl bg-amber-950/10">
@@ -320,6 +323,7 @@
                                 <option value="slide-up">⬆️ انزلاق ناعم من الأسفل</option>
                                 <option value="float-elegant">🌊 طفو أنيق مستمر</option>
                                 <option value="reveal-spark">🌟 كشف شراري ذهبي</option>
+                                <option value="flag-flutter">🏴 رفرفة العلم (تموج النص كاملاً)</option>
                             </select>
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
@@ -352,6 +356,13 @@
                 <div class="bg-emerald-900/20 p-5 rounded-xl border border-emerald-900/30 mb-4">
                     <i class="fa-solid fa-clapperboard text-4xl text-emerald-500 mb-3 block"></i>
                     <h3 class="text-white font-bold mb-2">إنتاج وتصدير الفيديو</h3>
+                </div>
+                
+                <!-- عداد الفيديوهات العالمي -->
+                <div class="text-center mb-4">
+                    <span class="bg-emerald-900/40 text-emerald-300 text-xs px-4 py-2 rounded-full border border-emerald-800/50 inline-block shadow-lg">
+                        <i class="fa-solid fa-globe text-emerald-400 mr-1"></i> تم إنشاء <b id="global-video-count" class="text-white text-sm">...</b> فيديو بواسطة المستخدمين
+                    </span>
                 </div>
                 
                 <button id="btn-export" onclick="startExport()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl transition shadow-lg shadow-emerald-600/30 text-sm">
@@ -425,6 +436,16 @@
             applyVideoSettings();
             requestAnimationFrame(renderLoop);
             triggerLivePreview();
+            
+            // جلب عدد الفيديوهات المنشأة عالمياً
+            try {
+                fetch('https://api.counterapi.dev/v1/quran-studio-mody/videos_generated/')
+                    .then(res => res.json())
+                    .then(data => {
+                        let countEl = document.getElementById('global-video-count');
+                        if(countEl) countEl.innerText = data.count || 0;
+                    });
+            } catch(e) { console.log("خطأ في جلب العداد"); }
         };
 
         function triggerLivePreview() {
@@ -496,7 +517,7 @@
         function updateSettings() {
             state.settings = {
                 style: val('highlight-style'), baseC: val('base-color'), hiC: val('highlight-color'),
-                fontF: val('font-family'), fontS: num('font-size'), posY: num('pos-y'), transY: num('trans-y'), bgOp: num('bg-opacity') / 100,
+                fontF: val('font-family'), fontS: num('font-size'), posY: num('pos-y'), transY: num('trans-y'), transColor: val('trans-color'), bgOp: num('bg-opacity') / 100,
                 camOn: document.getElementById('cam-enable').checked, camType: val('cam-type'), camSpeed: num('cam-speed') / 10, filter: val('color-filter'),
                 wmText: val('watermark-text'), logoX: num('logo-x') / 100, logoY: num('logo-y') / 100,
                 infoOn: document.getElementById('info-enable').checked, infoFont: val('info-font'), infoColor: val('info-color'), infoX: num('info-x') / 100, infoY: num('info-y') / 100,
@@ -770,8 +791,21 @@
             if(s.infoOn && globalSurahs.length > 0) {
                 let sName = globalSurahs.find(x => x.number == val('surah'))?.name.replace('سُورَةُ ', '') || "السورة";
                 let rName = document.getElementById('reciter').options[document.getElementById('reciter').selectedIndex].text;
-                ctx.font = `bold 35px ${s.infoFont}`; ctx.fillStyle = s.infoColor; ctx.textAlign = "center"; ctx.shadowColor = "#000"; ctx.shadowBlur = 10;
-                ctx.fillText(`سورة ${sName}`, C_W * s.infoX, C_H * s.infoY); ctx.font = `25px ${s.infoFont}`; ctx.fillStyle = "rgba(255,255,255,0.7)"; ctx.fillText(rName, C_W * s.infoX, (C_H * s.infoY) + 40); ctx.shadowBlur = 0;
+                
+                // تطبيق الخط واللون المخصصين بوضوح
+                ctx.textAlign = "center"; ctx.shadowColor = "#000"; ctx.shadowBlur = 10;
+                
+                // رسم السورة
+                ctx.font = `bold 35px ${s.infoFont}`; 
+                ctx.fillStyle = s.infoColor; 
+                ctx.fillText(`سورة ${sName}`, C_W * s.infoX, C_H * s.infoY); 
+                
+                // رسم اسم القارئ بنفس اللون مع شفافية بسيطة للتفريق
+                ctx.globalAlpha = 0.8;
+                ctx.font = `25px ${s.infoFont}`; 
+                ctx.fillText(rName, C_W * s.infoX, (C_H * s.infoY) + 40); 
+                ctx.globalAlpha = 1.0;
+                ctx.shadowBlur = 0;
             }
 
             let transitionAlpha = 1; 
@@ -813,7 +847,11 @@
                         let wWidth = ctx.measureText(w.text).width; let centerX = startX - (wWidth / 2);
                         let isActive = (!state.audioBuffer) ? true : (timeMs >= w.start && timeMs <= w.end);
                         let wordProgress = (!state.audioBuffer) ? 1 : (isActive ? Math.min(1, (timeMs - w.start) / Math.max(1, w.end - w.start)) : 0);
-                        let useAnim = s.animOn && s.animStyle !== 'none' && isActive && !w.isAyahNum && state.audioBuffer;
+                        
+                        // تعديل: رفرفة العلم تعمل للنص كاملاً حتى لو لم يكن نشطاً كلمة بكلمة
+                        let useAnim = s.animOn && s.animStyle !== 'none' && !w.isAyahNum && state.audioBuffer;
+                        if(s.animStyle !== 'flag-flutter' && !isActive) useAnim = false;
+                        
                         let drawScale = 1, drawOffsetY = 0, drawGlow = 0, drawAlpha = 1, tx = centerX, ty = y;
 
                         if (useAnim) {
@@ -824,6 +862,11 @@
                                 case 'slide-up': let slideEase = 1 - Math.pow(1 - wordProgress, 3); drawOffsetY = (1 - slideEase) * 75 * intensity; drawAlpha = slideEase * 0.4 + 0.6; drawGlow = 18 * intensity; break;
                                 case 'float-elegant': drawOffsetY = Math.sin(timeMs / 650 * speed) * 14 * intensity; drawGlow = 12 * intensity; break;
                                 case 'reveal-spark': drawScale = 0.82 + wordProgress * 0.28 * intensity; drawGlow = wordProgress * 48 * intensity; drawAlpha = wordProgress * 0.35 + 0.65; break;
+                                case 'flag-flutter': 
+                                    // تموج كامل للنص يعتمد على الوقت وموقع الكلمة (X) لتكوين موجة متصلة
+                                    let wavePhase = (tx / (C_W * 0.5)) * Math.PI * 2; 
+                                    drawOffsetY = Math.sin((timeMs / 400 * speed) + wavePhase) * 20 * intensity;
+                                    break;
                             }
                         }
 
@@ -848,7 +891,9 @@
                 if(activePhrase.trans) {
                     let transFontSize = s.fontS * 0.35; 
                     ctx.font = `600 ${transFontSize}px 'Cairo', sans-serif`; 
-                    ctx.fillStyle = "rgba(203, 213, 225, 0.9)"; 
+                    
+                    // استخدام لون الترجمة المخصص
+                    ctx.fillStyle = s.transColor || "#cbd5e1"; 
                     ctx.shadowColor = "rgba(0,0,0,0.8)"; 
                     ctx.shadowBlur = 4; 
                     ctx.shadowOffsetY = 2;
@@ -908,7 +953,19 @@
                     } catch (err) {
                         msg.innerText = "⚠️ تم استخراج فيديو WebM بنجاح (بديل سريع وآمن)!"; msg.classList.replace('text-emerald-400', 'text-amber-400');
                         dLink.href = URL.createObjectURL(videoBlob); dLink.download = `Quran_Studio_${Date.now()}.webm`; dLink.innerHTML = '<i class="fa-solid fa-download ml-1"></i> تحميل الفيديو الأساسي (WebM)'; dLink.className = "mt-4 w-full block bg-amber-600 hover:bg-amber-500 text-white font-bold py-4 rounded-xl transition text-sm text-center"; dLink.classList.remove('hidden'); bar.style.width = "100%"; 
-                    } finally { btn.disabled = false; }
+                    } finally { 
+                        btn.disabled = false; 
+                        
+                        // زيادة العداد وتحديثه في الشاشة
+                        try {
+                            fetch('https://api.counterapi.dev/v1/quran-studio-mody/videos_generated/up')
+                                .then(res => res.json())
+                                .then(data => {
+                                    let countEl = document.getElementById('global-video-count');
+                                    if(countEl) countEl.innerText = data.count;
+                                });
+                        } catch(e) {}
+                    }
                 };
 
                 recorder.start(); let source = exportAudioCtx.createBufferSource(); source.buffer = state.audioBuffer; source.connect(state.analyser); state.analyser.connect(dest); source.connect(exportAudioCtx.destination); 
