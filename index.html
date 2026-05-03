@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Quran Studio - Ultimate Pro</title>
+    <title>Quran Studio - Ultimate Pro V2</title>
     
     <link rel="icon" type="image/png" href="icons/app_logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -117,10 +117,15 @@
                         <div><label class="block text-[10px] text-zinc-500 mb-1">من آية</label><input type="number" id="start-ayah" value="1" min="1" oninput="triggerLivePreview()"></div>
                         <div><label class="block text-[10px] text-zinc-500 mb-1">إلى آية</label><input type="number" id="end-ayah" value="3" min="1" oninput="triggerLivePreview()"></div>
                     </div>
-                    <select id="trans-type" class="mb-2" onchange="triggerLivePreview()">
+                    <!-- تم التعديل هنا لعدم فقدان الصوت عند تغيير الترجمة -->
+                    <label class="block text-xs font-bold text-amber-400 mt-2 mb-2">لغة الترجمة / التفسير</label>
+                    <select id="trans-type" class="mb-2" onchange="updateTranslationOnly()">
                         <option value="none">بدون ترجمة</option>
                         <option value="en.asad">English Translation (Asad)</option>
-                        <option value="ar.muyassar">التفسير الميسر</option>
+                        <option value="ar.muyassar">التفسير الميسر (عربي)</option>
+                        <option value="fr.hamidullah">Français (French)</option>
+                        <option value="ur.jalandhry">Urdu (اردو)</option>
+                        <option value="id.indonesian">Indonesian</option>
                     </select>
                 </div>
 
@@ -144,13 +149,11 @@
             <div id="tab-bg" class="panel-section space-y-3">
                 <div class="bg-amber-900/20 p-3 rounded-lg border border-amber-800/40">
                     <h3 class="text-xs font-bold text-amber-300 mb-2"><i class="fa-solid fa-crop text-amber-500 ml-1"></i> أبعاد وجودة الفيديو</h3>
-                    <label class="text-[10px] text-zinc-400 block mb-1">المقاس والشكل</label>
                     <select id="video-ratio" onchange="applyVideoSettings()" class="w-full bg-amber-950/50 text-amber-100 border border-amber-800/50 mb-2">
                         <option value="portrait">طولي - ريلز / تيك توك / شورتس (9:16)</option>
                         <option value="landscape">عرضي - يوتيوب (16:9)</option>
                         <option value="square">مربع - انستجرام / فيسبوك (1:1)</option>
                     </select>
-                    <label class="text-[10px] text-zinc-400 block mb-1">جودة التصدير (تؤثر على الحجم والسرعة)</label>
                     <select id="video-quality" onchange="applyVideoSettings()" class="w-full bg-amber-950/50 text-amber-100 border border-amber-800/50">
                         <option value="720">720p HD (سريع جداً، حجم صغير)</option>
                         <option value="1080" selected>1080p FHD (جودة عالية الافتراضية)</option>
@@ -163,38 +166,60 @@
                         <div class="file-btn bg-[#27272a] hover:bg-[#3f3f46] text-zinc-200"><i class="fa-solid fa-image text-xl mb-1"></i> رفع صورة<input type="file" accept="image/*" onchange="setBg('global', 'image', this)"></div>
                         <div class="file-btn bg-[#27272a] hover:bg-[#3f3f46] text-zinc-200"><i class="fa-solid fa-video text-xl mb-1"></i> رفع فيديو<input type="file" accept="video/*" onchange="setBg('global', 'video', this)"></div>
                     </div>
-                    <label class="flex justify-between text-[10px] text-zinc-300 mb-1"><span>تعتيم الفيديو</span></label>
+                    <label class="flex justify-between text-[10px] text-zinc-300 mb-1"><span>تعتيم الخلفية (Opacity)</span></label>
                     <input type="range" id="bg-opacity" min="0" max="100" value="60" oninput="updateSettings()">
                 </div>
 
-                <div class="bg-amber-950/20 p-3 rounded-lg border border-amber-900/40">
-                    <h3 class="text-xs font-bold text-amber-300 mb-3 flex items-center"><i class="fa-solid fa-bullseye text-amber-500 ml-1"></i> خلفية خاصة بـ (<span id="bg-ayah-label">الآية 1</span>)</h3>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div class="file-btn bg-amber-900/30 hover:bg-amber-800/50 text-amber-100 border border-amber-800">
-                            <i class="fa-solid fa-image text-lg mb-1"></i> تخصيص صورة<input type="file" accept="image/*" onchange="setBg('ayah', 'image', this)">
+                <!-- الإضافات الإبداعية للسينما والتأثيرات -->
+                <details open>
+                    <summary><i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i> تأثيرات بصرية سينمائية</summary>
+                    <div class="details-body">
+                        <!-- جزيئات الغبار (إضافة جديدة) -->
+                        <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-2">
+                            <input type="checkbox" id="particles-enable" checked onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
+                            <span class="text-[10px] text-zinc-300 font-bold">✨ ذرات غبار نورانية تسبح في الخلفية</span>
+                        </label>
+                        
+                        <!-- الحواف الداكنة (إضافة جديدة) -->
+                        <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-2">
+                            <input type="checkbox" id="vignette-enable" checked onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
+                            <span class="text-[10px] text-zinc-300 font-bold">🌑 حواف داكنة لتركيز الانتباه (Vignette)</span>
+                        </label>
+
+                        <!-- شريط تقدم (إضافة جديدة) -->
+                        <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-4">
+                            <input type="checkbox" id="prog-bar-enable" checked onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
+                            <span class="text-[10px] text-zinc-300 font-bold">📏 شريط تقدم الآية المسموعة أسفل الشاشة</span>
+                        </label>
+
+                        <!-- الجليتش (إضافة جديدة) -->
+                        <div class="border-t border-[#3f3f46] pt-3">
+                            <label class="flex justify-between text-[10px] text-red-400 font-bold mb-1"><span>📺 تأثير التشويش (Glitch / RGB Split)</span> <span id="glitch-int-val">0</span></label>
+                            <input type="range" id="glitch-intensity" min="0" max="50" value="0" class="mb-2 !accent-red-500" oninput="updateSettings(); document.getElementById('glitch-int-val').innerText=this.value;">
+                            <span class="text-[9px] text-zinc-500">اجعله 0 للإلغاء، أو قم بزيادته لتأثير حركي عصري.</span>
                         </div>
-                        <div class="file-btn bg-amber-900/30 hover:bg-amber-800/50 text-amber-100 border border-amber-800">
-                            <i class="fa-solid fa-video text-lg mb-1"></i> تخصيص فيديو<input type="file" accept="video/*" onchange="setBg('ayah', 'video', this)">
+
+                        <!-- التموج המائي القديم -->
+                        <div class="border-t border-[#3f3f46] pt-3 mt-2">
+                            <label class="flex justify-between text-[10px] text-blue-400 font-bold mb-1"><span>💧 تأثير التموج المائي لكامل الفيديو</span> <span id="ripple-int-val">0</span></label>
+                            <input type="range" id="ripple-intensity" min="0" max="50" value="0" class="mb-2 !accent-blue-500" oninput="updateSettings(); document.getElementById('ripple-int-val').innerText=this.value;">
                         </div>
                     </div>
-                    <button id="btn-clear-ayah-bg" onclick="clearAyahBg()" class="hidden w-full mt-3 bg-red-900/50 hover:bg-red-800 text-red-200 text-xs py-2 rounded border border-red-800 transition"><i class="fa-solid fa-trash ml-1"></i> حذف خلفية هذه الآية</button>
-                </div>
-
-                <details open>
-                    <summary><i class="fa-solid fa-video text-amber-500"></i> تأثيرات الكاميرا والفلاتر</summary>
+                </details>
+                
+                <details>
+                    <summary><i class="fa-solid fa-camera text-amber-500"></i> الكاميرا والفلاتر</summary>
                     <div class="details-body">
                         <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-2">
                             <input type="checkbox" id="cam-enable" onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
                             <span class="text-[10px] text-zinc-300 font-bold">تفعيل حركة الكاميرا (ذهاب وعودة)</span>
                         </label>
                         <select id="cam-type" onchange="updateSettings()" class="mb-3">
+                            <option value="combined" selected>حركة عشوائية مركبة سينمائية</option>
                             <option value="zoom">تكبير وتصغير (Zoom In & Out)</option>
                             <option value="pan">تمرير يمين ويسار (Pan L & R)</option>
                             <option value="kenburns">زحف سينمائي (Ken Burns)</option>
-                            <option value="combined" selected>حركة عشوائية مركبة سينمائية</option>
                         </select>
-                        <label class="flex justify-between text-[10px] text-zinc-500 mb-1"><span>سرعة حركة الكاميرا</span> <span id="cam-spd-val">15</span></label>
-                        <input type="range" id="cam-speed" min="1" max="50" value="15" class="mb-3" oninput="updateSettings(); document.getElementById('cam-spd-val').innerText=this.value;">
                         <label class="text-[10px] text-zinc-500 block mb-1">الفلتر اللوني العام</label>
                         <select id="color-filter" onchange="updateSettings()">
                             <option value="none">بدون فلتر</option>
@@ -202,57 +227,49 @@
                             <option value="warm">دافئ سينمائي</option>
                             <option value="cool">أزرق بارد</option>
                         </select>
-                        
-                        <!-- إعدادات تأثير التموج لكامل الفيديو (بدون تهنيج) -->
-                        <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-2 mt-4 border-t border-[#3f3f46] pt-4">
-                            <input type="checkbox" id="ripple-enable" onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
-                            <span class="text-[10px] text-zinc-300 font-bold">تأثير التموج السائل / المائي لكامل الفيديو (سريع جداً)</span>
-                        </label>
-                        <label class="flex justify-between text-[10px] text-zinc-500 mb-1"><span>قوة التموج</span> <span id="ripple-int-val">15</span></label>
-                        <input type="range" id="ripple-intensity" min="0" max="50" value="15" class="mb-3" oninput="updateSettings(); document.getElementById('ripple-int-val').innerText=this.value;">
                     </div>
                 </details>
             </div>
 
             <div id="tab-brand" class="panel-section space-y-3">
                 <details open>
-                    <summary><i class="fa-solid fa-stamp text-amber-500"></i> اللوجو (العلامة المائية)</summary>
+                    <summary><i class="fa-solid fa-stamp text-amber-500"></i> اللوجو (صورة وعلامة مائية)</summary>
                     <div class="details-body border-b border-[#3f3f46] pb-3">
                         <div class="file-btn bg-[#27272a] hover:bg-[#3f3f46] text-zinc-200 mb-2 text-[10px] p-2">
                             <i class="fa-solid fa-upload"></i> رفع صورة اللوجو
                             <input type="file" accept="image/png, image/jpeg" onchange="loadLogo(this)">
                         </div>
-                        <input type="text" id="watermark-text" placeholder="أو اكتب نص العلامة المائية هنا..." value="MAHMOUDSHOKRI7" class="mb-2" oninput="updateSettings()">
-                        <div class="grid grid-cols-2 gap-2">
-                            <div><label class="text-[9px] text-zinc-500 block">موقع العرض (X)</label><input type="range" id="logo-x" min="0" max="100" value="50" oninput="updateSettings()"></div>
-                            <div><label class="text-[9px] text-zinc-500 block">موقع الارتفاع (Y)</label><input type="range" id="logo-y" min="0" max="100" value="10" oninput="updateSettings()"></div>
+                        
+                        <!-- إضافات تحكم اللوجو -->
+                        <label class="text-[9px] text-zinc-400 block mb-1">حجم صورة اللوجو تكبير/تصغير</label>
+                        <input type="range" id="logo-scale" min="10" max="100" value="30" oninput="updateSettings()" class="mb-3">
+
+                        <hr class="border-[#3f3f46] my-2">
+                        <label class="text-[9px] text-zinc-400 block mb-1">النص (العلامة المائية)</label>
+                        <input type="text" id="watermark-text" placeholder="اكتب نص العلامة المائية هنا..." value="MAHMOUDSHOKRI7" class="mb-2" oninput="updateSettings()">
+                        
+                        <div class="grid grid-cols-2 gap-2 mb-2">
+                            <div>
+                                <label class="text-[9px] text-zinc-400 block mb-1">خط النص</label>
+                                <select id="wm-font" onchange="updateSettings()" class="!p-1">
+                                    <option value="'Cairo'">كايرو</option>
+                                    <option value="'ReemKufi'">ريم كوفي</option>
+                                    <option value="Arial">Arial</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[9px] text-zinc-400 block mb-1">حجم النص</label>
+                                <input type="range" id="wm-size" min="10" max="100" value="28" oninput="updateSettings()">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 mt-2">
+                            <div><label class="text-[9px] text-amber-500 font-bold block">موقع العرض (X)</label><input type="range" id="logo-x" min="0" max="100" value="50" oninput="updateSettings()"></div>
+                            <div><label class="text-[9px] text-amber-500 font-bold block">موقع الارتفاع (Y)</label><input type="range" id="logo-y" min="0" max="100" value="10" oninput="updateSettings()"></div>
                         </div>
                     </div>
                 </details>
                 
-                <details open>
-                    <summary><i class="fa-solid fa-user text-amber-500"></i> معلومات السورة والقارئ</summary>
-                    <div class="details-body border-b border-[#3f3f46] pb-3">
-                        <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-2">
-                            <input type="checkbox" id="info-enable" checked onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
-                            <span class="text-[10px] text-zinc-300 font-bold">إظهار الأسماء في الفيديو</span>
-                        </label>
-                        <div class="grid grid-cols-2 gap-2 mb-2">
-                            <select id="info-font" onchange="updateSettings()">
-                                <option value="'Cairo'">خط كايرو</option>
-                                <option value="'Kitab'">خط كتاب بولد</option>
-                                <option value="'ReemKufi'">خط ريم كوفي</option>
-                                <option value="'Hafs'">خط حفص</option>
-                            </select>
-                            <input type="color" id="info-color" value="#ffffff" onchange="updateSettings()" class="h-10 p-0 border-0 rounded">
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div><label class="text-[9px] text-zinc-500 block">موقع العرض (X)</label><input type="range" id="info-x" min="0" max="100" value="50" oninput="updateSettings()"></div>
-                            <div><label class="text-[9px] text-zinc-500 block">موقع الارتفاع (Y)</label><input type="range" id="info-y" min="0" max="100" value="85" oninput="updateSettings()"></div>
-                        </div>
-                    </div>
-                </details>
-
                 <details open>
                     <summary><i class="fa-solid fa-wave-square text-amber-500"></i> الموجات الصوتية</summary>
                     <div class="details-body">
@@ -261,7 +278,14 @@
                             <span class="text-[10px] text-zinc-300 font-bold">تفعيل الموجات الصوتية</span>
                         </label>
                         <div class="grid grid-cols-2 gap-2 mb-2">
-                            <select id="viz-style" onchange="updateSettings()"><option value="bars">أعمدة</option><option value="wave">موجة</option><option value="dots">نقاط</option></select>
+                            <!-- تمت إضافة موجات جديدة -->
+                            <select id="viz-style" onchange="updateSettings()">
+                                <option value="bars">أعمدة سفلية</option>
+                                <option value="wave">خط متصل</option>
+                                <option value="dots">نقاط متناثرة</option>
+                                <option value="symmetric">أعمدة متناظرة (جديد)</option>
+                                <option value="circle">موجة دائرية (جديد)</option>
+                            </select>
                             <input type="color" id="viz-color" value="#f59e0b" onchange="updateSettings()" class="h-10 p-0 border-0 rounded">
                         </div>
                         <div class="grid grid-cols-2 gap-2">
@@ -286,20 +310,30 @@
                         <option value="'Muhammadi'">خط محمدي</option>
                         <option value="'NotoNaskh'">نوتو نسخ (Noto Naskh)</option>
                         <option value="'Saleem'">خط سليم (PDMS Saleem)</option>
-                        <option value="'AyatQuran'">آيات قرآن (AyatQuran)</option>
                     </select>
 
-                    <label class="text-[10px] text-zinc-500 block mb-1">تأثير التلوين</label>
+                    <label class="text-[10px] text-zinc-500 block mb-1">نمط تلوين الكلمة المقروءة</label>
+                    <!-- ستايلات تلوين جديدة -->
                     <select id="highlight-style" onchange="updateSettings()" class="mb-3">
-                        <option value="quran-gold">✨ تلوين ذهبي للكلمة</option>
+                        <option value="quran-gold">✨ لون سادة للكلمة المقروءة</option>
                         <option value="center-focus">👁️ إظهار كلمة بكلمة في المنتصف</option>
-                        <option value="nur-glow">🌟 إضاءة نورانية متوهجة</option>
                         <option value="quran-dim">🌑 إضاءة خافتة للباقي</option>
+                        <option value="gradient-fill">🌈 تعبئة متدرجة سينمائية (جديد)</option>
+                        <option value="neon-border">🌟 إضاءة نيون قوية حول الكلمة (جديد)</option>
                     </select>
 
                     <div class="grid grid-cols-2 gap-3 mb-3">
                         <div><label class="text-[10px] text-zinc-500 block mb-1">اللون الأساسي</label><input type="color" id="base-color" value="#ffffff" oninput="updateSettings()" class="h-10 p-0 border-0 rounded"></div>
-                        <div><label class="text-[10px] text-zinc-500 block mb-1">لون التمييز</label><input type="color" id="highlight-color" value="#fbbf24" oninput="updateSettings()" class="h-10 p-0 border-0 rounded"></div>
+                        <div><label class="text-[10px] text-zinc-500 block mb-1">لون التمييز (المقروء)</label><input type="color" id="highlight-color" value="#fbbf24" oninput="updateSettings()" class="h-10 p-0 border-0 rounded"></div>
+                    </div>
+
+                    <!-- إضافة خيار الحواف (Stroke) -->
+                    <div class="mt-2 mb-3 bg-[#09090b] p-2 rounded border border-[#27272a]">
+                        <label class="text-[10px] text-emerald-400 font-bold block mb-1">🖌️ حواف النص (Stroke)</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div><label class="text-[9px] text-zinc-500 block">سُمك الحافة</label><input type="range" id="stroke-width" min="0" max="10" value="0" oninput="updateSettings()"></div>
+                            <div><label class="text-[9px] text-zinc-500 block">لون الحافة</label><input type="color" id="stroke-color" value="#000000" oninput="updateSettings()" class="h-6 p-0 border-0 rounded w-full"></div>
+                        </div>
                     </div>
 
                     <div>
@@ -322,15 +356,16 @@
                         <div class="details-body pt-4 border-t border-amber-800/30">
                             <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-3">
                                 <input type="checkbox" id="anim-enable" checked onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
-                                <span class="text-[10px] text-zinc-300 font-bold">تفعيل أنيميشن النص القرآني</span>
+                                <span class="text-[10px] text-zinc-300 font-bold">تفعيل حركة للكلمة المقروءة</span>
                             </label>
+                            <!-- تمت إضافة حركات جديدة -->
                             <select id="anim-style" onchange="updateSettings()" class="mb-3">
                                 <option value="none">بدون أنيميشن (ثابت)</option>
-                                <option value="pulse-glow" selected>✨ نبض ذهبي متوهج</option>
-                                <option value="pop-scale">🔥 انفجار تكبير خفيف</option>
+                                <option value="pulse-glow" selected>✨ نبض ذهبي خفيف</option>
+                                <option value="pop-scale">🔥 انفجار تكبير سريع</option>
                                 <option value="slide-up">⬆️ انزلاق ناعم من الأسفل</option>
-                                <option value="float-elegant">🌊 طفو أنيق مستمر</option>
-                                <option value="reveal-spark">🌟 كشف شراري ذهبي</option>
+                                <option value="typewriter">⌨️ كتابة متدرجة (جديد)</option>
+                                <option value="rotate-in">🔄 دوران وانبثاق (جديد)</option>
                             </select>
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
@@ -365,13 +400,6 @@
                     <h3 class="text-white font-bold mb-2">إنتاج وتصدير الفيديو</h3>
                 </div>
                 
-                <!-- عداد الفيديوهات العالمي -->
-                <div class="text-center mb-4">
-                    <span class="bg-emerald-900/40 text-emerald-300 text-xs px-4 py-2 rounded-full border border-emerald-800/50 inline-block shadow-lg">
-                        <i class="fa-solid fa-globe text-emerald-400 mr-1"></i> تم إنشاء <b id="global-video-count" class="text-white text-sm">...</b> فيديو بواسطة المستخدمين
-                    </span>
-                </div>
-                
                 <button id="btn-export" onclick="startExport()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl transition shadow-lg shadow-emerald-600/30 text-sm">
                     <i class="fa-solid fa-rocket ml-1"></i> بدء التصدير
                 </button>
@@ -404,7 +432,6 @@
         const canvas = document.getElementById('video-canvas');
         const ctx = canvas.getContext('2d');
         
-        // خادم مخفي لرسم التأثيرات الثقيلة (Optimized)
         const offCanvas = document.createElement('canvas');
         const offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
         
@@ -425,14 +452,20 @@
 
         const audioPlayer = document.getElementById('audio-player');
         
+        // نظام الجزيئات المبتكر
+        let particles = Array.from({length: 60}).map(() => ({
+            x: Math.random(), y: Math.random(),
+            speedY: 0.2 + Math.random() * 0.5, speedX: -0.2 + Math.random() * 0.4,
+            size: 0.5 + Math.random() * 2, opacity: Math.random(),
+            phase: Math.random() * Math.PI * 2
+        }));
+        
         window.onload = async () => {
             try {
                 let resS = await fetch('./surahs.json');
                 globalSurahs = await resS.json();
                 const sSelect = document.getElementById('surah');
-                globalSurahs.forEach(s => {
-                    sSelect.options.add(new Option(`${s.number}. ${s.name} (${s.numberOfAyahs} آية)`, s.number));
-                });
+                globalSurahs.forEach(s => { sSelect.options.add(new Option(`${s.number}. ${s.name} (${s.numberOfAyahs} آية)`, s.number)); });
             } catch(e) {}
 
             try {
@@ -440,25 +473,42 @@
                 globalQuran = await resQ.json();
             } catch(e) {}
 
-            document.getElementById('pos-y').value = 40;
-            document.getElementById('trans-y').value = 55;
-            document.getElementById('viz-y').value = 95;
-            
             applyVideoSettings();
             requestAnimationFrame(renderLoop);
             triggerLivePreview();
-            
-            // جلب عدد الفيديوهات المنشأة عالمياً
-            try {
-                fetch('https://api.counterapi.dev/v1/quran-studio-mody/videos_generated/')
-                    .then(res => res.json())
-                    .then(data => {
-                        let countEl = document.getElementById('global-video-count');
-                        if(countEl) countEl.innerText = data.count || 0;
-                    });
-            } catch(e) { console.log("خطأ في جلب العداد"); }
         };
 
+        // دالة جديدة لتحديث الترجمة فقط دون مسح الصوت والمزامنة!
+        async function updateTranslationOnly() {
+            if(!globalQuran || state.phrases.length === 0) return;
+            const surah = document.getElementById('surah').value;
+            const tType = document.getElementById('trans-type').value;
+            
+            let dataTr = null;
+            if (tType !== 'none') {
+                try { 
+                    let resTr = await fetch(`https://api.alquran.cloud/v1/surah/${surah}/${tType}`); 
+                    let jsonTr = await resTr.json(); 
+                    dataTr = jsonTr.data.ayahs; 
+                } catch(e){}
+            }
+
+            // تحديث نص الترجمة في الـ State الحالي مباشرة
+            for (let i = 0; i < state.phrases.length; i++) {
+                let verseNum = state.phrases[i].num;
+                state.phrases[i].trans = dataTr ? dataTr[verseNum-1].text : "";
+            }
+            
+            // إذا كان هناك بيانات أصلية محفوظة للتراجع عن القص، نحدثها أيضاً
+            if(state.originalPhrases) {
+                for (let i = 0; i < state.originalPhrases.length; i++) {
+                    let verseNum = state.originalPhrases[i].num;
+                    state.originalPhrases[i].trans = dataTr ? dataTr[verseNum-1].text : "";
+                }
+            }
+        }
+
+        // جلب الآيات كلياً (يحدث عند تغيير السورة أو رقم الآيات)
         function triggerLivePreview() {
             clearTimeout(previewDebounce);
             previewDebounce = setTimeout(async () => {
@@ -493,9 +543,7 @@
                     let wordsData = wordsArr.map((w) => ({
                         text: w, start: 0, end: 1000000, newPage: false, newLine: false, isAyahNum: false
                     }));
-
                     wordsData.push({ text: toArabicNumber(i), start: 0, end: 1000000, newPage: false, newLine: false, isAyahNum: true });
-
                     newPhrases.push({ num: i, startTime: 0, endTime: 1000000, words: wordsData, trans: transText });
                 }
 
@@ -530,11 +578,14 @@
         function updateSettings() {
             state.settings = {
                 style: val('highlight-style'), baseC: val('base-color'), hiC: val('highlight-color'),
+                strokeW: num('stroke-width'), strokeC: val('stroke-color'),
                 fontF: val('font-family'), fontS: num('font-size'), posY: num('pos-y'), transY: num('trans-y'), transColor: val('trans-color'), bgOp: num('bg-opacity') / 100,
-                camOn: document.getElementById('cam-enable').checked, camType: val('cam-type'), camSpeed: num('cam-speed') / 10, filter: val('color-filter'),
-                rippleOn: document.getElementById('ripple-enable').checked, rippleInt: num('ripple-intensity'),
-                wmText: val('watermark-text'), logoX: num('logo-x') / 100, logoY: num('logo-y') / 100,
-                infoOn: document.getElementById('info-enable').checked, infoFont: val('info-font'), infoColor: val('info-color'), infoX: num('info-x') / 100, infoY: num('info-y') / 100,
+                camOn: document.getElementById('cam-enable').checked, camType: val('cam-type'), filter: val('color-filter'),
+                rippleInt: num('ripple-intensity'), glitchInt: num('glitch-intensity'), 
+                partOn: document.getElementById('particles-enable').checked,
+                vigOn: document.getElementById('vignette-enable').checked,
+                progOn: document.getElementById('prog-bar-enable').checked,
+                wmText: val('watermark-text'), wmFont: val('wm-font'), wmSize: num('wm-size'), logoScale: num('logo-scale') / 100, logoX: num('logo-x') / 100, logoY: num('logo-y') / 100,
                 vizOn: document.getElementById('viz-enable').checked, vizStyle: val('viz-style'), vizColor: val('viz-color'), vizX: num('viz-x') / 100, vizY: num('viz-y') / 100,
                 animOn: document.getElementById('anim-enable').checked, animStyle: val('anim-style'), animInt: num('anim-intensity') / 100, animSpeed: num('anim-speed')
             };
@@ -546,10 +597,7 @@
             if(type === 'video') { mediaObj.muted = true; mediaObj.loop = true; mediaObj.playsInline = true; mediaObj.preload = "auto"; mediaObj.disablePictureInPicture = true; mediaObj.src = url; mediaObj.load(); mediaObj.play().catch(e=>{}); } 
             else { mediaObj.src = url; }
             if(target === 'global') { state.globalBg = { type, media: mediaObj }; } 
-            else { if(state.phrases.length === 0) return alert("قم باختيار الآيات أولاً."); let ayahNum = state.phrases[state.currentIndex].num; state.ayahBgs[ayahNum] = { type, media: mediaObj }; updatePreviewUI(); }
         }
-
-        function clearAyahBg() { if(state.phrases.length === 0) return; let ayahNum = state.phrases[state.currentIndex].num; delete state.ayahBgs[ayahNum]; updatePreviewUI(); }
 
         function changeAyah(step) {
             if(state.phrases.length === 0) return; state.currentIndex += step;
@@ -561,8 +609,6 @@
         function updatePreviewUI() {
             if(state.phrases.length === 0) return; let item = state.phrases[state.currentIndex];
             let lbl = document.getElementById('preview-ayah-label'); if(lbl) lbl.innerText = `معاينة الآية: ${item.num}`;
-            let bgLbl = document.getElementById('bg-ayah-label'); if(bgLbl) bgLbl.innerText = `الآية ${item.num}`;
-            let btnClear = document.getElementById('btn-clear-ayah-bg'); if(btnClear) { let hasCustom = state.ayahBgs[item.num] && state.ayahBgs[item.num].type !== 'none'; btnClear.style.display = hasCustom ? 'block' : 'none'; }
             document.querySelectorAll('.segment-block').forEach(b => b.classList.remove('active')); let block = document.getElementById(`block-${state.currentIndex}`); if(block) block.classList.add('active');
         }
 
@@ -621,7 +667,7 @@
                         if(activeIdx !== -1 && activeIdx !== state.currentIndex) { state.currentIndex = activeIdx; updatePreviewUI(); }
                     }
                 };
-            } catch (e) { console.error(e); } finally { btnText.parentElement.classList.remove('opacity-50', 'pointer-events-none'); }
+            } catch (e) { console.error(e); alert("فشل جلب بعض الصوتيات."); } finally { btnText.parentElement.classList.remove('opacity-50', 'pointer-events-none'); }
         }
 
         function showContextMenu(pIdx, wIdx, el, event) {
@@ -698,7 +744,7 @@
                 let div = document.createElement('div'); div.className = 'segment-block'; div.id = `block-${i}`;
                 let isAudioReady = !!state.audioBuffer;
                 div.innerHTML = `
-                    <div class="segment-header cursor-pointer" onclick="changeAyah(${i - state.currentIndex}); event.stopPropagation();">
+                    <div class="segment-header cursor-pointer text-amber-500 font-bold p-2 bg-[#27272a] text-xs flex justify-between" onclick="changeAyah(${i - state.currentIndex}); event.stopPropagation();">
                         <span>الآية ${p.num}</span><span>${isAudioReady ? formatTime(p.startTime/1000) : '-:-'}</span>
                     </div>
                     <div class="p-3 text-center text-sm text-zinc-300 leading-relaxed font-bold" style="font-family: 'Amiri Quran', serif; direction:rtl;">
@@ -766,75 +812,104 @@
             let activePhrase = null;
             if (!state.audioBuffer && state.phrases.length > 0) {
                 activePhrase = state.phrases[state.currentIndex];
-            } else {
+            } else if (state.phrases.length > 0) {
                 activePhrase = state.phrases.find(p => timeMs >= p.startTime && timeMs <= p.endTime);
             }
             
+            // 1. رسم الخلفية والكاميرا
             offCtx.save();
             if (s.camOn) {
-                let speedMultiplier = s.camSpeed || 1.5; let t = (timeMs / 1000) * 0.05 * speedMultiplier; let scale = 1, tx = 0, ty = 0;
-                if (s.camType === 'zoom') { scale = 1 + ((Math.sin(t * 2) + 1) / 2) * 0.3; } else if (s.camType === 'pan') { tx = Math.sin(t * 2) * 80; scale = 1.15; } else if (s.camType === 'kenburns') { scale = 1 + ((Math.sin(t * 1.5) + 1) / 2) * 0.2; tx = Math.sin(t * 1.8) * 60; ty = Math.cos(t * 1.3) * 30; scale *= 1.1; } else if (s.camType === 'combined') { scale = 1 + ((Math.sin(t * 2.2) * Math.cos(t * 1.5) + 1) / 2) * 0.35; tx = (Math.sin(t * 1.7) + Math.cos(t * 1.1)) * 50; ty = (Math.cos(t * 1.9) + Math.sin(t * 1.4)) * 30; scale *= 1.2; }
+                let speedMultiplier = 1.5; let t = (timeMs / 1000) * 0.05 * speedMultiplier; let scale = 1, tx = 0, ty = 0;
+                if (s.camType === 'zoom') { scale = 1 + ((Math.sin(t * 2) + 1) / 2) * 0.3; } 
+                else if (s.camType === 'pan') { tx = Math.sin(t * 2) * 80; scale = 1.15; } 
+                else if (s.camType === 'kenburns') { scale = 1 + ((Math.sin(t * 1.5) + 1) / 2) * 0.2; tx = Math.sin(t * 1.8) * 60; ty = Math.cos(t * 1.3) * 30; scale *= 1.1; } 
+                else if (s.camType === 'combined') { scale = 1 + ((Math.sin(t * 2.2) * Math.cos(t * 1.5) + 1) / 2) * 0.35; tx = (Math.sin(t * 1.7) + Math.cos(t * 1.1)) * 50; ty = (Math.cos(t * 1.9) + Math.sin(t * 1.4)) * 30; scale *= 1.2; }
                 offCtx.translate(C_W/2, C_H/2); offCtx.scale(scale, scale); offCtx.translate(-C_W/2 + tx, -C_H/2 + ty);
             }
 
             let bg = state.globalBg;
-            if(activePhrase && state.ayahBgs[activePhrase.num] && state.ayahBgs[activePhrase.num].type !== 'none') { bg = state.ayahBgs[activePhrase.num]; }
-
             if(bg.type !== 'none' && bg.media) {
-                if(bg.type === 'video' && bg.media.readyState >= 2) { drawCover(offCtx, bg.media, bg.media.videoWidth, bg.media.videoHeight); } else if(bg.type === 'image') { drawCover(offCtx, bg.media, bg.media.width, bg.media.height); }
+                if(bg.type === 'video' && bg.media.readyState >= 2) { drawCover(offCtx, bg.media, bg.media.videoWidth, bg.media.videoHeight); } 
+                else if(bg.type === 'image') { drawCover(offCtx, bg.media, bg.media.width, bg.media.height); }
             } else {
                 let grad = offCtx.createLinearGradient(0,0,0,C_H); grad.addColorStop(0,"#18181b"); grad.addColorStop(1,"#09090b"); offCtx.fillStyle = grad; offCtx.fillRect(0,0,C_W,C_H);
             }
             offCtx.restore();
 
+            // فلاتر الألوان
             if(s.filter === 'bw') { offCtx.globalCompositeOperation='saturation'; offCtx.fillStyle='white'; offCtx.fillRect(0,0,C_W,C_H); offCtx.globalCompositeOperation='source-over'; }
             if(s.filter === 'warm') { offCtx.fillStyle='rgba(245, 158, 11, 0.15)'; offCtx.fillRect(0,0,C_W,C_H); }
             if(s.filter === 'cool') { offCtx.fillStyle='rgba(14, 165, 233, 0.15)'; offCtx.fillRect(0,0,C_W,C_H); }
             offCtx.fillStyle = `rgba(0,0,0,${s.bgOp || 0.5})`; offCtx.fillRect(0,0,C_W,C_H);
 
+            // الجزيئات الغبارية السينمائية
+            if(s.partOn) {
+                offCtx.fillStyle = 'rgba(255, 215, 0, 0.6)';
+                particles.forEach(p => {
+                    p.y -= p.speedY; p.x += Math.sin(timeMs/1000 + p.phase) * p.speedX;
+                    if(p.y < 0) { p.y = 1.1; p.x = Math.random(); }
+                    offCtx.globalAlpha = p.opacity * 0.8;
+                    offCtx.beginPath(); offCtx.arc(p.x * C_W, p.y * C_H, p.size, 0, Math.PI*2); offCtx.fill();
+                });
+                offCtx.globalAlpha = 1;
+            }
+
+            // الموجات الصوتية مع الأشكال الجديدة
             if(s.vizOn && state.analyser && (!audioPlayer.paused || state.isExporting)) {
                 state.analyser.getByteFrequencyData(state.dataArray);
-                let dl = state.dataArray.length; let activeData = state.dataArray.slice(0, Math.floor(dl * 0.7)); let count = activeData.length;
-                let totalWaveWidth = C_W * 0.6; let barW = (totalWaveWidth / count) / 2; let startX = C_W * s.vizX; let baseY = C_H * s.vizY;
+                let count = Math.floor(state.dataArray.length * 0.7); 
+                let startX = C_W * s.vizX; let baseY = C_H * s.vizY;
 
-                offCtx.shadowColor = s.vizColor; offCtx.shadowBlur = 10; offCtx.fillStyle = s.vizColor; offCtx.strokeStyle = s.vizColor; offCtx.lineWidth = barW * 0.8; offCtx.lineCap = "round"; 
+                offCtx.shadowColor = s.vizColor; offCtx.shadowBlur = 15; offCtx.fillStyle = s.vizColor; offCtx.strokeStyle = s.vizColor; offCtx.lineCap = "round"; 
                 offCtx.beginPath();
-                for(let i=0; i < count; i++) {
-                    let val = activeData[i]; let h = (val / 255) * 40; if(h < 2) h = 2; 
-                    let xRight = startX + (i * (barW * 2.5)); let xLeft = startX - (i * (barW * 2.5));
-
-                    if(s.vizStyle === 'bars') { offCtx.moveTo(xRight, baseY); offCtx.lineTo(xRight, baseY - h); if(i !== 0) { offCtx.moveTo(xLeft, baseY); offCtx.lineTo(xLeft, baseY - h); } } 
-                    else if (s.vizStyle === 'dots') { offCtx.moveTo(xRight, baseY - h); offCtx.arc(xRight, baseY - h, barW, 0, Math.PI*2); if(i !== 0) { offCtx.moveTo(xLeft, baseY - h); offCtx.arc(xLeft, baseY - h, barW, 0, Math.PI*2); } } 
-                    else if (s.vizStyle === 'wave') { if (i === 0) { offCtx.moveTo(xRight, baseY - h); } else { offCtx.lineTo(xRight, baseY - h); } }
+                
+                if (s.vizStyle === 'circle') {
+                    let radius = 80; offCtx.lineWidth = 4;
+                    for(let i=0; i < count; i++) {
+                        let val = state.dataArray[i]; let h = (val / 255) * 50;
+                        let angle = (i / count) * Math.PI * 2;
+                        let x1 = startX + Math.cos(angle) * radius; let y1 = baseY + Math.sin(angle) * radius;
+                        let x2 = startX + Math.cos(angle) * (radius + h); let y2 = baseY + Math.sin(angle) * (radius + h);
+                        offCtx.moveTo(x1, y1); offCtx.lineTo(x2, y2);
+                    }
+                } else if (s.vizStyle === 'symmetric') {
+                    let barW = (C_W * 0.5) / count; offCtx.lineWidth = barW * 0.8;
+                    for(let i=0; i < count; i++) {
+                        let h = (state.dataArray[i] / 255) * 60; if(h < 2) h = 2;
+                        let x = startX - (C_W*0.25) + (i * barW);
+                        offCtx.moveTo(x, baseY - h/2); offCtx.lineTo(x, baseY + h/2);
+                    }
+                } else {
+                    let barW = ((C_W * 0.6) / count) / 2; offCtx.lineWidth = barW * 0.8;
+                    for(let i=0; i < count; i++) {
+                        let h = (state.dataArray[i] / 255) * 50; if(h < 2) h = 2; 
+                        let xR = startX + (i * (barW * 2.5)); let xL = startX - (i * (barW * 2.5));
+                        if(s.vizStyle === 'bars') { offCtx.moveTo(xR, baseY); offCtx.lineTo(xR, baseY - h); if(i!==0){ offCtx.moveTo(xL, baseY); offCtx.lineTo(xL, baseY - h); } } 
+                        else if (s.vizStyle === 'dots') { offCtx.moveTo(xR, baseY-h); offCtx.arc(xR, baseY-h, barW, 0, Math.PI*2); if(i!==0){ offCtx.moveTo(xL, baseY-h); offCtx.arc(xL, baseY-h, barW, 0, Math.PI*2); } } 
+                        else if (s.vizStyle === 'wave') { if(i===0) offCtx.moveTo(xR, baseY-h); else offCtx.lineTo(xR, baseY-h); }
+                    }
                 }
                 offCtx.stroke(); offCtx.fill(); offCtx.shadowBlur = 0; 
             }
 
+            // اللوجو المائي والتطويرات
+            let logoOffset = 0;
             if(state.logoImage) {
-                let imgW = state.logoImage.width; let imgH = state.logoImage.height; if(imgW > C_W * 0.3) { let ratio = (C_W * 0.3) / imgW; imgW *= ratio; imgH *= ratio; }
+                let imgW = state.logoImage.width; let imgH = state.logoImage.height; 
+                let maxW = C_W * s.logoScale; if(imgW > maxW) { let ratio = maxW / imgW; imgW *= ratio; imgH *= ratio; }
                 offCtx.drawImage(state.logoImage, (C_W * s.logoX) - (imgW/2), (C_H * s.logoY) - (imgH/2), imgW, imgH);
+                logoOffset = (imgH/2) + 20;
             }
             if(s.wmText) { 
-                offCtx.font = `bold 28px 'Cairo', sans-serif`; 
-                offCtx.fillStyle = "rgba(255,255,255,0.35)"; 
-                offCtx.textAlign = "center"; 
-                offCtx.fillText(s.wmText, C_W * s.logoX, (C_H * s.logoY) + (state.logoImage ? 60 : 0)); 
-            }
-            if(s.infoOn && globalSurahs.length > 0) {
-                let sName = globalSurahs.find(x => x.number == val('surah'))?.name.replace('سُورَةُ ', '') || "السورة";
-                let rName = document.getElementById('reciter').options[document.getElementById('reciter').selectedIndex].text;
-                
-                offCtx.textAlign = "center"; offCtx.shadowColor = "#000"; offCtx.shadowBlur = 10;
-                offCtx.font = `bold 35px ${s.infoFont}`; offCtx.fillStyle = s.infoColor; 
-                offCtx.fillText(`سورة ${sName}`, C_W * s.infoX, C_H * s.infoY); 
-                
-                offCtx.globalAlpha = 0.8; offCtx.font = `25px ${s.infoFont}`; 
-                offCtx.fillText(rName, C_W * s.infoX, (C_H * s.infoY) + 40); 
-                offCtx.globalAlpha = 1.0; offCtx.shadowBlur = 0;
+                offCtx.font = `bold ${s.wmSize}px ${s.wmFont}`; 
+                offCtx.fillStyle = "rgba(255,255,255,0.4)"; 
+                offCtx.textAlign = "center"; offCtx.textBaseline = "middle";
+                offCtx.fillText(s.wmText, C_W * s.logoX, (C_H * s.logoY) + logoOffset); 
             }
 
             let transitionAlpha = 1; 
 
+            // كتابة القرآن
             if (activePhrase) {
                 let screens = []; let currentScreen = [];
                 activePhrase.words.forEach(w => { if (w.newPage && currentScreen.length > 0) { screens.push(currentScreen); currentScreen = []; } currentScreen.push(w); });
@@ -874,32 +949,59 @@
                         let wordProgress = (!state.audioBuffer) ? 1 : (isActive ? Math.min(1, (timeMs - w.start) / Math.max(1, w.end - w.start)) : 0);
                         
                         let useAnim = s.animOn && s.animStyle !== 'none' && isActive && !w.isAyahNum && state.audioBuffer;
-                        let drawScale = 1, drawOffsetY = 0, drawGlow = 0, drawAlpha = 1, tx = centerX, ty = y;
+                        let drawScale = 1, drawOffsetY = 0, drawGlow = 0, drawAlpha = 1, tx = centerX, ty = y, drawRotation = 0;
 
                         if (useAnim) {
                             const intensity = s.animInt || 0.7; const speed = s.animSpeed || 1.5;
                             switch (s.animStyle) {
-                                case 'pulse-glow': let pulse = Math.sin(wordProgress * Math.PI * 4 * speed) * 0.5 + 0.5; drawScale = 1 + pulse * 0.12 * intensity; drawGlow = 20 + pulse * 30 * intensity; drawAlpha = 0.95 + pulse * 0.1; break;
-                                case 'pop-scale': let popEase = Math.pow(wordProgress, 0.4); drawScale = 0.75 + popEase * 0.45 * intensity; drawGlow = 15 * intensity; break;
-                                case 'slide-up': let slideEase = 1 - Math.pow(1 - wordProgress, 3); drawOffsetY = (1 - slideEase) * 75 * intensity; drawAlpha = slideEase * 0.4 + 0.6; drawGlow = 18 * intensity; break;
-                                case 'float-elegant': drawOffsetY = Math.sin(timeMs / 650 * speed) * 14 * intensity; drawGlow = 12 * intensity; break;
-                                case 'reveal-spark': drawScale = 0.82 + wordProgress * 0.28 * intensity; drawGlow = wordProgress * 48 * intensity; drawAlpha = wordProgress * 0.35 + 0.65; break;
+                                case 'pulse-glow': let pulse = Math.sin(wordProgress * Math.PI * 4 * speed) * 0.5 + 0.5; drawScale = 1 + pulse * 0.1 * intensity; drawGlow = 20 + pulse * 30 * intensity; break;
+                                case 'pop-scale': drawScale = 0.75 + Math.pow(wordProgress, 0.4) * 0.45 * intensity; break;
+                                case 'slide-up': drawOffsetY = (1 - (1 - Math.pow(1 - wordProgress, 3))) * 75 * intensity; drawAlpha = wordProgress * 0.6 + 0.4; break;
+                                case 'typewriter': 
+                                    let charsToShow = Math.floor(wordProgress * w.text.length); 
+                                    w.drawText = w.text.substring(0, charsToShow); 
+                                    if(charsToShow === w.text.length) w.drawText = w.text; 
+                                    break;
+                                case 'rotate-in': drawRotation = (1 - Math.pow(wordProgress, 0.5)) * Math.PI * intensity; drawScale = wordProgress; drawAlpha = wordProgress; break;
                             }
                         }
 
                         offCtx.shadowBlur = 0;
-                        if (isActive) { offCtx.fillStyle = (!state.audioBuffer) ? s.baseC : s.hiC; offCtx.shadowColor = s.hiC; offCtx.shadowBlur = (!state.audioBuffer) ? 0 : ((s.style === 'nur-glow' ? 25 : 0) + drawGlow);
-                        } else { offCtx.fillStyle = s.baseC; offCtx.globalAlpha = (s.style === 'quran-dim') ? 0.2 : 0.85; }
+                        
+                        // تجهيز ألوان الكلمة (متدرج، نيون، عادي)
+                        if (isActive && state.audioBuffer) { 
+                            if(s.style === 'gradient-fill') {
+                                let grd = offCtx.createLinearGradient(centerX - wWidth/2, y - lineH/2, centerX + wWidth/2, y + lineH/2);
+                                grd.addColorStop(0, s.hiC); grd.addColorStop(1, s.baseC);
+                                offCtx.fillStyle = grd; offCtx.shadowColor = s.hiC; offCtx.shadowBlur = 10;
+                            } else if (s.style === 'neon-border') {
+                                offCtx.fillStyle = s.baseC; offCtx.shadowColor = s.hiC; offCtx.shadowBlur = 30 + drawGlow;
+                            } else {
+                                offCtx.fillStyle = s.hiC; offCtx.shadowBlur = drawGlow; offCtx.shadowColor = s.hiC;
+                            }
+                        } else { 
+                            offCtx.fillStyle = s.baseC; offCtx.globalAlpha = (s.style === 'quran-dim') ? 0.2 : 0.85; 
+                        }
+                        
                         offCtx.globalAlpha *= drawAlpha * transitionAlpha; 
 
+                        let textToDraw = w.drawText || w.text; delete w.drawText;
+
+                        // دالة مساعدة لرسم النص مع الـ Stroke
+                        const renderTextStr = (txt, px, py) => {
+                            if(s.strokeW > 0 && s.strokeC) { offCtx.strokeStyle = s.strokeC; offCtx.lineWidth = s.strokeW; offCtx.strokeText(txt, px, py); }
+                            offCtx.fillText(txt, px, py);
+                        };
+
                         if (s.style === 'center-focus' && state.audioBuffer) {
-                            if (isActive) { tx = C_W / 2; ty = C_H * (s.posY / 100);
-                                if (useAnim && (drawScale !== 1 || drawOffsetY !== 0)) { offCtx.save(); offCtx.translate(tx, ty + drawOffsetY); offCtx.scale(drawScale, drawScale); offCtx.fillText(w.text, 0, 0); offCtx.restore();
-                                } else { offCtx.fillText(w.text, tx, ty + drawOffsetY); }
+                            if (isActive) { 
+                                tx = C_W / 2; ty = C_H * (s.posY / 100);
+                                offCtx.save(); offCtx.translate(tx, ty + drawOffsetY); offCtx.rotate(drawRotation); offCtx.scale(drawScale, drawScale); 
+                                renderTextStr(textToDraw, 0, 0); offCtx.restore();
                             }
                         } else {
-                            if (useAnim && (drawScale !== 1 || drawOffsetY !== 0)) { offCtx.save(); offCtx.translate(tx, ty + drawOffsetY); offCtx.scale(drawScale, drawScale); offCtx.fillText(w.text, 0, 0); offCtx.restore();
-                            } else { offCtx.fillText(w.text, tx, ty + drawOffsetY); }
+                            offCtx.save(); offCtx.translate(tx, ty + drawOffsetY); offCtx.rotate(drawRotation); offCtx.scale(drawScale, drawScale); 
+                            renderTextStr(textToDraw, 0, 0); offCtx.restore();
                         }
                         offCtx.globalAlpha = transitionAlpha; offCtx.shadowBlur = 0; startX -= (wWidth + spaceW);
                     });
@@ -911,8 +1013,8 @@
                     offCtx.fillStyle = s.transColor || "#cbd5e1"; 
                     offCtx.shadowColor = "rgba(0,0,0,0.8)"; offCtx.shadowBlur = 4; offCtx.shadowOffsetY = 2;
                     
-                    const isEnglish = /^[a-zA-Z]/.test(activePhrase.trans.trim()); 
-                    offCtx.direction = isEnglish ? "ltr" : "rtl";
+                    const isEnglishOrLatin = /^[a-zA-Z]/.test(activePhrase.trans.trim()); 
+                    offCtx.direction = isEnglishOrLatin ? "ltr" : "rtl";
                     
                     let requestedTransY = C_H * (s.transY/100); 
                     let finalTransY = Math.max(requestedTransY, bottomOfQuranText + 25);
@@ -922,33 +1024,66 @@
                 }
             }
             
+            // الحواف الداكنة (Vignette)
+            if(s.vigOn) {
+                let vigGrd = offCtx.createRadialGradient(C_W/2, C_H/2, C_W*0.4, C_W/2, C_H/2, C_W*0.8);
+                vigGrd.addColorStop(0, 'rgba(0,0,0,0)'); vigGrd.addColorStop(1, 'rgba(0,0,0,0.85)');
+                offCtx.fillStyle = vigGrd; offCtx.fillRect(0,0,C_W,C_H);
+            }
+
+            // شريط التقدم (Progress Bar)
+            if(s.progOn && activePhrase && state.audioBuffer) {
+                let progHeight = 6;
+                let duration = activePhrase.endTime - activePhrase.startTime;
+                let current = timeMs - activePhrase.startTime;
+                let progRatio = Math.max(0, Math.min(1, current / duration));
+                offCtx.fillStyle = 'rgba(255,255,255,0.2)'; offCtx.fillRect(0, C_H - progHeight, C_W, progHeight);
+                offCtx.fillStyle = s.hiC || '#fbbf24'; offCtx.fillRect(0, C_H - progHeight, C_W * progRatio, progHeight);
+            }
+
             offCtx.globalAlpha = 1; 
 
             // ==========================================
-            // تطبيق تأثير التموج النهائي (مُحسن جداً بدون أي تهنيج)
+            // المعالجة النهائية ونقل الصورة للـ Canvas الأساسي
             // ==========================================
             ctx.clearRect(0, 0, C_W, C_H);
             
-            if (s.rippleOn && (s.rippleInt || 15) > 0) {
-                let intensity = s.rippleInt || 15;
-                let speed = 0.003; 
-                let frequency = 0.01; 
+            // 1. تأثير الجليتش (Glitch / RGB Split)
+            if (s.glitchInt > 0) {
+                let gInt = s.glitchInt;
+                // إزاحة خفيفة عشوائية للرسم الأساسي
+                let xShift = (Math.random() - 0.5) * gInt;
+                ctx.globalCompositeOperation = 'screen';
                 
-                // 1. زيادة الشريحة لتقليل العمليات من 240 إلى 60 فقط (تخفيف هائل على المعالج)
-                let sliceHeight = 30; 
+                // الأحمر يمين
+                ctx.fillStyle = 'red'; ctx.fillRect(0,0,C_W,C_H);
+                ctx.drawImage(offCanvas, xShift + (gInt/2), 0);
                 
-                // 2. حساب الوقت مرة واحدة فقط خارج الحلقة
+                // الأزرق يسار
+                ctx.fillStyle = 'cyan'; ctx.fillRect(0,0,C_W,C_H);
+                ctx.drawImage(offCanvas, xShift - (gInt/2), 0);
+                
+                ctx.globalCompositeOperation = 'source-over';
+                
+                // تقطيع عشوائي بالشاشة (Slice shifting)
+                if(Math.random() < 0.1) {
+                    let sliceY = Math.random() * C_H;
+                    let sliceH = 10 + Math.random() * 50;
+                    let sliceX = (Math.random() - 0.5) * gInt * 5;
+                    ctx.drawImage(offCanvas, 0, sliceY, C_W, sliceH, sliceX, sliceY, C_W, sliceH);
+                }
+            } 
+            // 2. التموج المائي (القديم)
+            else if (s.rippleInt > 0) {
+                let intensity = s.rippleInt; let speed = 0.003; let frequency = 0.01; let sliceHeight = 30; 
                 let timePhase = timeMs * speed;
-
                 for (let y = 0; y < C_H; y += sliceHeight) {
-                    // 3. استخدام Bitwise OR (| 0) لتحويل الرقم العشري إلى رقم صحيح (Integer)
-                    // هذا يمنع المتصفح من استخدام خاصية الـ Anti-Aliasing الثقيلة جداً للكسور
-                    let yInt = y | 0;
-                    let offsetX = (Math.sin((yInt * frequency) + timePhase) * intensity) | 0;
-                    
+                    let yInt = y | 0; let offsetX = (Math.sin((yInt * frequency) + timePhase) * intensity) | 0;
                     ctx.drawImage(offCanvas, 0, yInt, C_W, sliceHeight, offsetX, yInt, C_W, sliceHeight);
                 }
-            } else {
+            } 
+            // 3. عادي
+            else {
                 ctx.drawImage(offCanvas, 0, 0);
             }
 
@@ -967,7 +1102,6 @@
                 msg.innerText = "🔴 جاري التسجيل المباشر للفيديو..."; bar.style.width = "40%";
 
                 if (state.globalBg.type === 'video' && state.globalBg.media) { state.globalBg.media.currentTime = 0; state.globalBg.media.playbackRate = 1.0; state.globalBg.media.play(); }
-                for (let key in state.ayahBgs) { if (state.ayahBgs[key].type === 'video' && state.ayahBgs[key].media) { state.ayahBgs[key].media.currentTime = 0; state.ayahBgs[key].media.playbackRate = 1.0; state.ayahBgs[key].media.play(); } }
                 
                 let exportAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); let dest = exportAudioCtx.createMediaStreamDestination();
                 state.analyser = exportAudioCtx.createAnalyser(); state.analyser.fftSize = 128; state.dataArray = new Uint8Array(state.analyser.frequencyBinCount);
@@ -991,18 +1125,7 @@
                     } catch (err) {
                         msg.innerText = "⚠️ تم استخراج فيديو WebM بنجاح (بديل سريع وآمن)!"; msg.classList.replace('text-emerald-400', 'text-amber-400');
                         dLink.href = URL.createObjectURL(videoBlob); dLink.download = `Quran_Studio_${Date.now()}.webm`; dLink.innerHTML = '<i class="fa-solid fa-download ml-1"></i> تحميل الفيديو الأساسي (WebM)'; dLink.className = "mt-4 w-full block bg-amber-600 hover:bg-amber-500 text-white font-bold py-4 rounded-xl transition text-sm text-center"; dLink.classList.remove('hidden'); bar.style.width = "100%"; 
-                    } finally { 
-                        btn.disabled = false; 
-                        
-                        try {
-                            fetch('https://api.counterapi.dev/v1/quran-studio-mody/videos_generated/up')
-                                .then(res => res.json())
-                                .then(data => {
-                                    let countEl = document.getElementById('global-video-count');
-                                    if(countEl) countEl.innerText = data.count;
-                                });
-                        } catch(e) {}
-                    }
+                    } finally { btn.disabled = false; }
                 };
 
                 recorder.start(); let source = exportAudioCtx.createBufferSource(); source.buffer = state.audioBuffer; source.connect(state.analyser); state.analyser.connect(dest); source.connect(exportAudioCtx.destination); 
