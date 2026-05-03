@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Quran Studio - Ultimate Pro V4</title>
+    <title>Quran Studio - Ultimate Pro V5</title>
     
     <link rel="icon" type="image/png" href="icons/app_logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -170,7 +170,7 @@
                 </div>
 
                 <details open>
-                    <summary><i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i> تأثيرات بصرية سينمائية (جديد)</summary>
+                    <summary><i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i> تأثيرات بصرية سينمائية</summary>
                     <div class="details-body">
                         <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-2">
                             <input type="checkbox" id="particles-enable" checked onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
@@ -197,14 +197,9 @@
                             <span class="text-[10px] text-zinc-300 font-bold">🫧 ضبابية العدسة الخلفية (Bokeh Blur)</span>
                         </label>
 
-                        <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-2">
+                        <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-4">
                             <input type="checkbox" id="bars-enable" checked onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
                             <span class="text-[10px] text-zinc-300 font-bold">🎬 أشرطة سينمائية (Letterbox)</span>
-                        </label>
-
-                        <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-4">
-                            <input type="checkbox" id="prog-bar-enable" checked onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
-                            <span class="text-[10px] text-zinc-300 font-bold">📏 شريط تقدم الآية المسموعة</span>
                         </label>
 
                         <div class="border-t border-[#3f3f46] pt-3">
@@ -249,6 +244,30 @@
             </div>
 
             <div id="tab-brand" class="panel-section space-y-3">
+                
+                <details open>
+                    <summary><i class="fa-solid fa-user text-amber-500"></i> معلومات السورة والقارئ</summary>
+                    <div class="details-body border-b border-[#3f3f46] pb-3">
+                        <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-2">
+                            <input type="checkbox" id="info-enable" checked onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
+                            <span class="text-[10px] text-zinc-300 font-bold">إظهار اسم السورة والقارئ في الفيديو</span>
+                        </label>
+                        <div class="grid grid-cols-2 gap-2 mb-2">
+                            <select id="info-font" onchange="updateSettings()">
+                                <option value="'Cairo'">خط كايرو</option>
+                                <option value="'Kitab'">خط كتاب بولد</option>
+                                <option value="'ReemKufi'">خط ريم كوفي</option>
+                                <option value="'Hafs'">خط حفص</option>
+                            </select>
+                            <input type="color" id="info-color" value="#ffffff" onchange="updateSettings()" class="h-10 p-0 border-0 rounded">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div><label class="text-[9px] text-zinc-500 block">موقع العرض (X)</label><input type="range" id="info-x" min="0" max="100" value="50" oninput="updateSettings()"></div>
+                            <div><label class="text-[9px] text-zinc-500 block">موقع الارتفاع (Y)</label><input type="range" id="info-y" min="0" max="100" value="85" oninput="updateSettings()"></div>
+                        </div>
+                    </div>
+                </details>
+
                 <details open>
                     <summary><i class="fa-solid fa-stamp text-amber-500"></i> اللوجو والهوية</summary>
                     <div class="details-body border-b border-[#3f3f46] pb-3">
@@ -285,29 +304,28 @@
                             <span class="text-[10px] text-zinc-300 font-bold">تفعيل الموجات الصوتية</span>
                         </label>
                         <div class="grid grid-cols-2 gap-2 mb-2">
-                            <!-- 15 ستايل موجات -->
                             <select id="viz-style" onchange="updateSettings()">
                                 <option value="bars">أعمدة سفلية</option>
                                 <option value="wave">خط متصل</option>
                                 <option value="dots">نقاط متناثرة</option>
                                 <option value="symmetric">أعمدة متناظرة علوي سفلي</option>
                                 <option value="circle">موجة دائرية</option>
-                                <option value="double-wave">موجة عاكسة (جديد)</option>
-                                <option value="pulse-ring">حلقة نابضة (جديد)</option>
-                                <option value="radial-bars">أشعة دائرية (جديد)</option>
-                                <option value="block-bars">بلوكات متقطعة (جديد)</option>
-                                <option value="line-glow">نبض خطي متوهج (جديد)</option>
-                                <option value="bounce-dots">نقاط قافزة (جديد)</option>
-                                <option value="corner">زوايا الشاشة (جديد)</option>
-                                <option value="top-drop">سقوط من الأعلى (جديد)</option>
-                                <option value="hexagon">شكل سداسي (جديد)</option>
-                                <option value="heartbeat">نبضات القلب (جديد)</option>
+                                <option value="double-wave">موجة عاكسة</option>
+                                <option value="pulse-ring">حلقة نابضة</option>
+                                <option value="radial-bars">أشعة دائرية</option>
+                                <option value="block-bars">بلوكات متقطعة</option>
+                                <option value="line-glow">نبض خطي متوهج</option>
+                                <option value="bounce-dots">نقاط قافزة</option>
+                                <option value="corner">زوايا الشاشة</option>
+                                <option value="top-drop">سقوط من الأعلى</option>
+                                <option value="hexagon">شكل سداسي</option>
+                                <option value="heartbeat">نبضات القلب</option>
                             </select>
                             <input type="color" id="viz-color" value="#f59e0b" onchange="updateSettings()" class="h-10 p-0 border-0 rounded">
                         </div>
                         <div class="grid grid-cols-2 gap-2">
                             <div><label class="text-[9px] text-zinc-500 block">موقع العرض (X)</label><input type="range" id="viz-x" min="0" max="100" value="50" oninput="updateSettings()"></div>
-                            <div><label class="text-[9px] text-zinc-500 block">موقع الارتفاع (Y)</label><input type="range" id="viz-y" min="0" max="100" value="95" oninput="updateSettings()"></div>
+                            <div><label class="text-[9px] text-zinc-500 block">موقع الارتفاع (Y)</label><input type="range" id="viz-y" min="0" max="100" value="100" oninput="updateSettings()"></div>
                         </div>
                     </div>
                 </details>
@@ -330,23 +348,23 @@
                     </select>
 
                     <label class="text-[10px] text-zinc-500 block mb-1">نمط تلوين الكلمة المقروءة (Highlight)</label>
-                    <!-- 15 نمط تلوين -->
                     <select id="highlight-style" onchange="updateSettings()" class="mb-3">
                         <option value="quran-gold">✨ لون سادة للكلمة المقروءة</option>
-                        <option value="center-focus">👁️ إظهار كلمة بكلمة في المنتصف</option>
+                        <option value="center-focus">👁️ كلمة بكلمة لون سادة في المنتصف</option>
+                        <option value="center-focus-rainbow">👁️🌈 كلمة بكلمة طيف متغير في المنتصف (جديد)</option>
                         <option value="quran-dim">🌑 إضاءة خافتة للباقي</option>
                         <option value="gradient-fill">🌈 تعبئة متدرجة سينمائية</option>
                         <option value="neon-border">🌟 إضاءة نيون قوية حول الكلمة</option>
-                        <option value="shadow-pop">🔲 ظل منفصل بارز (جديد)</option>
-                        <option value="invert-box">⬛ خلفية معكوسة للكلمة (جديد)</option>
-                        <option value="underline-glow">_ خط سفلي متوهج (جديد)</option>
-                        <option value="hollow-active">⭕ نص مفرغ للنشط (جديد)</option>
-                        <option value="gold-foil">🪙 فويل ذهبي معدني (جديد)</option>
-                        <option value="fire-text">🔥 ألوان النار (جديد)</option>
-                        <option value="glass-morphism">🧊 فقاعة زجاجية (جديد)</option>
-                        <option value="silver-chrome">⚙️ كروم فضي (جديد)</option>
-                        <option value="moonlight">🌙 توهج القمر الأزرق (جديد)</option>
-                        <option value="rainbow">🏳️‍🌈 طيف ألوان متغيرة (جديد)</option>
+                        <option value="shadow-pop">🔲 ظل منفصل بارز</option>
+                        <option value="invert-box">⬛ خلفية معكوسة للكلمة</option>
+                        <option value="underline-glow">_ خط سفلي متوهج</option>
+                        <option value="hollow-active">⭕ نص مفرغ للنشط</option>
+                        <option value="gold-foil">🪙 فويل ذهبي معدني</option>
+                        <option value="fire-text">🔥 ألوان النار</option>
+                        <option value="glass-morphism">🧊 فقاعة زجاجية</option>
+                        <option value="silver-chrome">⚙️ كروم فضي</option>
+                        <option value="moonlight">🌙 توهج القمر الأزرق</option>
+                        <option value="rainbow">🏳️‍🌈 طيف ألوان متغيرة</option>
                     </select>
 
                     <div class="grid grid-cols-2 gap-3 mb-3">
@@ -486,11 +504,9 @@
 
         const audioPlayer = document.getElementById('audio-player');
         
-        // نظام الجزيئات والدوائر (Bokeh)
         let particles = Array.from({length: 60}).map(() => ({ x: Math.random(), y: Math.random(), speedY: 0.2 + Math.random() * 0.5, speedX: -0.2 + Math.random() * 0.4, size: 0.5 + Math.random() * 2, opacity: Math.random(), phase: Math.random() * Math.PI * 2 }));
         let bokehs = Array.from({length: 20}).map(() => ({ x: Math.random(), y: Math.random(), speedY: 0.05 + Math.random() * 0.1, speedX: -0.05 + Math.random() * 0.1, size: 20 + Math.random() * 60, opacity: Math.random() * 0.3, phase: Math.random() * Math.PI * 2 }));
         
-        // لوحة لتأثير الـ Grain
         let grainCanvas = document.createElement('canvas'); grainCanvas.width = 300; grainCanvas.height = 300;
         let gCtx = grainCanvas.getContext('2d');
         let gData = gCtx.createImageData(300, 300);
@@ -498,6 +514,8 @@
         gCtx.putImageData(gData,0,0);
 
         window.onload = async () => {
+            document.getElementById('viz-y').value = 100; // جعل الموجات بالأسفل افتراضياً
+            
             try {
                 let resS = await fetch('./surahs.json'); globalSurahs = await resS.json(); const sSelect = document.getElementById('surah');
                 globalSurahs.forEach(s => { sSelect.options.add(new Option(`${s.number}. ${s.name} (${s.numberOfAyahs} آية)`, s.number)); });
@@ -533,7 +551,6 @@
                     let cleanText = ayahObj.text.trim().replace(/\s+/g, ' '); let transText = dataTr ? dataTr[i-1].text : "";
                     let wordsArr = cleanText.split(' ');
                     
-                    // سر الترقيم: إرفاق الرقم بعلامة خاصة لمعالجته لاحقاً بناءً على الخط 
                     wordsArr[wordsArr.length - 1] += `|^${toArabicNumber(i)}`;
 
                     let wordsData = wordsArr.map((w) => ({ text: w, start: 0, end: 1000000, newPage: false, newLine: false, isAyahNum: false }));
@@ -573,7 +590,7 @@
                 partOn: document.getElementById('particles-enable').checked, vigOn: document.getElementById('vignette-enable').checked,
                 bloomOn: document.getElementById('bloom-enable').checked, leaksOn: document.getElementById('leaks-enable').checked,
                 bokehOn: document.getElementById('bokeh-enable').checked, barsOn: document.getElementById('bars-enable').checked,
-                progOn: document.getElementById('prog-bar-enable').checked,
+                infoOn: document.getElementById('info-enable').checked, infoFont: val('info-font'), infoColor: val('info-color'), infoX: num('info-x') / 100, infoY: num('info-y') / 100,
                 wmText: val('watermark-text'), wmFont: val('wm-font'), wmSize: num('wm-size'), logoScale: num('logo-scale') / 100, logoX: num('logo-x') / 100, logoY: num('logo-y') / 100,
                 vizOn: document.getElementById('viz-enable').checked, vizStyle: val('viz-style'), vizColor: val('viz-color'), vizX: num('viz-x') / 100, vizY: num('viz-y') / 100,
                 animOn: document.getElementById('anim-enable').checked, animStyle: val('anim-style'), animInt: num('anim-intensity') / 100, animSpeed: num('anim-speed')
@@ -798,7 +815,7 @@
                 offCtx.fillStyle = lg; offCtx.fillRect(0,0,C_W,C_H); offCtx.globalCompositeOperation = 'source-over';
             }
 
-            // 15 Visualizers
+            // Visualizer Draw
             if(s.vizOn && state.analyser && (!audioPlayer.paused || state.isExporting)) {
                 state.analyser.getByteFrequencyData(state.dataArray);
                 let count = Math.floor(state.dataArray.length * 0.6); let startX = C_W * s.vizX; let baseY = C_H * s.vizY;
@@ -880,6 +897,21 @@
                 offCtx.stroke(); if(s.vizStyle === 'circle' || s.vizStyle === 'hexagon' || s.vizStyle === 'double-wave') offCtx.fill(); offCtx.shadowBlur = 0; 
             }
 
+            // Surah & Reciter Info (Restored Feature)
+            if(s.infoOn && globalSurahs.length > 0) {
+                let sName = globalSurahs.find(x => x.number == val('surah'))?.name.replace('سُورَةُ ', '') || "السورة";
+                let rSelect = document.getElementById('reciter');
+                let rName = rSelect.options[rSelect.selectedIndex].text;
+                
+                offCtx.textAlign = "center"; offCtx.shadowColor = "#000"; offCtx.shadowBlur = 10;
+                offCtx.font = `bold 35px ${s.infoFont}`; offCtx.fillStyle = s.infoColor; 
+                offCtx.fillText(`سورة ${sName}`, C_W * s.infoX, C_H * s.infoY); 
+                
+                offCtx.globalAlpha = 0.8; offCtx.font = `25px ${s.infoFont}`; 
+                offCtx.fillText(rName, C_W * s.infoX, (C_H * s.infoY) + 40); 
+                offCtx.globalAlpha = 1.0; offCtx.shadowBlur = 0;
+            }
+
             let logoOffset = 0;
             if(state.logoImage) { let imgW = state.logoImage.width; let imgH = state.logoImage.height; let maxW = C_W * s.logoScale; if(imgW > maxW) { let ratio = maxW / imgW; imgW *= ratio; imgH *= ratio; } offCtx.drawImage(state.logoImage, (C_W * s.logoX) - (imgW/2), (C_H * s.logoY) - (imgH/2), imgW, imgH); logoOffset = (imgH/2) + 20; }
             if(s.wmText) { offCtx.font = `bold ${s.wmSize}px ${s.wmFont}`; offCtx.fillStyle = "rgba(255,255,255,0.4)"; offCtx.textAlign = "center"; offCtx.textBaseline = "middle"; offCtx.fillText(s.wmText, C_W * s.logoX, (C_H * s.logoY) + logoOffset); }
@@ -903,7 +935,6 @@
                 offCtx.font = `bold ${s.fontS}px ${s.fontF}`; offCtx.textAlign = "center"; offCtx.textBaseline = "middle";
                 let lines = []; let currentLine =[]; let currentWidth = 0; let spaceW = offCtx.measureText(" ").width; let maxW = C_W * 0.85;
 
-                // Smart Wrapping considering Ayah Numbers
                 activeScreen.forEach(w => {
                     let displayTxt = w.text;
                     if(displayTxt.includes('|^')) {
@@ -919,6 +950,8 @@
 
                 let lineH = s.fontS * 1.6; let startY = (C_H * (s.posY/100)) - ((lines.length - 1) * lineH) / 2;
                 let bottomOfQuranText = startY + ((lines.length - 1) * lineH) + (lineH / 2);
+                
+                let isCenterStyle = (s.style === 'center-focus' || s.style === 'center-focus-rainbow');
 
                 lines.forEach((line, i) => {
                     let y = startY + (i * lineH); let startX = (C_W / 2) + (line.width / 2); 
@@ -953,7 +986,6 @@
 
                         if(s.animStyle !== 'blur-focus' || !useAnim) offCtx.shadowBlur = 0;
                         
-                        // Highlight Styles (15 Styles)
                         let isHollow = false;
                         if (isActive && state.audioBuffer) { 
                             if(s.style === 'gradient-fill') { let grd = offCtx.createLinearGradient(centerX - wWidth/2, y - lineH/2, centerX + wWidth/2, y + lineH/2); grd.addColorStop(0, s.hiC); grd.addColorStop(1, s.baseC); offCtx.fillStyle = grd; offCtx.shadowColor = s.hiC; offCtx.shadowBlur = 10; } 
@@ -968,6 +1000,7 @@
                             else if (s.style === 'silver-chrome') { let lg = offCtx.createLinearGradient(0, ty-lineH/2, 0, ty+lineH/2); lg.addColorStop(0, '#ffffff'); lg.addColorStop(0.4, '#888888'); lg.addColorStop(0.5, '#222222'); lg.addColorStop(0.6, '#aaaaaa'); lg.addColorStop(1, '#eeeeee'); offCtx.fillStyle = lg; }
                             else if (s.style === 'moonlight') { offCtx.fillStyle = '#ffffff'; offCtx.shadowColor = '#0ea5e9'; offCtx.shadowBlur = 30 + drawGlow; }
                             else if (s.style === 'rainbow') { offCtx.fillStyle = `hsl(${(timeMs/10)%360}, 100%, 60%)`; offCtx.shadowColor = offCtx.fillStyle; offCtx.shadowBlur = 15; }
+                            else if (s.style === 'center-focus-rainbow') { offCtx.fillStyle = `hsl(${(timeMs/10)%360}, 100%, 60%)`; offCtx.shadowColor = offCtx.fillStyle; offCtx.shadowBlur = 15 + drawGlow; }
                             else { offCtx.fillStyle = s.hiC; if(s.animStyle !== 'blur-focus' || !useAnim) offCtx.shadowBlur = drawGlow; offCtx.shadowColor = s.hiC; }
                         } else { 
                             offCtx.fillStyle = s.baseC; offCtx.globalAlpha = (s.style === 'quran-dim') ? 0.2 : 0.85; 
@@ -981,7 +1014,7 @@
                             if(isHollow) offCtx.strokeText(txt, px, py); else offCtx.fillText(txt, px, py);
                         };
 
-                        if (s.style === 'center-focus' && state.audioBuffer) {
+                        if (isCenterStyle && state.audioBuffer) {
                             if (isActive) { tx = C_W / 2; ty = C_H * (s.posY / 100); offCtx.save(); offCtx.translate(tx, ty + drawOffsetY); offCtx.rotate(drawRotation); offCtx.scale(drawScale, drawScale); renderTextStr(textToDraw, 0, 0); offCtx.restore(); }
                         } else {
                             offCtx.save(); offCtx.translate(tx, ty + drawOffsetY); offCtx.rotate(drawRotation); offCtx.scale(drawScale, drawScale); renderTextStr(textToDraw, 0, 0); offCtx.restore();
@@ -1001,14 +1034,12 @@
             // Cinematic Effects Layer 2
             if(s.vigOn) { let vigGrd = offCtx.createRadialGradient(C_W/2, C_H/2, C_W*0.4, C_W/2, C_H/2, C_W*0.8); vigGrd.addColorStop(0, 'rgba(0,0,0,0)'); vigGrd.addColorStop(1, 'rgba(0,0,0,0.85)'); offCtx.fillStyle = vigGrd; offCtx.fillRect(0,0,C_W,C_H); }
             if(s.barsOn) { let barH = Math.min(100, timeMs/5); offCtx.fillStyle = '#000'; offCtx.fillRect(0,0,C_W,barH); offCtx.fillRect(0,C_H-barH,C_W,barH); }
-            if(s.progOn && activePhrase && state.audioBuffer) { let progHeight = 6; let ratio = Math.max(0, Math.min(1, (timeMs - activePhrase.startTime) / (activePhrase.endTime - activePhrase.startTime))); offCtx.fillStyle = 'rgba(255,255,255,0.2)'; offCtx.fillRect(0, C_H - progHeight, C_W, progHeight); offCtx.fillStyle = s.hiC || '#fbbf24'; offCtx.fillRect(0, C_H - progHeight, C_W * ratio, progHeight); }
 
             offCtx.globalAlpha = 1; 
 
             // Final Composite to Main Canvas
             ctx.clearRect(0, 0, C_W, C_H);
             
-            // Glitch Safe Effect
             if (s.glitchInt > 0) {
                 let gInt = s.glitchInt; ctx.drawImage(offCanvas, 0, 0); 
                 if(Math.random() < 0.3) { let sY = Math.random() * C_H; let sH = 5 + Math.random() * 30; let sX = (Math.random() - 0.5) * gInt * 4; ctx.drawImage(offCanvas, 0, sY, C_W, sH, sX, sY, C_W, sH); }
@@ -1020,10 +1051,7 @@
                 for (let y = 0; y < C_H; y += 30) { let yInt = y | 0; let oX = (Math.sin((yInt * 0.01) + timePhase) * intensity) | 0; ctx.drawImage(offCanvas, 0, yInt, C_W, 30, oX, yInt, C_W, 30); }
             } else { ctx.drawImage(offCanvas, 0, 0); }
 
-            // Bloom Glow Overlay
             if(s.bloomOn) { ctx.globalCompositeOperation = 'screen'; ctx.globalAlpha = 0.4; ctx.filter = 'blur(15px)'; ctx.drawImage(canvas, 0, 0); ctx.filter = 'none'; ctx.globalAlpha = 1.0; ctx.globalCompositeOperation = 'source-over'; }
-            
-            // Film Grain Overlay
             if(s.grainInt > 0) { ctx.globalCompositeOperation = 'overlay'; ctx.globalAlpha = s.grainInt / 100; let ptrn = ctx.createPattern(grainCanvas, 'repeat'); ctx.fillStyle = ptrn; ctx.save(); ctx.translate((Math.random()-0.5)*100, (Math.random()-0.5)*100); ctx.fillRect(-100,-100,C_W+200,C_H+200); ctx.restore(); ctx.globalAlpha = 1.0; ctx.globalCompositeOperation = 'source-over'; }
 
             requestAnimationFrame(renderLoop);
