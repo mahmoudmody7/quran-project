@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Quran Studio - Ultimate Pro V2</title>
+    <title>Quran Studio - Ultimate Pro V3</title>
     
     <link rel="icon" type="image/png" href="icons/app_logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -117,7 +117,6 @@
                         <div><label class="block text-[10px] text-zinc-500 mb-1">من آية</label><input type="number" id="start-ayah" value="1" min="1" oninput="triggerLivePreview()"></div>
                         <div><label class="block text-[10px] text-zinc-500 mb-1">إلى آية</label><input type="number" id="end-ayah" value="3" min="1" oninput="triggerLivePreview()"></div>
                     </div>
-                    <!-- تم التعديل هنا لعدم فقدان الصوت عند تغيير الترجمة -->
                     <label class="block text-xs font-bold text-amber-400 mt-2 mb-2">لغة الترجمة / التفسير</label>
                     <select id="trans-type" class="mb-2" onchange="updateTranslationOnly()">
                         <option value="none">بدون ترجمة</option>
@@ -170,38 +169,32 @@
                     <input type="range" id="bg-opacity" min="0" max="100" value="60" oninput="updateSettings()">
                 </div>
 
-                <!-- الإضافات الإبداعية للسينما والتأثيرات -->
                 <details open>
                     <summary><i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i> تأثيرات بصرية سينمائية</summary>
                     <div class="details-body">
-                        <!-- جزيئات الغبار (إضافة جديدة) -->
                         <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-2">
                             <input type="checkbox" id="particles-enable" checked onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
                             <span class="text-[10px] text-zinc-300 font-bold">✨ ذرات غبار نورانية تسبح في الخلفية</span>
                         </label>
                         
-                        <!-- الحواف الداكنة (إضافة جديدة) -->
                         <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-2">
                             <input type="checkbox" id="vignette-enable" checked onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
                             <span class="text-[10px] text-zinc-300 font-bold">🌑 حواف داكنة لتركيز الانتباه (Vignette)</span>
                         </label>
 
-                        <!-- شريط تقدم (إضافة جديدة) -->
                         <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-4">
                             <input type="checkbox" id="prog-bar-enable" checked onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
                             <span class="text-[10px] text-zinc-300 font-bold">📏 شريط تقدم الآية المسموعة أسفل الشاشة</span>
                         </label>
 
-                        <!-- الجليتش (إضافة جديدة) -->
                         <div class="border-t border-[#3f3f46] pt-3">
-                            <label class="flex justify-between text-[10px] text-red-400 font-bold mb-1"><span>📺 تأثير التشويش (Glitch / RGB Split)</span> <span id="glitch-int-val">0</span></label>
+                            <label class="flex justify-between text-[10px] text-red-400 font-bold mb-1"><span>📺 تأثير التشويش (Glitch Effect)</span> <span id="glitch-int-val">0</span></label>
                             <input type="range" id="glitch-intensity" min="0" max="50" value="0" class="mb-2 !accent-red-500" oninput="updateSettings(); document.getElementById('glitch-int-val').innerText=this.value;">
-                            <span class="text-[9px] text-zinc-500">اجعله 0 للإلغاء، أو قم بزيادته لتأثير حركي عصري.</span>
+                            <span class="text-[9px] text-zinc-500">تم إصلاحه ليعمل بشكل سينمائي آمن بدون شاشة بيضاء.</span>
                         </div>
 
-                        <!-- التموج המائي القديم -->
                         <div class="border-t border-[#3f3f46] pt-3 mt-2">
-                            <label class="flex justify-between text-[10px] text-blue-400 font-bold mb-1"><span>💧 تأثير التموج المائي لكامل الفيديو</span> <span id="ripple-int-val">0</span></label>
+                            <label class="flex justify-between text-[10px] text-blue-400 font-bold mb-1"><span>💧 تأثير التموج المائي</span> <span id="ripple-int-val">0</span></label>
                             <input type="range" id="ripple-intensity" min="0" max="50" value="0" class="mb-2 !accent-blue-500" oninput="updateSettings(); document.getElementById('ripple-int-val').innerText=this.value;">
                         </div>
                     </div>
@@ -240,7 +233,6 @@
                             <input type="file" accept="image/png, image/jpeg" onchange="loadLogo(this)">
                         </div>
                         
-                        <!-- إضافات تحكم اللوجو -->
                         <label class="text-[9px] text-zinc-400 block mb-1">حجم صورة اللوجو تكبير/تصغير</label>
                         <input type="range" id="logo-scale" min="10" max="100" value="30" oninput="updateSettings()" class="mb-3">
 
@@ -278,7 +270,6 @@
                             <span class="text-[10px] text-zinc-300 font-bold">تفعيل الموجات الصوتية</span>
                         </label>
                         <div class="grid grid-cols-2 gap-2 mb-2">
-                            <!-- تمت إضافة موجات جديدة -->
                             <select id="viz-style" onchange="updateSettings()">
                                 <option value="bars">أعمدة سفلية</option>
                                 <option value="wave">خط متصل</option>
@@ -313,13 +304,12 @@
                     </select>
 
                     <label class="text-[10px] text-zinc-500 block mb-1">نمط تلوين الكلمة المقروءة</label>
-                    <!-- ستايلات تلوين جديدة -->
                     <select id="highlight-style" onchange="updateSettings()" class="mb-3">
                         <option value="quran-gold">✨ لون سادة للكلمة المقروءة</option>
                         <option value="center-focus">👁️ إظهار كلمة بكلمة في المنتصف</option>
                         <option value="quran-dim">🌑 إضاءة خافتة للباقي</option>
-                        <option value="gradient-fill">🌈 تعبئة متدرجة سينمائية (جديد)</option>
-                        <option value="neon-border">🌟 إضاءة نيون قوية حول الكلمة (جديد)</option>
+                        <option value="gradient-fill">🌈 تعبئة متدرجة سينمائية</option>
+                        <option value="neon-border">🌟 إضاءة نيون قوية حول الكلمة</option>
                     </select>
 
                     <div class="grid grid-cols-2 gap-3 mb-3">
@@ -327,7 +317,6 @@
                         <div><label class="text-[10px] text-zinc-500 block mb-1">لون التمييز (المقروء)</label><input type="color" id="highlight-color" value="#fbbf24" oninput="updateSettings()" class="h-10 p-0 border-0 rounded"></div>
                     </div>
 
-                    <!-- إضافة خيار الحواف (Stroke) -->
                     <div class="mt-2 mb-3 bg-[#09090b] p-2 rounded border border-[#27272a]">
                         <label class="text-[10px] text-emerald-400 font-bold block mb-1">🖌️ حواف النص (Stroke)</label>
                         <div class="grid grid-cols-2 gap-2">
@@ -358,14 +347,24 @@
                                 <input type="checkbox" id="anim-enable" checked onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
                                 <span class="text-[10px] text-zinc-300 font-bold">تفعيل حركة للكلمة المقروءة</span>
                             </label>
-                            <!-- تمت إضافة حركات جديدة -->
+                            <!-- تمت إضافة 10 أنيميشن جديدة هنا -->
                             <select id="anim-style" onchange="updateSettings()" class="mb-3">
                                 <option value="none">بدون أنيميشن (ثابت)</option>
                                 <option value="pulse-glow" selected>✨ نبض ذهبي خفيف</option>
                                 <option value="pop-scale">🔥 انفجار تكبير سريع</option>
                                 <option value="slide-up">⬆️ انزلاق ناعم من الأسفل</option>
-                                <option value="typewriter">⌨️ كتابة متدرجة (جديد)</option>
-                                <option value="rotate-in">🔄 دوران وانبثاق (جديد)</option>
+                                <option value="typewriter">⌨️ كتابة متدرجة</option>
+                                <option value="rotate-in">🔄 دوران وانبثاق</option>
+                                <option value="bounce-drop">🏀 سقوط وارتداد (جديد)</option>
+                                <option value="blur-focus">📷 تركيز عدسة الزوم (جديد)</option>
+                                <option value="elastic-pop">🎈 مطاطي تكبير وتقلص (جديد)</option>
+                                <option value="typewriter-cursor">👨‍💻 كتابة مع مؤشر (جديد)</option>
+                                <option value="shake-intense">⚡ اهتزاز قوي درامي (جديد)</option>
+                                <option value="flip-x">🪞 التفاف أفقي 3D (جديد)</option>
+                                <option value="zoom-out-fade">📉 تصغير من حجم كبير (جديد)</option>
+                                <option value="wave-text">🌊 طفو موجي (جديد)</option>
+                                <option value="ghost-trail">👻 طيف متصاعد (جديد)</option>
+                                <option value="swing-3d">🔔 تأرجح البندول (جديد)</option>
                             </select>
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
@@ -452,7 +451,6 @@
 
         const audioPlayer = document.getElementById('audio-player');
         
-        // نظام الجزيئات المبتكر
         let particles = Array.from({length: 60}).map(() => ({
             x: Math.random(), y: Math.random(),
             speedY: 0.2 + Math.random() * 0.5, speedX: -0.2 + Math.random() * 0.4,
@@ -478,7 +476,6 @@
             triggerLivePreview();
         };
 
-        // دالة جديدة لتحديث الترجمة فقط دون مسح الصوت والمزامنة!
         async function updateTranslationOnly() {
             if(!globalQuran || state.phrases.length === 0) return;
             const surah = document.getElementById('surah').value;
@@ -493,13 +490,10 @@
                 } catch(e){}
             }
 
-            // تحديث نص الترجمة في الـ State الحالي مباشرة
             for (let i = 0; i < state.phrases.length; i++) {
                 let verseNum = state.phrases[i].num;
                 state.phrases[i].trans = dataTr ? dataTr[verseNum-1].text : "";
             }
-            
-            // إذا كان هناك بيانات أصلية محفوظة للتراجع عن القص، نحدثها أيضاً
             if(state.originalPhrases) {
                 for (let i = 0; i < state.originalPhrases.length; i++) {
                     let verseNum = state.originalPhrases[i].num;
@@ -508,7 +502,6 @@
             }
         }
 
-        // جلب الآيات كلياً (يحدث عند تغيير السورة أو رقم الآيات)
         function triggerLivePreview() {
             clearTimeout(previewDebounce);
             previewDebounce = setTimeout(async () => {
@@ -540,10 +533,13 @@
                     let transText = dataTr ? dataTr[i-1].text : "";
 
                     let wordsArr = cleanText.split(' ');
+                    // تم دمج رقم الآية بالكلمة الأخيرة ليكونوا كتلة واحدة تتفاعل مع بعضها
+                    wordsArr[wordsArr.length - 1] += ` ﴿${toArabicNumber(i)}﴾`;
+
                     let wordsData = wordsArr.map((w) => ({
                         text: w, start: 0, end: 1000000, newPage: false, newLine: false, isAyahNum: false
                     }));
-                    wordsData.push({ text: toArabicNumber(i), start: 0, end: 1000000, newPage: false, newLine: false, isAyahNum: true });
+                    
                     newPhrases.push({ num: i, startTime: 0, endTime: 1000000, words: wordsData, trans: transText });
                 }
 
@@ -637,6 +633,9 @@
                     let durationMs = decodedBuffer.duration * 1000;
                     let ayahTiming = fullTimingData ? fullTimingData.find(d => d.surah == surah && d.ayah == phrase.num) : null; let segments = ayahTiming ? ayahTiming.segments : [];
                     let ayahObj = surahTextData.find(a => a.verse == phrase.num); let cleanText = ayahObj.text.trim().replace(/\s+/g, ' '); let wordsArr = cleanText.split(' ');
+                    
+                    // دمج الرقم في آخر الكلمة للصوت والمزامنة أيضاً
+                    wordsArr[wordsArr.length - 1] += ` ﴿${toArabicNumber(phrase.num)}﴾`;
 
                     phrase.startTime = globalTimeMs; phrase.endTime = globalTimeMs + durationMs;
                     let hasValidTimings = (segments.length === wordsArr.length); let totalChars = wordsArr.reduce((sum, w) => sum + w.length, 0); let cumulativeChars = 0; let wordsData = [];
@@ -647,7 +646,7 @@
                         else { let startRatio = cumulativeChars / totalChars; let endRatio = (cumulativeChars + wText.length) / totalChars; wStart = globalTimeMs + (startRatio * durationMs); wEnd = globalTimeMs + (endRatio * durationMs); cumulativeChars += wText.length; }
                         wordsData.push({ text: wText, start: wStart, end: wEnd, newPage: phrase.words[idx].newPage, newLine: phrase.words[idx].newLine, isAyahNum: false });
                     });
-                    wordsData.push({ text: toArabicNumber(phrase.num), start: globalTimeMs + durationMs - 300, end: globalTimeMs + durationMs, newPage: false, newLine: false, isAyahNum: true });
+                    
                     phrase.words = wordsData; globalTimeMs += durationMs;
                 }
 
@@ -816,7 +815,6 @@
                 activePhrase = state.phrases.find(p => timeMs >= p.startTime && timeMs <= p.endTime);
             }
             
-            // 1. رسم الخلفية والكاميرا
             offCtx.save();
             if (s.camOn) {
                 let speedMultiplier = 1.5; let t = (timeMs / 1000) * 0.05 * speedMultiplier; let scale = 1, tx = 0, ty = 0;
@@ -836,13 +834,11 @@
             }
             offCtx.restore();
 
-            // فلاتر الألوان
             if(s.filter === 'bw') { offCtx.globalCompositeOperation='saturation'; offCtx.fillStyle='white'; offCtx.fillRect(0,0,C_W,C_H); offCtx.globalCompositeOperation='source-over'; }
             if(s.filter === 'warm') { offCtx.fillStyle='rgba(245, 158, 11, 0.15)'; offCtx.fillRect(0,0,C_W,C_H); }
             if(s.filter === 'cool') { offCtx.fillStyle='rgba(14, 165, 233, 0.15)'; offCtx.fillRect(0,0,C_W,C_H); }
             offCtx.fillStyle = `rgba(0,0,0,${s.bgOp || 0.5})`; offCtx.fillRect(0,0,C_W,C_H);
 
-            // الجزيئات الغبارية السينمائية
             if(s.partOn) {
                 offCtx.fillStyle = 'rgba(255, 215, 0, 0.6)';
                 particles.forEach(p => {
@@ -854,7 +850,6 @@
                 offCtx.globalAlpha = 1;
             }
 
-            // الموجات الصوتية مع الأشكال الجديدة
             if(s.vizOn && state.analyser && (!audioPlayer.paused || state.isExporting)) {
                 state.analyser.getByteFrequencyData(state.dataArray);
                 let count = Math.floor(state.dataArray.length * 0.7); 
@@ -892,7 +887,6 @@
                 offCtx.stroke(); offCtx.fill(); offCtx.shadowBlur = 0; 
             }
 
-            // اللوجو المائي والتطويرات
             let logoOffset = 0;
             if(state.logoImage) {
                 let imgW = state.logoImage.width; let imgH = state.logoImage.height; 
@@ -909,7 +903,6 @@
 
             let transitionAlpha = 1; 
 
-            // كتابة القرآن
             if (activePhrase) {
                 let screens = []; let currentScreen = [];
                 activePhrase.words.forEach(w => { if (w.newPage && currentScreen.length > 0) { screens.push(currentScreen); currentScreen = []; } currentScreen.push(w); });
@@ -957,18 +950,31 @@
                                 case 'pulse-glow': let pulse = Math.sin(wordProgress * Math.PI * 4 * speed) * 0.5 + 0.5; drawScale = 1 + pulse * 0.1 * intensity; drawGlow = 20 + pulse * 30 * intensity; break;
                                 case 'pop-scale': drawScale = 0.75 + Math.pow(wordProgress, 0.4) * 0.45 * intensity; break;
                                 case 'slide-up': drawOffsetY = (1 - (1 - Math.pow(1 - wordProgress, 3))) * 75 * intensity; drawAlpha = wordProgress * 0.6 + 0.4; break;
+                                case 'rotate-in': drawRotation = (1 - Math.pow(wordProgress, 0.5)) * Math.PI * intensity; drawScale = wordProgress; drawAlpha = wordProgress; break;
+                                case 'bounce-drop': let drop = Math.max(0, 1 - wordProgress * 3); drawOffsetY = -Math.abs(Math.cos(wordProgress * Math.PI * 3)) * 50 * drop * intensity; drawAlpha = wordProgress * 2 > 1 ? 1 : wordProgress * 2; break;
+                                case 'blur-focus': drawScale = 1 + (1 - wordProgress) * 0.5 * intensity; drawAlpha = wordProgress; offCtx.shadowBlur = (1 - wordProgress) * 30 * intensity; offCtx.shadowColor = s.baseC; break;
+                                case 'elastic-pop': let t2 = wordProgress * 2; drawScale = t2 < 1 ? t2 * 1.2 : 1.2 - (t2 - 1) * 0.2; if (drawScale < 0) drawScale = 0.1; drawScale = 1 + (drawScale - 1) * intensity; break;
+                                case 'shake-intense': if (wordProgress < 0.9) { tx += (Math.random() - 0.5) * 10 * intensity; ty += (Math.random() - 0.5) * 10 * intensity; } break;
+                                case 'flip-x': let flipProg = Math.min(1, wordProgress * 2); drawScale = Math.cos((1 - flipProg) * Math.PI); drawAlpha = flipProg; break;
+                                case 'zoom-out-fade': drawScale = 1 + (1 - Math.pow(wordProgress, 0.3)) * 2 * intensity; drawAlpha = wordProgress; break;
+                                case 'wave-text': drawOffsetY = Math.sin(timeMs / 100 * speed) * 15 * intensity; break;
+                                case 'ghost-trail': drawOffsetY = -(1 - wordProgress) * 40 * intensity; drawAlpha = wordProgress; drawGlow = (1 - wordProgress) * 30 * intensity; break;
+                                case 'swing-3d': let swing = Math.sin(wordProgress * Math.PI * 3) * (1 - wordProgress); drawRotation = swing * 0.5 * intensity; tx += swing * 20 * intensity; break;
                                 case 'typewriter': 
                                     let charsToShow = Math.floor(wordProgress * w.text.length); 
                                     w.drawText = w.text.substring(0, charsToShow); 
                                     if(charsToShow === w.text.length) w.drawText = w.text; 
                                     break;
-                                case 'rotate-in': drawRotation = (1 - Math.pow(wordProgress, 0.5)) * Math.PI * intensity; drawScale = wordProgress; drawAlpha = wordProgress; break;
+                                case 'typewriter-cursor': 
+                                    let cShow = Math.floor(wordProgress * w.text.length);
+                                    w.drawText = w.text.substring(0, cShow) + (Math.floor(timeMs / 150) % 2 === 0 ? " _" : "");
+                                    if(cShow === w.text.length) w.drawText = w.text;
+                                    break;
                             }
                         }
 
-                        offCtx.shadowBlur = 0;
+                        if(s.animStyle !== 'blur-focus' || !useAnim) offCtx.shadowBlur = 0;
                         
-                        // تجهيز ألوان الكلمة (متدرج، نيون، عادي)
                         if (isActive && state.audioBuffer) { 
                             if(s.style === 'gradient-fill') {
                                 let grd = offCtx.createLinearGradient(centerX - wWidth/2, y - lineH/2, centerX + wWidth/2, y + lineH/2);
@@ -977,7 +983,7 @@
                             } else if (s.style === 'neon-border') {
                                 offCtx.fillStyle = s.baseC; offCtx.shadowColor = s.hiC; offCtx.shadowBlur = 30 + drawGlow;
                             } else {
-                                offCtx.fillStyle = s.hiC; offCtx.shadowBlur = drawGlow; offCtx.shadowColor = s.hiC;
+                                offCtx.fillStyle = s.hiC; if(s.animStyle !== 'blur-focus' || !useAnim) offCtx.shadowBlur = drawGlow; offCtx.shadowColor = s.hiC;
                             }
                         } else { 
                             offCtx.fillStyle = s.baseC; offCtx.globalAlpha = (s.style === 'quran-dim') ? 0.2 : 0.85; 
@@ -987,7 +993,6 @@
 
                         let textToDraw = w.drawText || w.text; delete w.drawText;
 
-                        // دالة مساعدة لرسم النص مع الـ Stroke
                         const renderTextStr = (txt, px, py) => {
                             if(s.strokeW > 0 && s.strokeC) { offCtx.strokeStyle = s.strokeC; offCtx.lineWidth = s.strokeW; offCtx.strokeText(txt, px, py); }
                             offCtx.fillText(txt, px, py);
@@ -1024,14 +1029,12 @@
                 }
             }
             
-            // الحواف الداكنة (Vignette)
             if(s.vigOn) {
                 let vigGrd = offCtx.createRadialGradient(C_W/2, C_H/2, C_W*0.4, C_W/2, C_H/2, C_W*0.8);
                 vigGrd.addColorStop(0, 'rgba(0,0,0,0)'); vigGrd.addColorStop(1, 'rgba(0,0,0,0.85)');
                 offCtx.fillStyle = vigGrd; offCtx.fillRect(0,0,C_W,C_H);
             }
 
-            // شريط التقدم (Progress Bar)
             if(s.progOn && activePhrase && state.audioBuffer) {
                 let progHeight = 6;
                 let duration = activePhrase.endTime - activePhrase.startTime;
@@ -1043,37 +1046,37 @@
 
             offCtx.globalAlpha = 1; 
 
-            // ==========================================
-            // المعالجة النهائية ونقل الصورة للـ Canvas الأساسي
-            // ==========================================
+            // نقل الصورة للمشهد الأساسي والمؤثرات الختامية
             ctx.clearRect(0, 0, C_W, C_H);
             
-            // 1. تأثير الجليتش (Glitch / RGB Split)
+            // 1. تأثير الجليتش (مُصلح: يعمل بتشريح وإزاحة آمنة بدون شاشة بيضاء)
             if (s.glitchInt > 0) {
                 let gInt = s.glitchInt;
-                // إزاحة خفيفة عشوائية للرسم الأساسي
-                let xShift = (Math.random() - 0.5) * gInt;
-                ctx.globalCompositeOperation = 'screen';
+                ctx.drawImage(offCanvas, 0, 0); // رسم أساسي
                 
-                // الأحمر يمين
-                ctx.fillStyle = 'red'; ctx.fillRect(0,0,C_W,C_H);
-                ctx.drawImage(offCanvas, xShift + (gInt/2), 0);
-                
-                // الأزرق يسار
-                ctx.fillStyle = 'cyan'; ctx.fillRect(0,0,C_W,C_H);
-                ctx.drawImage(offCanvas, xShift - (gInt/2), 0);
-                
-                ctx.globalCompositeOperation = 'source-over';
-                
-                // تقطيع عشوائي بالشاشة (Slice shifting)
-                if(Math.random() < 0.1) {
+                // تشريح عرضي عشوائي (آمن)
+                if(Math.random() < 0.3) {
                     let sliceY = Math.random() * C_H;
-                    let sliceH = 10 + Math.random() * 50;
-                    let sliceX = (Math.random() - 0.5) * gInt * 5;
+                    let sliceH = 5 + Math.random() * 30;
+                    let sliceX = (Math.random() - 0.5) * gInt * 4;
                     ctx.drawImage(offCanvas, 0, sliceY, C_W, sliceH, sliceX, sliceY, C_W, sliceH);
                 }
+                if(Math.random() < 0.1) {
+                    let sliceY = Math.random() * C_H;
+                    let sliceH = 50 + Math.random() * 100;
+                    let sliceX = (Math.random() - 0.5) * gInt * 10;
+                    ctx.drawImage(offCanvas, 0, sliceY, C_W, sliceH, sliceX, sliceY, C_W, sliceH);
+                }
+                
+                // تأثير طيف لوني خفيف (آمن ولا يغير الخلفية)
+                if (Math.random() < 0.5) {
+                    ctx.globalAlpha = 0.3;
+                    ctx.drawImage(offCanvas, gInt, 0); 
+                    ctx.drawImage(offCanvas, -gInt, 0); 
+                    ctx.globalAlpha = 1.0;
+                }
             } 
-            // 2. التموج المائي (القديم)
+            // 2. التموج المائي
             else if (s.rippleInt > 0) {
                 let intensity = s.rippleInt; let speed = 0.003; let frequency = 0.01; let sliceHeight = 30; 
                 let timePhase = timeMs * speed;
@@ -1082,7 +1085,7 @@
                     ctx.drawImage(offCanvas, 0, yInt, C_W, sliceHeight, offsetX, yInt, C_W, sliceHeight);
                 }
             } 
-            // 3. عادي
+            // 3. طبيعي
             else {
                 ctx.drawImage(offCanvas, 0, 0);
             }
