@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Quran Studio - Ultimate Pro V7</title>
+    <title>Quran Studio - Ultimate Pro V8</title>
     
     <link rel="icon" type="image/png" href="icons/app_logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -203,7 +203,7 @@
                             <input type="range" id="grain-intensity" min="0" max="50" value="0" class="mb-2" oninput="updateSettings(); document.getElementById('grain-int-val').innerText=this.value;">
                         </div>
                         <div class="border-t border-[#3f3f46] pt-3">
-                            <label class="flex justify-between text-[10px] text-red-400 font-bold mb-1"><span>📺 تأثير التشويش الآمن (Glitch)</span> <span id="glitch-int-val">0</span></label>
+                            <label class="flex justify-between text-[10px] text-red-400 font-bold mb-1"><span>📺 تأثير التشويش على الشاشة (Screen Glitch)</span> <span id="glitch-int-val">0</span></label>
                             <input type="range" id="glitch-intensity" min="0" max="50" value="0" class="mb-2 !accent-red-500" oninput="updateSettings(); document.getElementById('glitch-int-val').innerText=this.value;">
                         </div>
                         <div class="border-t border-[#3f3f46] pt-3 mt-2">
@@ -408,6 +408,16 @@
                                 <input type="checkbox" id="anim-enable" checked onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
                                 <span class="text-[10px] text-zinc-300 font-bold">تفعيل حركة للكلمة المقروءة</span>
                             </label>
+
+                            <!-- ميزة إضافة التشويش للنص القرآني فقط -->
+                            <div class="bg-red-900/20 p-2 rounded border border-red-500/30 mb-3">
+                                <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-2">
+                                    <input type="checkbox" id="text-glitch-enable" onchange="updateSettings()" class="w-3 h-3 accent-red-500 rounded">
+                                    <span class="text-[10px] text-red-300 font-bold">📺 تشويش (Glitch) للنص القرآني فقط</span>
+                                </label>
+                                <input type="range" id="text-glitch-int" min="0" max="50" value="10" class="!accent-red-500" oninput="updateSettings()">
+                            </div>
+
                             <select id="anim-style" onchange="updateSettings()" class="mb-3">
                                 <option value="none">بدون أنيميشن (ثابت)</option>
                                 <option value="pulse-glow" selected>✨ نبض ذهبي خفيف</option>
@@ -514,17 +524,9 @@
         let grainCanvas = document.createElement('canvas'); grainCanvas.width = 300; grainCanvas.height = 300; let gCtx = grainCanvas.getContext('2d'); let gData = gCtx.createImageData(300, 300);
         for(let i=0; i<gData.data.length; i+=4) { let v = Math.random()*255; gData.data[i]=v; gData.data[i+1]=v; gData.data[i+2]=v; gData.data[i+3]=255; } gCtx.putImageData(gData,0,0);
 
-        // محرك توحيد اللغة العربية الذكي
         function normalizeArabic(text) {
             if (!text) return "";
-            return text
-                .replace(/[\u064B-\u065F\u0670]/g, '') // إزالة التشكيل
-                .replace(/[أإآا]/g, 'ا')               // توحيد الألف
-                .replace(/[ةه]/g, 'ه')                 // توحيد التاء المربوطة
-                .replace(/[يى]/g, 'ي')                 // توحيد الياء
-                .replace(/^سوره |^سوره /g, '')         // تجاهل كلمة سورة في البداية
-                .replace(/\s+/g, ' ')                  // إزالة المسافات الزائدة
-                .trim();
+            return text.replace(/[\u064B-\u065F\u0670]/g, '').replace(/[أإآا]/g, 'ا').replace(/[ةه]/g, 'ه').replace(/[يى]/g, 'ي').replace(/^سوره |^سوره /g, '').replace(/\s+/g, ' ').trim();
         }
 
         window.onload = async () => {
@@ -547,16 +549,9 @@
         function filterSurahs() {
             let term = document.getElementById('surah-search').value;
             if(!term.trim()) { populateSurahs(globalSurahs); return; }
-            
             let normalizedTerm = normalizeArabic(term);
-            let filtered = globalSurahs.filter(s => {
-                let normalizedName = normalizeArabic(s.name.replace('سُورَةُ ', ''));
-                let numberMatch = s.number.toString().includes(term);
-                return normalizedName.includes(normalizedTerm) || numberMatch;
-            });
-            
-            populateSurahs(filtered);
-            if(filtered.length > 0) triggerLivePreview();
+            let filtered = globalSurahs.filter(s => { let normalizedName = normalizeArabic(s.name.replace('سُورَةُ ', '')); let numberMatch = s.number.toString().includes(term); return normalizedName.includes(normalizedTerm) || numberMatch; });
+            populateSurahs(filtered); if(filtered.length > 0) triggerLivePreview();
         }
 
         async function updateTranslationOnly() {
@@ -625,7 +620,8 @@
                 infoOn: document.getElementById('info-enable').checked, infoFont: val('info-font'), infoColor: val('info-color'), infoX: num('info-x') / 100, infoY: num('info-y') / 100,
                 wmText: val('watermark-text'), wmFont: val('wm-font'), wmSize: num('wm-size'), logoScale: num('logo-scale') / 100, logoX: num('logo-x') / 100, logoY: num('logo-y') / 100,
                 vizOn: document.getElementById('viz-enable').checked, vizStyle: val('viz-style'), vizColor: val('viz-color'), vizX: num('viz-x') / 100, vizY: num('viz-y') / 100,
-                animOn: document.getElementById('anim-enable').checked, animStyle: val('anim-style'), animInt: num('anim-intensity') / 100, animSpeed: num('anim-speed')
+                animOn: document.getElementById('anim-enable').checked, animStyle: val('anim-style'), animInt: num('anim-intensity') / 100, animSpeed: num('anim-speed'),
+                textGlitchOn: document.getElementById('text-glitch-enable').checked, textGlitchInt: num('text-glitch-int')
             };
         }
 
@@ -900,7 +896,9 @@
 
             if(s.infoOn && globalSurahs.length > 0) {
                 let sName = globalSurahs.find(x => x.number == val('surah'))?.name.replace('سُورَةُ ', '') || "السورة";
-                let rSelect = document.getElementById('reciter'); let rName = rSelect.options[rSelect.selectedIndex].text;
+                let rSelect = document.getElementById('reciter'); 
+                let rName = rSelect.options[rSelect.selectedIndex].text.replace(/\(/g, '- ').replace(/\)/g, ' -');
+                
                 offCtx.textAlign = "center"; offCtx.shadowColor = "#000"; offCtx.shadowBlur = 10;
                 offCtx.font = `bold 35px ${s.infoFont}`; offCtx.fillStyle = s.infoColor; offCtx.fillText(`سورة ${sName}`, C_W * s.infoX, C_H * s.infoY); 
                 offCtx.globalAlpha = 0.8; offCtx.font = `25px ${s.infoFont}`; offCtx.fillText(rName, C_W * s.infoX, (C_H * s.infoY) + 40); 
@@ -919,8 +917,13 @@
                 let activeScreen = screens[0]; for(let screen of screens) { if(timeMs >= screen[0].start && timeMs <= screen[screen.length-1].end) { activeScreen = screen; break; } }
                 
                 if (state.audioBuffer) {
-                    let screenStart = activeScreen[0].start; let screenEnd = activeScreen[activeScreen.length - 1].end; let fadeDuration = 700; let p = 1;
-                    if (timeMs < screenStart + fadeDuration) { p = (timeMs - screenStart) / fadeDuration; } else if (timeMs > screenEnd - fadeDuration) { p = (screenEnd - timeMs) / fadeDuration; }
+                    let screenStart = activeScreen[0].start; let screenEnd = activeScreen[activeScreen.length - 1].end; 
+                    let fadeDurationIn = 500; let fadeDurationOut = 100; // منع اختفاء النص مبكراً
+                    let p = 1;
+                    
+                    if (timeMs < screenStart + fadeDurationIn) { p = (timeMs - screenStart) / fadeDurationIn; } 
+                    else if (timeMs > screenEnd - fadeDurationOut) { p = (screenEnd - timeMs) / fadeDurationOut; }
+                    
                     if (p < 0) p = 0; if (p > 1) p = 1;
 
                     if (p < 1) {
@@ -1016,9 +1019,18 @@
                         offCtx.globalAlpha *= drawAlpha * globalTransAlpha; 
 
                         let textToDraw = w.drawText; delete w.drawText;
+                        
                         const renderTextStr = (txt, px, py) => {
-                            if(s.strokeW > 0 && s.strokeC && !isHollow) { offCtx.strokeStyle = s.strokeC; offCtx.lineWidth = s.strokeW; offCtx.strokeText(txt, px, py); }
-                            if(isHollow) offCtx.strokeText(txt, px, py); else offCtx.fillText(txt, px, py);
+                            if (s.textGlitchOn && Math.random() < 0.2 && !w.text.includes('|^')) {
+                                let shift = (Math.random() - 0.5) * s.textGlitchInt;
+                                let origFill = offCtx.fillStyle;
+                                offCtx.fillStyle = 'red'; offCtx.fillText(txt, px + shift, py);
+                                offCtx.fillStyle = 'cyan'; offCtx.fillText(txt, px - shift, py);
+                                offCtx.fillStyle = origFill; offCtx.fillText(txt, px + (Math.random()*2), py);
+                            } else {
+                                if(s.strokeW > 0 && s.strokeC && !isHollow) { offCtx.strokeStyle = s.strokeC; offCtx.lineWidth = s.strokeW; offCtx.strokeText(txt, px, py); }
+                                if(isHollow) offCtx.strokeText(txt, px, py); else offCtx.fillText(txt, px, py);
+                            }
                         };
 
                         if (isCenterStyle && state.audioBuffer) {
