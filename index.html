@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Quran Studio - Ultimate Pro V6</title>
+    <title>Quran Studio - Ultimate Pro V7</title>
     
     <link rel="icon" type="image/png" href="icons/app_logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -112,8 +112,7 @@
             <div id="tab-quran" class="panel-section active space-y-3">
                 <div class="bg-amber-900/10 p-3 rounded-lg border border-amber-900/30">
                     <label class="block text-xs font-bold text-amber-400 mb-2">البحث والسورة</label>
-                    <!-- محرك البحث الذكي للسور -->
-                    <input type="text" id="surah-search" placeholder="🔍 ابحث عن اسم السورة (مثال: البقرة)..." class="mb-2 !bg-black !text-amber-300 !border-amber-900 focus:!border-amber-500" onkeyup="filterSurahs()">
+                    <input type="text" id="surah-search" placeholder="🔍 ابحث عن اسم السورة بدون تشكيل..." class="mb-2 !bg-black !text-amber-300 !border-amber-900 focus:!border-amber-500" onkeyup="filterSurahs()">
                     <select id="surah" class="mb-3" onchange="triggerLivePreview()"></select>
                     
                     <div class="grid grid-cols-2 gap-3 mb-3">
@@ -291,7 +290,7 @@
                 </details>
                 
                 <details open>
-                    <summary><i class="fa-solid fa-wave-square text-amber-500"></i> الموجات الصوتية השاملة</summary>
+                    <summary><i class="fa-solid fa-wave-square text-amber-500"></i> الموجات الصوتية الشاملة</summary>
                     <div class="details-body">
                         <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-2">
                             <input type="checkbox" id="viz-enable" checked onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
@@ -329,7 +328,7 @@
                 <div class="bg-[#18181b] p-3 rounded-lg border border-[#27272a]">
                     
                     <div class="bg-indigo-900/20 p-2 rounded border border-indigo-500/30 mb-3">
-                        <label class="text-[10px] text-indigo-300 font-bold block mb-1">🎬 انتقالات سينمائية بين الآيات (جديد)</label>
+                        <label class="text-[10px] text-indigo-300 font-bold block mb-1">🎬 انتقالات سينمائية بين الآيات</label>
                         <select id="ayah-transition" onchange="updateSettings()" class="w-full !bg-indigo-950/50 !text-white !border-indigo-500/50">
                             <option value="blur-fade">تلاشي ضبابي سينمائي (Blur Fade)</option>
                             <option value="zoom-fade">زوم خارجي ناعم (Zoom Fade)</option>
@@ -515,7 +514,22 @@
         let grainCanvas = document.createElement('canvas'); grainCanvas.width = 300; grainCanvas.height = 300; let gCtx = grainCanvas.getContext('2d'); let gData = gCtx.createImageData(300, 300);
         for(let i=0; i<gData.data.length; i+=4) { let v = Math.random()*255; gData.data[i]=v; gData.data[i+1]=v; gData.data[i+2]=v; gData.data[i+3]=255; } gCtx.putImageData(gData,0,0);
 
+        // محرك توحيد اللغة العربية الذكي
+        function normalizeArabic(text) {
+            if (!text) return "";
+            return text
+                .replace(/[\u064B-\u065F\u0670]/g, '') // إزالة التشكيل
+                .replace(/[أإآا]/g, 'ا')               // توحيد الألف
+                .replace(/[ةه]/g, 'ه')                 // توحيد التاء المربوطة
+                .replace(/[يى]/g, 'ي')                 // توحيد الياء
+                .replace(/^سوره |^سوره /g, '')         // تجاهل كلمة سورة في البداية
+                .replace(/\s+/g, ' ')                  // إزالة المسافات الزائدة
+                .trim();
+        }
+
         window.onload = async () => {
+            document.getElementById('viz-y').value = 100;
+            
             try {
                 let resS = await fetch('./surahs.json'); globalSurahs = await resS.json(); 
                 populateSurahs(globalSurahs);
@@ -531,9 +545,16 @@
         }
 
         function filterSurahs() {
-            let term = document.getElementById('surah-search').value.trim();
-            if(!term) { populateSurahs(globalSurahs); return; }
-            let filtered = globalSurahs.filter(s => s.name.includes(term) || s.number.toString().includes(term));
+            let term = document.getElementById('surah-search').value;
+            if(!term.trim()) { populateSurahs(globalSurahs); return; }
+            
+            let normalizedTerm = normalizeArabic(term);
+            let filtered = globalSurahs.filter(s => {
+                let normalizedName = normalizeArabic(s.name.replace('سُورَةُ ', ''));
+                let numberMatch = s.number.toString().includes(term);
+                return normalizedName.includes(normalizedTerm) || numberMatch;
+            });
+            
             populateSurahs(filtered);
             if(filtered.length > 0) triggerLivePreview();
         }
@@ -783,15 +804,13 @@
             offCtx.clearRect(0, 0, C_W, C_H);
             let s = state.settings;
             
-            // Base time vs Synced Time (The Core Audio Sync Logic)
             let baseTimeMs = state.isExporting ? (Date.now() - (window.exportStartTime || Date.now())) : (audioPlayer.currentTime * 1000);
-            let timeMs = baseTimeMs + ((s.syncOffset || 0) * 1000); // Time used ONLY for text highlighting & sync
+            let timeMs = baseTimeMs + ((s.syncOffset || 0) * 1000); 
 
             let activePhrase = null;
             if (!state.audioBuffer && state.phrases.length > 0) { activePhrase = state.phrases[state.currentIndex]; } 
             else if (state.phrases.length > 0) { activePhrase = state.phrases.find(p => timeMs >= p.startTime && timeMs <= p.endTime); }
             
-            // 1. Scene & Camera (Uses baseTimeMs so it's smooth globally)
             offCtx.save();
             if (s.camOn) {
                 let speedMultiplier = 1.5; let t = (baseTimeMs / 1000) * 0.05 * speedMultiplier; let scale = 1, tx = 0, ty = 0;
@@ -821,7 +840,6 @@
                 offCtx.globalCompositeOperation = 'screen'; let lx = Math.sin(baseTimeMs/3000) * (C_W/3); let lg = offCtx.createRadialGradient(lx, 0, 0, lx, 0, C_W*0.6); lg.addColorStop(0, 'rgba(255,100,50,0.15)'); lg.addColorStop(1, 'rgba(0,0,0,0)'); offCtx.fillStyle = lg; offCtx.fillRect(0,0,C_W,C_H); offCtx.globalCompositeOperation = 'source-over';
             }
 
-            // Visualizer Draw
             if(s.vizOn && state.analyser && (!audioPlayer.paused || state.isExporting)) {
                 state.analyser.getByteFrequencyData(state.dataArray);
                 let count = Math.floor(state.dataArray.length * 0.6); let startX = C_W * s.vizX; let baseY = C_H * s.vizY;
@@ -880,7 +898,6 @@
                 offCtx.stroke(); if(s.vizStyle === 'circle' || s.vizStyle === 'hexagon' || s.vizStyle === 'double-wave') offCtx.fill(); offCtx.shadowBlur = 0; 
             }
 
-            // Info (Surah/Reciter)
             if(s.infoOn && globalSurahs.length > 0) {
                 let sName = globalSurahs.find(x => x.number == val('surah'))?.name.replace('سُورَةُ ', '') || "السورة";
                 let rSelect = document.getElementById('reciter'); let rName = rSelect.options[rSelect.selectedIndex].text;
@@ -894,12 +911,7 @@
             if(state.logoImage) { let imgW = state.logoImage.width; let imgH = state.logoImage.height; let maxW = C_W * s.logoScale; if(imgW > maxW) { let ratio = maxW / imgW; imgW *= ratio; imgH *= ratio; } offCtx.drawImage(state.logoImage, (C_W * s.logoX) - (imgW/2), (C_H * s.logoY) - (imgH/2), imgW, imgH); logoOffset = (imgH/2) + 20; }
             if(s.wmText) { offCtx.font = `bold ${s.wmSize}px ${s.wmFont}`; offCtx.fillStyle = "rgba(255,255,255,0.4)"; offCtx.textAlign = "center"; offCtx.textBaseline = "middle"; offCtx.fillText(s.wmText, C_W * s.logoX, (C_H * s.logoY) + logoOffset); }
 
-            // Global Cinematic Transitions Values
-            let globalTransAlpha = 1;
-            let globalTransBlur = 0;
-            let globalTransScale = 1;
-            let globalTransY = 0;
-            let globalFlashAlpha = 0;
+            let globalTransAlpha = 1; let globalTransBlur = 0; let globalTransScale = 1; let globalTransY = 0; let globalFlashAlpha = 0;
 
             if (activePhrase) {
                 let screens = []; let currentScreen = [];
@@ -918,8 +930,8 @@
                             case 'zoom-fade': globalTransScale = 1 + (1 - p) * 0.3; break;
                             case 'slide-blur': globalTransY = (1 - p) * 50; globalTransBlur = (1 - p) * 10; break;
                             case 'flash-burn': globalTransBlur = (1 - p) * 5; globalFlashAlpha = (1 - p); break;
-                            case 'glitch-shift': if(p < 0.5) globalTransAlpha = 0; break; // Handled in composite
-                            case 'fade': break; // Default fade
+                            case 'glitch-shift': if(p < 0.5) globalTransAlpha = 0; break;
+                            case 'fade': break; 
                         }
                     }
                 }
@@ -1025,10 +1037,7 @@
                     offCtx.direction = "rtl"; offCtx.shadowBlur = 0; offCtx.shadowOffsetY = 0;
                 }
                 
-                // Clear Filters
                 offCtx.filter = 'none';
-                
-                // Flash Burn Transition Overlay
                 if(globalFlashAlpha > 0) { offCtx.fillStyle = `rgba(255,255,255,${globalFlashAlpha})`; offCtx.fillRect(0,0,C_W,C_H); }
             }
             
@@ -1040,7 +1049,6 @@
             // Final Composite to Main Canvas
             ctx.clearRect(0, 0, C_W, C_H);
             
-            // Glitch Shift Transition Logic + Manual Glitch Int
             let isTransGlitch = (s.ayahTrans === 'glitch-shift' && activePhrase && globalTransAlpha < 1 && globalTransAlpha > 0);
             
             if (s.glitchInt > 0 || isTransGlitch) {
