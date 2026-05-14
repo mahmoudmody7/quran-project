@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EduLang Studio - AI Powered Pro</title>
+    <title>EduLang Studio - Multi AI Pro</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -79,15 +79,20 @@
             
             <!-- تبويب المشاريع -->
             <div id="tab-data" class="panel-section active space-y-3">
+                
+                <div class="bg-[#18181b] p-3 rounded-lg border border-amber-500/30 mb-3">
+                    <h3 class="text-[11px] font-bold text-amber-400 mb-2">إعدادات API (لـ Cartesia AI)</h3>
+                    <input type="text" id="cartesia-api-key" value="sk_car_3MbiQ4oVEod5F6JYW4dQSb" class="!bg-[#09090b] text-[10px] text-zinc-400" placeholder="مفتاح Cartesia API">
+                </div>
+
                 <div class="bg-indigo-900/20 p-4 rounded-lg border border-indigo-500/30">
-                    <h3 class="text-xs font-bold text-indigo-300 mb-2"><i class="fa-solid fa-robot"></i> الذكاء الاصطناعي</h3>
-                    <p class="text-[10px] text-indigo-200/70 mb-3">ارفع ملف JSON الذي ولده لك الذكاء الاصطناعي لإنشاء المحادثة والشخصيات تلقائياً.</p>
-                    <div class="file-btn bg-indigo-600 hover:bg-indigo-500 text-white"><i class="fa-solid fa-file-code text-xl mb-1"></i> استيراد سكريبت AI (JSON)<input type="file" accept=".json" onchange="importAIScript(this)"></div>
+                    <h3 class="text-xs font-bold text-indigo-300 mb-2"><i class="fa-solid fa-robot"></i> استيراد سيناريو الذكاء الاصطناعي</h3>
+                    <p class="text-[10px] text-indigo-200/70 mb-3">ارفع ملف JSON الذي ولده لك الذكاء الاصطناعي.</p>
+                    <div class="file-btn bg-indigo-600 hover:bg-indigo-500 text-white"><i class="fa-solid fa-file-code text-xl mb-1"></i> استيراد ملف (JSON)<input type="file" accept=".json" onchange="importAIScript(this)"></div>
                 </div>
 
                 <div class="bg-blue-900/20 p-4 rounded-lg border border-blue-500/30">
                     <h3 class="text-xs font-bold text-blue-300 mb-2"><i class="fa-solid fa-save"></i> حفظ وإدارة المشاريع</h3>
-                    <p class="text-[10px] text-blue-200/70 mb-3">احفظ عملك الحالي بالكامل للعودة إليه لاحقاً وتعديله بدون الحاجة للبدء من الصفر.</p>
                     <div class="grid grid-cols-2 gap-2">
                         <button onclick="exportProject()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded text-[11px]"><i class="fa-solid fa-download"></i> حفظ المشروع</button>
                         <div class="file-btn bg-[#27272a] hover:bg-[#3f3f46] text-white !py-2 !text-[11px]"><i class="fa-solid fa-upload"></i> فتح مشروع<input type="file" accept=".edulang" onchange="importProject(this)"></div>
@@ -98,7 +103,7 @@
             <!-- تبويب الشخصيات -->
             <div id="tab-chars" class="panel-section space-y-3">
                 <div class="bg-[#18181b] p-3 rounded-lg border border-[#27272a] text-[11px] text-zinc-300 mb-3">
-                    أضف شخصياتك واربط كل شخصية بكود (مثل A, B) ليطابق نصوص الذكاء الاصطناعي.
+                    أضف شخصياتك، خصص صورة وأماكن كل شخصية، وحدد محرك الصوت ولغة التحدث.
                 </div>
                 <div id="speakers-container" class="space-y-3"></div>
                 <button onclick="addSpeaker()" class="w-full bg-[#27272a] hover:bg-[#3f3f46] text-white font-bold py-3 rounded transition text-xs border border-dashed border-[#52525b]">
@@ -133,22 +138,33 @@
                 </div>
 
                 <div class="bg-[#18181b] p-3 rounded-lg border border-[#27272a]">
-                    <h3 class="text-xs font-bold text-blue-400 mb-3"><i class="fa-solid fa-font text-blue-500"></i> تصميم النصوص والألوان العامة</h3>
+                    <h3 class="text-xs font-bold text-blue-400 mb-3"><i class="fa-solid fa-font text-blue-500"></i> تصميم النصوص والألوان</h3>
+                    
+                    <div class="mb-3 bg-[#09090b] p-2 rounded border border-[#3f3f46]">
+                        <label class="text-[10px] text-zinc-400 block mb-1">حركة النص (Text Transition)</label>
+                        <select id="text-anim" onchange="updateSettings()" class="!p-1 text-[10px] w-full">
+                            <option value="fade">تلاشي ناعم سينمائي (Fade In/Out)</option>
+                            <option value="zoom" selected>تكبير وتلاشي (Zoom In & Fade)</option>
+                            <option value="slide">انزلاق للأعلى (Slide Up)</option>
+                            <option value="none">بدون حركة (ثابت)</option>
+                        </select>
+                    </div>
+
                     <div class="grid grid-cols-2 gap-3 mb-2">
-                        <div><label class="text-[10px] text-zinc-500 block">اللون الافتراضي (إذا لم يحدد)</label><input type="color" id="default-color" value="#ffffff" oninput="updateSettings()" class="h-8 p-0 border-0 rounded w-full"></div>
-                        <div><label class="text-[10px] text-zinc-500 block">لون التوهج النشط للمتحدث</label><input type="color" id="en-highlight" value="#3b82f6" oninput="updateSettings()" class="h-8 p-0 border-0 rounded w-full"></div>
+                        <div><label class="text-[10px] text-zinc-500 block">اللون الافتراضي</label><input type="color" id="default-color" value="#ffffff" oninput="updateSettings()" class="h-8 p-0 border-0 rounded w-full"></div>
+                        <div><label class="text-[10px] text-zinc-500 block">لون توهج صورة المتحدث</label><input type="color" id="en-highlight" value="#3b82f6" oninput="updateSettings()" class="h-8 p-0 border-0 rounded w-full"></div>
                     </div>
                     
-                    <label class="flex justify-between text-[10px] text-zinc-500 mb-1 mt-3">حجم الخط الإنجليزي (Target) <span id="en-size-val">50</span></label>
+                    <label class="flex justify-between text-[10px] text-zinc-500 mb-1 mt-3">حجم الخط الإنجليزي <span id="en-size-val">50</span></label>
                     <input type="range" id="en-size" min="20" max="120" value="50" oninput="updateSettings(); document.getElementById('en-size-val').innerText=this.value;">
                     
-                    <label class="flex justify-between text-[10px] text-zinc-500 mb-1">حجم خط النطق (Pronunciation) <span id="pr-size-val">40</span></label>
+                    <label class="flex justify-between text-[10px] text-zinc-500 mb-1">حجم خط النطق <span id="pr-size-val">40</span></label>
                     <input type="range" id="pr-size" min="20" max="100" value="40" oninput="updateSettings(); document.getElementById('pr-size-val').innerText=this.value;">
 
-                    <label class="flex justify-between text-[10px] text-zinc-500 mb-1">حجم الخط العربي (Native) <span id="ar-size-val">40</span></label>
+                    <label class="flex justify-between text-[10px] text-zinc-500 mb-1">حجم الخط العربي <span id="ar-size-val">40</span></label>
                     <input type="range" id="ar-size" min="20" max="100" value="40" oninput="updateSettings(); document.getElementById('ar-size-val').innerText=this.value;">
                     
-                    <label class="flex justify-between text-[10px] text-zinc-500 mb-1 mt-3">تباعد الأسطر (Line Spacing) <span id="line-space-val">70</span></label>
+                    <label class="flex justify-between text-[10px] text-zinc-500 mb-1 mt-3">تباعد الأسطر <span id="line-space-val">70</span></label>
                     <input type="range" id="line-space" min="30" max="150" value="70" oninput="updateSettings(); document.getElementById('line-space-val').innerText=this.value;">
                 </div>
 
@@ -199,8 +215,24 @@
         const offCanvas = document.createElement('canvas'); const offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
         const audioPlayer = document.getElementById('audio-player');
         
+        // قوائم الأصوات
+        const POCKET_VOICES = ["alba", "marius", "javert", "jean", "fantine", "cosette", "eponine", "azelma", "Stella.wav", "Tyler.wav", "Juniper.wav"];
+        const CARTESIA_VOICES = [
+            { id: "95d51f79-c397-46f9-b49a-23763d3eaa2d", name: "Cartesia Default" },
+            { id: "694f9389-aac1-45b6-b726-9d9369183238", name: "Sarah (EN)" },
+            { id: "a0e99841-438c-4a64-b679-ae501e7d6091", name: "Arthur (EN)" }
+        ];
+        const CARTESIA_LANGS = [
+            { code: "en", name: "إنجليزي (English)" },
+            { code: "ar", name: "عربي (Arabic)" },
+            { code: "hi", name: "هندي (Hindi)" },
+            { code: "fr", name: "فرنسي (French)" },
+            { code: "es", name: "إسباني (Spanish)" }
+        ];
+
         let state = {
-            speakers: [], // { id, code, name, voice, imageBase64, showImage, x, y, scale, textX, textY, vizOn, vizStyle, vizX, vizY, vizScale, vizColor }
+            speakers: [], 
+            // speaker = { id, code, name, ttsEngine, voice, lang, imageBase64, showImage, x, y, scale, textX, textY, vizOn, vizStyle, vizX, vizY, vizScale, vizColor }
             dialogues: [], 
             bg: { type: 'none', base64: null, media: null },
             settings: {},
@@ -208,7 +240,6 @@
             globalAudioBuffer: null,
             currentIndex: 0,
             isExporting: false,
-            voicesList: ["alba", "marius", "javert", "jean", "fantine", "cosette", "eponine", "azelma", "Stella.wav", "Tyler.wav", "Juniper.wav"]
         };
 
         const val = id => document.getElementById(id).value;
@@ -236,26 +267,23 @@
         function updateSettings() {
             state.settings = {
                 bgOp: num('bg-opacity') / 100,
+                textAnim: val('text-anim'),
                 defaultColor: val('default-color'),
                 enHighlight: val('en-highlight'),
-                enSize: num('en-size'),
-                prSize: num('pr-size'),
-                arSize: num('ar-size'),
+                enSize: num('en-size'), prSize: num('pr-size'), arSize: num('ar-size'),
                 lineSpace: num('line-space')
             };
         }
 
-        // -------- نظام حفظ واسترجاع المشاريع (JSON) --------
+        // -------- نظام حفظ واسترجاع المشاريع --------
         function exportProject() {
             let projectData = {
                 speakers: state.speakers,
-                dialogues: state.dialogues.map(d => ({ ...d, baseAudioBuffer: null })), // Don't save raw audio buffer
-                settings: state.settings,
-                bg: { type: state.bg.type, base64: state.bg.base64 }
+                dialogues: state.dialogues.map(d => ({ ...d, baseAudioBuffer: null })), 
+                settings: state.settings, bg: { type: state.bg.type, base64: state.bg.base64 }
             };
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(projectData));
-            const downloadAnchorNode = document.createElement('a');
-            downloadAnchorNode.setAttribute("href", dataStr);
+            const downloadAnchorNode = document.createElement('a'); downloadAnchorNode.setAttribute("href", dataStr);
             downloadAnchorNode.setAttribute("download", `EduLang_Project_${Date.now()}.edulang`);
             document.body.appendChild(downloadAnchorNode); downloadAnchorNode.click(); downloadAnchorNode.remove();
         }
@@ -269,6 +297,7 @@
                     state.settings = data.settings || state.settings;
                     
                     document.getElementById('bg-opacity').value = state.settings.bgOp * 100;
+                    document.getElementById('text-anim').value = state.settings.textAnim || 'zoom';
                     document.getElementById('default-color').value = state.settings.defaultColor || '#ffffff';
                     document.getElementById('en-size').value = state.settings.enSize || 50;
                     document.getElementById('pr-size').value = state.settings.prSize || 40;
@@ -284,15 +313,15 @@
                     state.speakers = data.speakers;
                     state.speakers.forEach(s => {
                         if(s.imageBase64) { let img = new Image(); img.src = s.imageBase64; s.imageObj = img; }
-                        // Ensure legacy projects have the new property
-                        if(!s.vizStyle) s.vizStyle = 'symmetric';
+                        if(!s.ttsEngine) s.ttsEngine = 'pocket';
+                        if(!s.lang) s.lang = 'en';
                     });
 
                     state.dialogues = data.dialogues;
                     state.globalAudioBuffer = null; audioPlayer.src = ""; state.currentIndex = 0;
                     
-                    renderSpeakersUI(); renderDialoguesUI(); alert("تم تحميل المشروع بنجاح! تحتاج لتوليد الأصوات مرة أخرى.");
-                } catch(err) { alert("ملف مشروع غير صالح!"); console.error(err); }
+                    renderSpeakersUI(); renderDialoguesUI(); alert("تم تحميل المشروع بنجاح!");
+                } catch(err) { alert("ملف مشروع غير صالح!"); }
             };
             reader.readAsText(file);
         }
@@ -318,7 +347,7 @@
                         });
                     });
                     renderSpeakersUI(); renderDialoguesUI(); alert("تم استيراد المحادثة بنجاح!");
-                } catch(err) { alert("خطأ في قراءة ملف الـ AI. تأكد من الصيغة."); console.error(err); }
+                } catch(err) { alert("خطأ في قراءة ملف الـ AI. تأكد من الصيغة."); }
             };
             reader.readAsText(file);
         }
@@ -334,17 +363,16 @@
             reader.readAsDataURL(file);
         }
 
-        // -------- نظام الشخصيات والموجات المستقلة --------
+        // -------- نظام الشخصيات --------
         function generateId() { return Math.random().toString(36).substr(2, 9); }
 
         function addSpeaker(codeStr = null) {
-            const id = generateId(); const speakerNum = state.speakers.length + 1;
-            const isFirst = speakerNum % 2 !== 0;
+            const id = generateId(); const speakerNum = state.speakers.length + 1; const isFirst = speakerNum % 2 !== 0;
             const newSpeaker = {
-                id: id, code: codeStr || `S${speakerNum}`, name: `Speaker ${speakerNum}`, voice: state.voicesList[(speakerNum-1) % state.voicesList.length],
+                id: id, code: codeStr || `S${speakerNum}`, name: `Speaker ${speakerNum}`, 
+                ttsEngine: 'pocket', voice: POCKET_VOICES[(speakerNum-1) % POCKET_VOICES.length], lang: 'en',
                 imageBase64: null, imageObj: null, showImage: true,
-                x: isFirst ? 25 : 75, y: 55, scale: 30,
-                textX: isFirst ? 30 : 70, textY: 30,
+                x: isFirst ? 25 : 75, y: 55, scale: 30, textX: isFirst ? 30 : 70, textY: 30,
                 vizOn: true, vizStyle: 'symmetric', vizColor: '#3b82f6', vizScale: 100, vizX: isFirst ? 30 : 70, vizY: 70
             };
             state.speakers.push(newSpeaker); renderSpeakersUI(); updateDialogueSpeakersDropdowns();
@@ -352,31 +380,68 @@
 
         function removeSpeaker(id) { state.speakers = state.speakers.filter(s => s.id !== id); renderSpeakersUI(); updateDialogueSpeakersDropdowns(); }
 
+        function getVoiceOptionsHtml(engine, currentVoice) {
+            if(engine === 'cartesia') {
+                return CARTESIA_VOICES.map(v => `<option value="${v.id}" ${v.id===currentVoice?'selected':''}>${v.name}</option>`).join('') + 
+                       `<option value="custom" ${CARTESIA_VOICES.find(x=>x.id===currentVoice)?'':'selected'}>صوت مخصص (ID)</option>`;
+            } else {
+                return POCKET_VOICES.map(v => `<option value="${v}" ${v===currentVoice?'selected':''}>صوت: ${v}</option>`).join('');
+            }
+        }
+
         function renderSpeakersUI() {
             const container = document.getElementById('speakers-container'); container.innerHTML = '';
             state.speakers.forEach(s => {
+                
+                let isCustomCartesia = s.ttsEngine === 'cartesia' && !CARTESIA_VOICES.find(v => v.id === s.voice);
+                
                 const div = document.createElement('div');
                 div.className = "bg-[#18181b] border border-[#27272a] p-3 rounded-lg relative mb-3";
                 div.innerHTML = `
                     <button onclick="removeSpeaker('${s.id}')" class="absolute top-2 left-2 text-red-500 hover:text-red-400"><i class="fa-solid fa-trash"></i></button>
                     
-                    <div class="flex gap-3 items-center mb-3">
+                    <div class="flex gap-3 items-center mb-2">
                         <div class="file-btn bg-[#27272a] hover:bg-[#3f3f46] w-16 h-16 rounded flex-shrink-0 !p-0 flex items-center justify-center overflow-hidden border border-blue-500/50">
                             ${s.imageObj ? `<img src="${s.imageObj.src}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-user text-xl"></i>`}
                             <input type="file" accept="image/*" onchange="uploadSpeakerImg('${s.id}', this)">
                         </div>
                         <div class="flex-1">
                             <div class="flex gap-1 mb-1">
-                                <input type="text" value="${s.code}" onchange="updateSpeakerProp('${s.id}', 'code', this.value)" placeholder="كود (A,B)" class="w-1/3 text-xs text-center font-bold text-amber-400" title="كود الربط بملف AI">
+                                <input type="text" value="${s.code}" onchange="updateSpeakerProp('${s.id}', 'code', this.value)" placeholder="كود A,B" class="w-1/3 text-xs text-center font-bold text-amber-400">
                                 <input type="text" value="${s.name}" onchange="updateSpeakerProp('${s.id}', 'name', this.value)" placeholder="اسم الشخصية" class="w-2/3 text-xs">
                             </div>
-                            <select onchange="updateSpeakerProp('${s.id}', 'voice', this.value)" class="text-xs !p-1 mb-1">
-                                ${state.voicesList.map(v => `<option value="${v}" ${v===s.voice?'selected':''}>صوت: ${v}</option>`).join('')}
-                            </select>
-                            <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer">
+                            <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mt-2">
                                 <input type="checkbox" ${s.showImage ? 'checked' : ''} onchange="updateSpeakerProp('${s.id}', 'showImage', this.checked)" class="w-3 h-3 accent-blue-500 rounded">
                                 <span class="text-[10px] text-zinc-300">إظهار صورة الشخصية</span>
                             </label>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#09090b] p-2 rounded border border-[#3f3f46] mb-2">
+                        <h4 class="text-[10px] font-bold text-indigo-400 mb-2">إعدادات محرك الصوت</h4>
+                        <div class="grid grid-cols-2 gap-2 mb-2">
+                            <div>
+                                <label class="text-[9px] text-zinc-400 block mb-1">المحرك</label>
+                                <select onchange="handleEngineChange('${s.id}', this.value)" class="!p-1 text-[10px]">
+                                    <option value="pocket" ${s.ttsEngine==='pocket'?'selected':''}>Pocket TTS (EN)</option>
+                                    <option value="cartesia" ${s.ttsEngine==='cartesia'?'selected':''}>Cartesia AI (Multi)</option>
+                                </select>
+                            </div>
+                            ${s.ttsEngine === 'cartesia' ? `
+                            <div>
+                                <label class="text-[9px] text-zinc-400 block mb-1">لغة التحدث</label>
+                                <select onchange="updateSpeakerProp('${s.id}', 'lang', this.value)" class="!p-1 text-[10px]">
+                                    ${CARTESIA_LANGS.map(l => `<option value="${l.code}" ${l.code===s.lang?'selected':''}>${l.name}</option>`).join('')}
+                                </select>
+                            </div>
+                            ` : '<div></div>'}
+                        </div>
+                        
+                        <div class="flex gap-1">
+                            <select id="voice-sel-${s.id}" onchange="handleVoiceSelChange('${s.id}', this.value)" class="!p-1 text-[10px] flex-1">
+                                ${getVoiceOptionsHtml(s.ttsEngine, s.voice)}
+                            </select>
+                            ${isCustomCartesia ? `<input type="text" value="${s.voice}" onchange="updateSpeakerProp('${s.id}', 'voice', this.value)" placeholder="الصق ID الصوت" class="!p-1 text-[10px] flex-1">` : ''}
                         </div>
                     </div>
                     
@@ -402,15 +467,13 @@
                                 <input type="checkbox" ${s.vizOn ? 'checked' : ''} onchange="updateSpeakerProp('${s.id}', 'vizOn', this.checked)" class="w-3 h-3 accent-blue-500 rounded">
                                 <span class="text-[10px] text-zinc-300 font-bold">تفعيل الموجة لهذه الشخصية</span>
                             </label>
-                            
                             <div class="mb-2">
                                 <label class="text-[9px] text-zinc-400 block mb-1">شكل الموجة</label>
                                 <select onchange="updateSpeakerProp('${s.id}', 'vizStyle', this.value)" class="!p-1 text-[10px] w-full">
                                     <option value="symmetric" ${s.vizStyle === 'symmetric' ? 'selected' : ''}>متناظرة (أعلى وأسفل)</option>
-                                    <option value="bottom-up" ${s.vizStyle === 'bottom-up' ? 'selected' : ''}>أعمدة للأعلى (تفضيل)</option>
+                                    <option value="bottom-up" ${s.vizStyle === 'bottom-up' ? 'selected' : ''}>أعمدة للأعلى</option>
                                 </select>
                             </div>
-
                             <div class="grid grid-cols-2 gap-2 mb-2">
                                 <div><label class="text-[9px] text-zinc-400 block">لون الموجة</label><input type="color" value="${s.vizColor}" oninput="updateSpeakerProp('${s.id}', 'vizColor', this.value)" class="h-6 p-0 border-0 rounded w-full"></div>
                                 <div><label class="text-[9px] text-zinc-400 block">حجم الموجة</label><input type="range" min="10" max="200" value="${s.vizScale}" oninput="updateSpeakerProp('${s.id}', 'vizScale', this.value)"></div>
@@ -426,6 +489,20 @@
             });
         }
 
+        function handleEngineChange(id, engine) {
+            let speaker = state.speakers.find(s => s.id === id);
+            speaker.ttsEngine = engine;
+            speaker.voice = engine === 'cartesia' ? CARTESIA_VOICES[0].id : POCKET_VOICES[0];
+            if(engine === 'cartesia') speaker.lang = 'en';
+            renderSpeakersUI();
+        }
+
+        function handleVoiceSelChange(id, val) {
+            let speaker = state.speakers.find(s => s.id === id);
+            if(val === 'custom') { speaker.voice = ''; } else { speaker.voice = val; }
+            renderSpeakersUI();
+        }
+
         function updateSpeakerProp(id, prop, value) {
             let speaker = state.speakers.find(s => s.id === id);
             if(speaker) {
@@ -439,19 +516,14 @@
             if(input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = e => { 
-                    let base64 = e.target.result;
-                    let img = new Image(); img.src = base64; 
-                    img.onload = () => { 
-                        let speaker = state.speakers.find(s => s.id === id); 
-                        speaker.imageBase64 = base64; speaker.imageObj = img; 
-                        renderSpeakersUI(); 
-                    } 
+                    let base64 = e.target.result; let img = new Image(); img.src = base64; 
+                    img.onload = () => { let speaker = state.speakers.find(s => s.id === id); speaker.imageBase64 = base64; speaker.imageObj = img; renderSpeakersUI(); } 
                 };
                 reader.readAsDataURL(input.files[0]);
             }
         }
 
-        // -------- نظام السيناريو والتوليد الفردي --------
+        // -------- نظام السيناريو --------
         function addDialogueRow() {
             const id = generateId();
             state.dialogues.push({ id: id, speakerId: state.speakers.length > 0 ? state.speakers[0].id : '', target: '', pronunciation: '', native: '', baseAudioBuffer: null, repeat: 1, pauseAfter: 1, start: 0, end: 0 });
@@ -464,8 +536,7 @@
             const container = document.getElementById('dialogues-container'); container.innerHTML = '';
             state.dialogues.forEach((d, index) => {
                 const div = document.createElement('div');
-                div.className = `dialogue-card ${index === state.currentIndex ? 'active' : ''}`;
-                div.id = `dialogue-card-${index}`;
+                div.className = `dialogue-card ${index === state.currentIndex ? 'active' : ''}`; div.id = `dialogue-card-${index}`;
                 div.onclick = () => { if(state.currentIndex !== index) { state.currentIndex = index; updateDialogueHighlight(); } };
                 div.innerHTML = `
                     <div class="flex justify-between items-center mb-2">
@@ -523,20 +594,51 @@
             document.getElementById('preview-label').innerText = `معاينة المشهد: ${state.currentIndex + 1}`;
         }
 
-        // -------- استخراج النص النقي --------
+        // -------- توليد الصوت APIs --------
         function stripTags(text) { return text.replace(/\[(.*?)\]\{#.*?\}/g, '$1'); }
 
-        // -------- توليد الصوت وبناء الخط الزمني --------
-        async function fetchHFVoice(text, voiceName) {
+        async function fetchPocketTTS(text, voiceName) {
             try {
                 let cleanText = stripTags(text); 
                 const postRes = await fetch("https://mahmoudmody777-pocket-tts-test.hf.space/gradio_api/call/tts_generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ data: [cleanText, voiceName] }) });
-                if(!postRes.ok) throw new Error("API Error"); const { event_id } = await postRes.json();
+                if(!postRes.ok) throw new Error("PocketTTS API Error"); const { event_id } = await postRes.json();
                 const getRes = await fetch(`https://mahmoudmody777-pocket-tts-test.hf.space/gradio_api/call/tts_generate/${event_id}`);
                 const textData = await getRes.text();
                 const urlMatch = textData.match(/"url":\s*"([^"]+)"/);
                 if(urlMatch && urlMatch[1]) { const audioFetch = await fetch(urlMatch[1]); return await audioFetch.arrayBuffer(); } else throw new Error("URL not found");
-            } catch (err) { console.error(err); return null; }
+            } catch (err) { console.error("PocketTTS Error:", err); return null; }
+        }
+
+        async function fetchCartesiaTTS(text, voiceId, language) {
+            try {
+                let cleanText = stripTags(text);
+                let apiKey = document.getElementById('cartesia-api-key').value;
+                if(!apiKey) throw new Error("Missing Cartesia API Key");
+
+                const postRes = await fetch("https://api.cartesia.ai/tts/bytes", {
+                    method: "POST",
+                    headers: {
+                        "Cartesia-Version": "2024-03-01", // Updated version based on typical usage, fallback to generic if strict
+                        "X-API-Key": apiKey,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        model_id: "sonic-multilingual", // Using multilingual model to support hi, ar, fr, etc
+                        transcript: cleanText,
+                        voice: { mode: "id", id: voiceId },
+                        output_format: { container: "wav", encoding: "pcm_s16le", sample_rate: 44100 },
+                        language: language,
+                        generation_config: { speed: 1, volume: 1, emotion: "calm" }
+                    })
+                });
+                
+                if(!postRes.ok) {
+                    let errData = await postRes.text();
+                    throw new Error("Cartesia Error: " + errData);
+                }
+                
+                return await postRes.arrayBuffer();
+            } catch(err) { console.error("Cartesia Error:", err); return null; }
         }
 
         async function initAudioCtx() {
@@ -545,15 +647,32 @@
             if(!state.analyser) { state.analyser = state.audioCtx.createAnalyser(); state.analyser.fftSize = 256; state.dataArray = new Uint8Array(state.analyser.frequencyBinCount); }
         }
 
+        async function processAudioForDialogue(diag) {
+            let speaker = state.speakers.find(s => s.id === diag.speakerId);
+            if(!speaker) return false;
+            
+            let arrayBuffer = null;
+            if(speaker.ttsEngine === 'cartesia') {
+                arrayBuffer = await fetchCartesiaTTS(diag.target, speaker.voice, speaker.lang);
+            } else {
+                arrayBuffer = await fetchPocketTTS(diag.target, speaker.voice);
+            }
+
+            if(arrayBuffer) {
+                diag.baseAudioBuffer = await state.audioCtx.decodeAudioData(arrayBuffer);
+                return true;
+            }
+            return false;
+        }
+
         async function generateSingleAudio(id, btnEl) {
-            let diag = state.dialogues.find(d => d.id === id); if(!diag || !diag.target.trim()) return alert("اكتب النص الإنجليزي أولاً.");
-            let speaker = state.speakers.find(s => s.id === diag.speakerId); let voiceToUse = speaker ? speaker.voice : "alba";
+            let diag = state.dialogues.find(d => d.id === id); if(!diag || !diag.target.trim()) return alert("اكتب النص أولاً.");
             let oldText = btnEl.innerHTML; btnEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; btnEl.disabled = true;
 
             await initAudioCtx();
-            let arrayBuffer = await fetchHFVoice(diag.target, voiceToUse);
-            if(arrayBuffer) { diag.baseAudioBuffer = await state.audioCtx.decodeAudioData(arrayBuffer); renderDialoguesUI(); rebuildGlobalTimeline(); } 
-            else alert("فشل التوليد. تأكد من الاتصال.");
+            let success = await processAudioForDialogue(diag);
+            if(success) { renderDialoguesUI(); rebuildGlobalTimeline(); } 
+            else alert("فشل التوليد. تأكد من إعدادات API والاتصال.");
             btnEl.innerHTML = oldText; btnEl.disabled = false;
         }
 
@@ -564,10 +683,8 @@
 
             for (let i = 0; i < state.dialogues.length; i++) {
                 let diag = state.dialogues[i]; if(!diag.target.trim() || diag.baseAudioBuffer) continue; 
-                let speaker = state.speakers.find(s => s.id === diag.speakerId); let voiceToUse = speaker ? speaker.voice : "alba";
                 btnText.innerText = `توليد مشهد ${i + 1}/${state.dialogues.length}...`;
-                let arrayBuffer = await fetchHFVoice(diag.target, voiceToUse);
-                if(arrayBuffer) diag.baseAudioBuffer = await state.audioCtx.decodeAudioData(arrayBuffer);
+                await processAudioForDialogue(diag);
             }
             renderDialoguesUI(); rebuildGlobalTimeline();
             btnText.innerText = "اكتمل بنجاح!"; setTimeout(() => { btnText.innerText = "توليد كل الأصوات الناقصة"; btnText.parentElement.classList.remove('opacity-50', 'pointer-events-none'); }, 2000);
@@ -619,7 +736,6 @@
         function seekAudio(val) { if(audioPlayer.src) audioPlayer.currentTime = (val / 100) * audioPlayer.duration; }
         function drawCover(ctxToDraw, img, w, h) { ctxToDraw.imageSmoothingEnabled = true; ctxToDraw.imageSmoothingQuality = 'high'; let r = Math.max(C_W/w, C_H/h); let cw = Math.floor(w*r), ch = Math.floor(h*r); ctxToDraw.drawImage(img, 0, 0, w, h, Math.floor((C_W-cw)/2), Math.floor((C_H-ch)/2), cw, ch); }
 
-        // -------- نظام رسم النصوص الملونة --------
         function parseColoredText(text, defaultColor) {
             if(!text) return [];
             const regex = /\[(.*?)\]\{(#.*?)\}|([^\[\]]+)/g;
@@ -639,9 +755,7 @@
             let maxWidth = C_W * 0.9; let scale = 1;
             if(totalWidth > maxWidth) { scale = maxWidth / totalWidth; }
             
-            ctxToDraw.save();
-            ctxToDraw.translate(x, y);
-            if(scale !== 1) ctxToDraw.scale(scale, scale);
+            ctxToDraw.save(); ctxToDraw.translate(x, y); if(scale !== 1) ctxToDraw.scale(scale, scale);
 
             let currentX = direction === "ltr" ? -(totalWidth / 2) : (totalWidth / 2);
 
@@ -682,7 +796,6 @@
             state.speakers.forEach(speaker => {
                 let isSpeaking = activeDiag && activeDiag.speakerId === speaker.id && isPlaying;
                 
-                // --- رسم الصورة ---
                 if(speaker.showImage) {
                     let sSize = C_W * (speaker.scale / 100); let xPos = C_W * (speaker.x / 100); let yPos = C_H * (speaker.y / 100);
                     offCtx.save();
@@ -696,20 +809,10 @@
                     offCtx.restore();
                 }
 
-                // --- رسم الموجة الصوتية ---
                 if (speaker.vizOn) {
                     let drawViz = false; let fakeMode = false;
-
-                    // إظهار الموجة الحقيقية فقط إذا كان الصوت يعمل والشخصية تتحدث
-                    if (isPlaying && isSpeaking && state.analyser) { 
-                        drawViz = true; 
-                        state.analyser.getByteFrequencyData(state.dataArray); 
-                    }
-                    // إظهار الموجة الوهمية لكل الشخصيات إذا كان المقطع متوقفاً (ليتمكن المستخدم من تصميم مكانها)
-                    else if (!isPlaying) { 
-                        drawViz = true; 
-                        fakeMode = true; 
-                    } 
+                    if (isPlaying && isSpeaking && state.analyser) { drawViz = true; state.analyser.getByteFrequencyData(state.dataArray); }
+                    else if (!isPlaying) { drawViz = true; fakeMode = true; } 
 
                     if (drawViz) {
                         let count = 20; let startX = C_W * (speaker.vizX/100); let baseY = C_H * (speaker.vizY/100);
@@ -719,30 +822,19 @@
                         
                         for(let i=0; i < count; i++) {
                             let h = 5;
-                            if(!fakeMode) { 
-                                let val = state.dataArray[i * 3] || 0; 
-                                h = Math.max(5, (val / 255) * (C_H * 0.15 * (speaker.vizScale/100))); 
-                            }
-                            else { 
-                                h = Math.max(5, Math.abs(Math.sin((Date.now() / 200) + i)) * 60 * (speaker.vizScale/100)); 
-                            } 
+                            if(!fakeMode) { let val = state.dataArray[i * 3] || 0; h = Math.max(5, (val / 255) * (C_H * 0.15 * (speaker.vizScale/100))); }
+                            else { h = Math.max(5, Math.abs(Math.sin((Date.now() / 200) + i)) * 60 * (speaker.vizScale/100)); } 
                             
                             let x = startX - ((count * barW)/2) + (i * barW);
-
-                            // تطبيق نمط الموجة
-                            if (speaker.vizStyle === 'bottom-up') {
-                                let upH = h * 1.3; 
-                                offCtx.roundRect(x, baseY - upH, barW * 0.7, upH, barW * 0.35);
-                            } else {
-                                offCtx.roundRect(x, baseY - h/2, barW * 0.6, h, barW * 0.3);
-                            }
+                            if (speaker.vizStyle === 'bottom-up') { let upH = h * 1.3; offCtx.roundRect(x, baseY - upH, barW * 0.7, upH, barW * 0.35); } 
+                            else { offCtx.roundRect(x, baseY - h/2, barW * 0.6, h, barW * 0.3); }
                         }
                         offCtx.fill(); offCtx.shadowBlur = 0;
                     }
                 }
             });
 
-            // 3. رسم النصوص 
+            // 3. رسم النصوص بحركة سينمائية (بدون تقطيع الكلمات)
             if (activeDiag) {
                 let activeSpeaker = state.speakers.find(sp => sp.id === activeDiag.speakerId);
                 let tX = C_W * (activeSpeaker ? activeSpeaker.textX / 100 : 0.5);
@@ -753,26 +845,51 @@
                 let textPr = activeDiag.pronunciation.trim() ? activeDiag.pronunciation : "";
                 let textAr = activeDiag.native.trim() ? activeDiag.native : "نص تجريبي";
 
-                if(isPlaying && activeDiag.baseAudioBuffer && activeDiag.target.trim()) {
-                    let progress = (timeMs - activeDiag.start) / (activeDiag.end - activeDiag.start);
-                    if(progress > 1) progress = 1; if(progress < 0) progress = 0;
-                    let words = textEn.split(' '); let wordsToShow = Math.ceil(progress * words.length);
-                    textEn = words.slice(0, wordsToShow).join(' ');
+                let tAlpha = 1, tScale = 1, tYOffset = 0;
+
+                // تطبيق حركة النص (Animation)
+                if (isPlaying && activeDiag.baseAudioBuffer) {
+                    let timeIn = timeMs - activeDiag.start;
+                    let timeOut = activeDiag.end - timeMs;
+                    let animType = s.textAnim || 'zoom';
+
+                    if(animType !== 'none') {
+                        if (timeIn < 300) { 
+                            tAlpha = Math.max(0, timeIn / 300);
+                            if(animType === 'zoom') tScale = 0.8 + (0.2 * tAlpha);
+                            if(animType === 'slide') tYOffset = 30 * (1 - tAlpha);
+                        } 
+                        else if (timeOut < 300) { 
+                            tAlpha = Math.max(0, timeOut / 300);
+                            if(animType === 'zoom') tScale = 1 + (0.1 * (1 - tAlpha));
+                            if(animType === 'slide') tYOffset = -30 * (1 - tAlpha);
+                        }
+                    }
                 }
 
+                offCtx.save();
+                offCtx.globalAlpha = tAlpha;
+                
+                // لكي يتم تطبيق الحجم والانزلاق حول المركز، ننتقل أولاً للمركز ثم نطبق التحجيم ثم نعود
+                offCtx.translate(tX, tY + tYOffset);
+                offCtx.scale(tScale, tScale);
+                offCtx.translate(-tX, -tY - tYOffset);
+
                 let segmentsEn = parseColoredText(textEn, s.defaultColor || "#ffffff");
-                drawColoredLineCentered(offCtx, segmentsEn, tX, tY, `900 ${s.enSize}px 'Outfit', sans-serif`, "ltr");
+                drawColoredLineCentered(offCtx, segmentsEn, tX, tY + tYOffset, `900 ${s.enSize}px 'Outfit', sans-serif`, "ltr");
 
                 if(textPr) {
                     let segmentsPr = parseColoredText(textPr, s.defaultColor || "#ffffff");
-                    drawColoredLineCentered(offCtx, segmentsPr, tX, tY + lSpace, `900 ${s.prSize}px 'Cairo', sans-serif`, "rtl");
+                    drawColoredLineCentered(offCtx, segmentsPr, tX, tY + tYOffset + lSpace, `900 ${s.prSize}px 'Cairo', sans-serif`, "rtl");
                 }
 
                 if(textAr) {
                     let segmentsAr = parseColoredText(textAr, s.defaultColor || "#ffffff");
-                    let finalY = textPr ? tY + (lSpace * 2) : tY + lSpace;
+                    let finalY = textPr ? tY + tYOffset + (lSpace * 2) : tY + tYOffset + lSpace;
                     drawColoredLineCentered(offCtx, segmentsAr, tX, finalY, `900 ${s.arSize}px 'Cairo', sans-serif`, "rtl");
                 }
+
+                offCtx.restore();
             }
 
             ctx.clearRect(0, 0, C_W, C_H); ctx.drawImage(offCanvas, 0, 0); requestAnimationFrame(renderLoop);
