@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EduLang Studio - English Conversation Videos</title>
+    <title>EduLang Studio - Pro Conversation</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -80,10 +80,10 @@
             <!-- تبويب الشخصيات -->
             <div id="tab-chars" class="panel-section active space-y-3">
                 <div class="bg-blue-900/10 p-3 rounded-lg border border-blue-900/30 text-xs text-blue-300 mb-3">
-                    أضف الشخصيات (Avatars) التي ستتحدث في المحادثة وحدد صوت كل شخصية ومكانها على الشاشة.
+                    أضف شخصياتك، خصص صورة وأماكن كل شخصية، وموقع النص الذي ستتحدث به على الشاشة.
                 </div>
                 
-                <div id="speakers-container"></div>
+                <div id="speakers-container" class="space-y-3"></div>
 
                 <button onclick="addSpeaker()" class="w-full bg-[#27272a] hover:bg-[#3f3f46] text-white font-bold py-3 rounded transition text-xs border border-dashed border-[#52525b]">
                     <i class="fa-solid fa-plus"></i> إضافة شخصية جديدة
@@ -128,26 +128,43 @@
 
             <!-- تبويب التصميم -->
             <div id="tab-design" class="panel-section space-y-2">
-                <div class="bg-[#18181b] p-3 rounded-lg border border-[#27272a]">
-                    <h3 class="text-xs font-bold text-blue-400 mb-3 border-b border-[#27272a] pb-2">تصميم النص الإنجليزي</h3>
-                    <div class="grid grid-cols-2 gap-3 mb-2">
-                        <div><label class="text-[10px] text-zinc-500 block">اللون الأساسي</label><input type="color" id="en-color" value="#ffffff" oninput="updateSettings()" class="h-8 p-0 border-0 rounded w-full"></div>
-                        <div><label class="text-[10px] text-zinc-500 block">لون التظليل للحوار النشط</label><input type="color" id="en-highlight" value="#3b82f6" oninput="updateSettings()" class="h-8 p-0 border-0 rounded w-full"></div>
+                <details open>
+                    <summary><i class="fa-solid fa-wave-square text-blue-500"></i> الموجات الصوتية (Audio Visualizer)</summary>
+                    <div class="details-body">
+                        <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-2">
+                            <input type="checkbox" id="viz-enable" checked onchange="updateSettings()" class="w-3 h-3 accent-blue-500 rounded">
+                            <span class="text-[10px] text-zinc-300 font-bold">تفعيل الموجات الصوتية للتحدث</span>
+                        </label>
+                        <div class="grid grid-cols-2 gap-2 mb-2">
+                            <div><label class="text-[10px] text-zinc-500 block">لون الموجة</label><input type="color" id="viz-color" value="#3b82f6" oninput="updateSettings()" class="h-8 p-0 border-0 rounded w-full"></div>
+                            <div><label class="text-[10px] text-zinc-500 block">حجم الموجة</label><input type="range" id="viz-scale" min="10" max="200" value="100" oninput="updateSettings()"></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div><label class="text-[9px] text-zinc-500 block">الموقع يمين/يسار (X)</label><input type="range" id="viz-x" min="0" max="100" value="50" oninput="updateSettings()"></div>
+                            <div><label class="text-[9px] text-zinc-500 block">الموقع أعلى/أسفل (Y)</label><input type="range" id="viz-y" min="0" max="100" value="85" oninput="updateSettings()"></div>
+                        </div>
                     </div>
-                    <label class="flex justify-between text-[10px] text-zinc-500 mb-1">حجم الخط <span id="en-size-val">60</span></label>
-                    <input type="range" id="en-size" min="20" max="120" value="60" oninput="updateSettings(); document.getElementById('en-size-val').innerText=this.value;">
-                    <label class="flex justify-between text-[10px] text-zinc-500 mb-1">موقع النص (Y)</label>
-                    <input type="range" id="en-y" min="0" max="100" value="70" oninput="updateSettings()">
+                </details>
 
-                    <h3 class="text-xs font-bold text-emerald-400 mb-3 mt-4 border-b border-[#27272a] pb-2">تصميم الترجمة العربية</h3>
-                    <div class="grid grid-cols-2 gap-3 mb-2">
-                        <div><label class="text-[10px] text-zinc-500 block">لون الترجمة</label><input type="color" id="ar-color" value="#fbbf24" oninput="updateSettings()" class="h-8 p-0 border-0 rounded w-full"></div>
+                <details open>
+                    <summary><i class="fa-solid fa-font text-blue-500"></i> تصميم النصوص والألوان</summary>
+                    <div class="details-body">
+                        <div class="grid grid-cols-2 gap-3 mb-2">
+                            <div><label class="text-[10px] text-zinc-500 block">اللون الأساسي للإنجليزي</label><input type="color" id="en-color" value="#ffffff" oninput="updateSettings()" class="h-8 p-0 border-0 rounded w-full"></div>
+                            <div><label class="text-[10px] text-zinc-500 block">لون التظليل للمتحدث</label><input type="color" id="en-highlight" value="#3b82f6" oninput="updateSettings()" class="h-8 p-0 border-0 rounded w-full"></div>
+                        </div>
+                        <label class="flex justify-between text-[10px] text-zinc-500 mb-1">حجم الخط الإنجليزي <span id="en-size-val">60</span></label>
+                        <input type="range" id="en-size" min="20" max="120" value="60" oninput="updateSettings(); document.getElementById('en-size-val').innerText=this.value;">
+                        
+                        <hr class="border-[#3f3f46] my-2">
+                        
+                        <div class="grid grid-cols-2 gap-3 mb-2">
+                            <div><label class="text-[10px] text-zinc-500 block">لون الترجمة العربية</label><input type="color" id="ar-color" value="#fbbf24" oninput="updateSettings()" class="h-8 p-0 border-0 rounded w-full"></div>
+                        </div>
+                        <label class="flex justify-between text-[10px] text-zinc-500 mb-1">حجم الخط العربي <span id="ar-size-val">40</span></label>
+                        <input type="range" id="ar-size" min="20" max="100" value="40" oninput="updateSettings(); document.getElementById('ar-size-val').innerText=this.value;">
                     </div>
-                    <label class="flex justify-between text-[10px] text-zinc-500 mb-1">حجم الخط <span id="ar-size-val">40</span></label>
-                    <input type="range" id="ar-size" min="20" max="100" value="40" oninput="updateSettings(); document.getElementById('ar-size-val').innerText=this.value;">
-                    <label class="flex justify-between text-[10px] text-zinc-500 mb-1">موقع الترجمة (Y)</label>
-                    <input type="range" id="ar-y" min="0" max="100" value="85" oninput="updateSettings()">
-                </div>
+                </details>
             </div>
 
             <!-- تبويب التصدير -->
@@ -178,7 +195,7 @@
         <button onclick="switchTab('chars', 'الشخصيات', this)" class="tab-btn active"><i class="fa-solid fa-users text-xl mb-1"></i>الشخصيات</button>
         <button onclick="switchTab('scenario', 'السيناريو', this)" class="tab-btn"><i class="fa-solid fa-list text-xl mb-1"></i>السيناريو</button>
         <button onclick="switchTab('bg', 'الخلفية والمشهد', this)" class="tab-btn"><i class="fa-solid fa-image text-xl mb-1"></i>الخلفية</button>
-        <button onclick="switchTab('design', 'النصوص والتصميم', this)" class="tab-btn"><i class="fa-solid fa-font text-xl mb-1"></i>النصوص</button>
+        <button onclick="switchTab('design', 'النصوص والتصميم', this)" class="tab-btn"><i class="fa-solid fa-font text-xl mb-1"></i>التصميم</button>
         <button onclick="switchTab('export', 'التصدير النهائي', this)" class="tab-btn text-emerald-500"><i class="fa-solid fa-clapperboard text-xl mb-1"></i>إنتاج</button>
     </nav>
 
@@ -191,21 +208,22 @@
         const audioPlayer = document.getElementById('audio-player');
         
         let state = {
-            speakers: [], // { id, name, voice, imageObj, x, y, scale }
-            dialogues: [], // { id, speakerId, en, ar, audioBuffer, startTime, endTime }
+            speakers: [], // { id, name, voice, imageObj, showImage, x, y, scale, textX, textY }
+            dialogues: [], // { id, speakerId, en, ar, audioBuffer, start, end }
             bg: { type: 'none', media: null },
             settings: {},
             audioCtx: null,
+            analyser: null, dataArray: null,
             globalAudioBuffer: null,
             currentIndex: 0,
             isExporting: false,
-            voicesList: ["alba", "bria", "colin", "default"] // Voices supported by HF endpoint
+            // الأصوات المحدثة حسب طلبك
+            voicesList: ["alba", "marius", "javert", "jean", "fantine", "cosette", "eponine", "azelma", "Stella.wav", "Tyler.wav", "Juniper.wav"]
         };
 
         const val = id => document.getElementById(id).value;
         const num = id => parseFloat(document.getElementById(id).value) || 0;
 
-        // تهيئة عند البداية
         window.onload = () => {
             applyVideoSettings();
             addSpeaker(true); // Add default speaker 1
@@ -219,7 +237,6 @@
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active')); btn.classList.add('active'); document.getElementById('panel-title').innerHTML = `<i class="fa-solid fa-check-circle text-blue-500 ml-2"></i> ${title}`;
         }
 
-        // إعدادات الفيديو
         function applyVideoSettings() {
             const ratio = document.getElementById('video-ratio').value;
             if (ratio === 'landscape') { C_W = 1920; C_H = 1080; } 
@@ -232,8 +249,13 @@
         function updateSettings() {
             state.settings = {
                 bgOp: num('bg-opacity') / 100,
-                enSize: num('en-size'), enColor: val('en-color'), enHighlight: val('en-highlight'), enY: num('en-y') / 100,
-                arSize: num('ar-size'), arColor: val('ar-color'), arY: num('ar-y') / 100
+                enSize: num('en-size'), enColor: val('en-color'), enHighlight: val('en-highlight'),
+                arSize: num('ar-size'), arColor: val('ar-color'),
+                vizOn: document.getElementById('viz-enable').checked,
+                vizColor: val('viz-color'),
+                vizScale: num('viz-scale') / 100,
+                vizX: num('viz-x') / 100,
+                vizY: num('viz-y') / 100
             };
         }
 
@@ -245,7 +267,7 @@
             state.bg = { type, media: mediaObj };
         }
 
-        // -------- نظام الشخصيات (Speakers) --------
+        // -------- نظام الشخصيات --------
         function generateId() { return Math.random().toString(36).substr(2, 9); }
 
         function addSpeaker(isDefault = false) {
@@ -256,9 +278,12 @@
                 name: `Speaker ${speakerNum}`,
                 voice: state.voicesList[(speakerNum-1) % state.voicesList.length],
                 imageObj: null,
+                showImage: true,
                 x: isDefault && speakerNum === 1 ? 25 : (isDefault && speakerNum === 2 ? 75 : 50),
-                y: 40,
-                scale: 30
+                y: 35,
+                scale: 30,
+                textX: isDefault && speakerNum === 1 ? 25 : (isDefault && speakerNum === 2 ? 75 : 50),
+                textY: 70
             };
             state.speakers.push(newSpeaker);
             renderSpeakersUI();
@@ -274,25 +299,40 @@
             const container = document.getElementById('speakers-container'); container.innerHTML = '';
             state.speakers.forEach((s, index) => {
                 const div = document.createElement('div');
-                div.className = "bg-[#18181b] border border-[#27272a] p-3 rounded-lg relative";
+                div.className = "bg-[#18181b] border border-[#27272a] p-3 rounded-lg relative mb-3";
                 div.innerHTML = `
                     <button onclick="removeSpeaker('${s.id}')" class="absolute top-2 left-2 text-red-500 hover:text-red-400"><i class="fa-solid fa-trash"></i></button>
+                    
                     <div class="flex gap-3 items-center mb-3">
-                        <div class="file-btn bg-[#27272a] hover:bg-[#3f3f46] w-16 h-16 rounded-full flex-shrink-0 !p-0 flex items-center justify-center overflow-hidden border-2 border-blue-500/50">
-                            ${s.imageObj ? `<img src="${s.imageObj.src}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-user text-xl"></i>`}
+                        <div class="file-btn bg-[#27272a] hover:bg-[#3f3f46] w-16 h-16 rounded flex-shrink-0 !p-0 flex items-center justify-center overflow-hidden border border-blue-500/50">
+                            ${s.imageObj ? `<img src="${s.imageObj.src}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-user text-xl"></i>`}
                             <input type="file" accept="image/*" onchange="uploadSpeakerImg('${s.id}', this)">
                         </div>
                         <div class="flex-1">
                             <input type="text" value="${s.name}" onchange="updateSpeakerProp('${s.id}', 'name', this.value)" placeholder="اسم الشخصية" class="mb-1 text-xs">
                             <select onchange="updateSpeakerProp('${s.id}', 'voice', this.value)" class="text-xs !p-1">
-                                ${state.voicesList.map(v => `<option value="${v}" ${v===s.voice?'selected':''}>Voice: ${v}</option>`).join('')}
+                                ${state.voicesList.map(v => `<option value="${v}" ${v===s.voice?'selected':''}>صوت: ${v}</option>`).join('')}
                             </select>
+                            <label class="flex items-center space-x-2 rtl:space-x-reverse mt-2 cursor-pointer">
+                                <input type="checkbox" ${s.showImage ? 'checked' : ''} onchange="updateSpeakerProp('${s.id}', 'showImage', this.checked)" class="w-3 h-3 accent-blue-500 rounded">
+                                <span class="text-[10px] text-zinc-300">إظهار الصورة في الفيديو</span>
+                            </label>
                         </div>
                     </div>
-                    <div class="grid grid-cols-3 gap-2 border-t border-[#3f3f46] pt-2">
-                        <div><label class="text-[9px] text-zinc-400">يمين/يسار (X)</label><input type="range" min="0" max="100" value="${s.x}" oninput="updateSpeakerProp('${s.id}', 'x', this.value)"></div>
-                        <div><label class="text-[9px] text-zinc-400">أعلى/أسفل (Y)</label><input type="range" min="0" max="100" value="${s.y}" oninput="updateSpeakerProp('${s.id}', 'y', this.value)"></div>
-                        <div><label class="text-[9px] text-zinc-400">حجم الصورة</label><input type="range" min="10" max="100" value="${s.scale}" oninput="updateSpeakerProp('${s.id}', 'scale', this.value)"></div>
+                    
+                    <div class="bg-[#09090b] p-2 rounded border border-[#3f3f46]">
+                        <h4 class="text-[10px] font-bold text-blue-400 mb-2">مكان وحجم الشخصية</h4>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div><label class="text-[9px] text-zinc-400 block">يمين/يسار (X)</label><input type="range" min="0" max="100" value="${s.x}" oninput="updateSpeakerProp('${s.id}', 'x', this.value)"></div>
+                            <div><label class="text-[9px] text-zinc-400 block">أعلى/أسفل (Y)</label><input type="range" min="0" max="100" value="${s.y}" oninput="updateSpeakerProp('${s.id}', 'y', this.value)"></div>
+                            <div><label class="text-[9px] text-zinc-400 block">تكبير/تصغير</label><input type="range" min="10" max="100" value="${s.scale}" oninput="updateSpeakerProp('${s.id}', 'scale', this.value)"></div>
+                        </div>
+                        
+                        <h4 class="text-[10px] font-bold text-emerald-400 mt-2 mb-2">مكان ظهور نص هذه الشخصية</h4>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div><label class="text-[9px] text-zinc-400 block">مكان النص (X)</label><input type="range" min="0" max="100" value="${s.textX}" oninput="updateSpeakerProp('${s.id}', 'textX', this.value)"></div>
+                            <div><label class="text-[9px] text-zinc-400 block">مكان النص (Y)</label><input type="range" min="0" max="100" value="${s.textY}" oninput="updateSpeakerProp('${s.id}', 'textY', this.value)"></div>
+                        </div>
                     </div>
                 `;
                 container.appendChild(div);
@@ -302,7 +342,7 @@
         function updateSpeakerProp(id, prop, value) {
             let speaker = state.speakers.find(s => s.id === id);
             if(speaker) {
-                if(prop === 'x' || prop === 'y' || prop === 'scale') speaker[prop] = parseFloat(value);
+                if(['x', 'y', 'scale', 'textX', 'textY'].includes(prop)) speaker[prop] = parseFloat(value);
                 else speaker[prop] = value;
                 
                 if(prop === 'name') updateDialogueSpeakersDropdowns();
@@ -320,16 +360,12 @@
             }
         }
 
-        // -------- نظام السيناريو (Dialogues) --------
+        // -------- نظام السيناريو --------
         function addDialogueRow() {
             const id = generateId();
             state.dialogues.push({
-                id: id,
-                speakerId: state.speakers.length > 0 ? state.speakers[0].id : '',
-                en: '',
-                ar: '',
-                audioBuffer: null,
-                start: 0, end: 0
+                id: id, speakerId: state.speakers.length > 0 ? state.speakers[0].id : '',
+                en: '', ar: '', audioBuffer: null, start: 0, end: 0
             });
             renderDialoguesUI();
         }
@@ -367,8 +403,7 @@
 
         function updateDialogueSpeakersDropdowns() {
             document.querySelectorAll('.dialogue-speaker-select').forEach(select => {
-                const currentVal = select.value;
-                select.innerHTML = generateSpeakerOptions(currentVal);
+                const currentVal = select.value; select.innerHTML = generateSpeakerOptions(currentVal);
             });
         }
 
@@ -382,10 +417,7 @@
             state.currentIndex += step;
             if(state.currentIndex < 0) state.currentIndex = 0; 
             if(state.currentIndex >= state.dialogues.length) state.currentIndex = state.dialogues.length - 1;
-            
-            if (state.globalAudioBuffer && audioPlayer.src) { 
-                audioPlayer.currentTime = state.dialogues[state.currentIndex].start / 1000; 
-            }
+            if (state.globalAudioBuffer && audioPlayer.src) { audioPlayer.currentTime = state.dialogues[state.currentIndex].start / 1000; }
             updateDialogueHighlight();
         }
 
@@ -396,54 +428,48 @@
             document.getElementById('preview-label').innerText = `معاينة المشهد: ${state.currentIndex + 1}`;
         }
 
-        // -------- نظام سحب وتوليد الصوت عبر Hugging Face API --------
+        // -------- توليد الصوت API --------
         async function fetchHFVoice(text, voiceName) {
             try {
-                // 1. Post request to init processing
                 const postRes = await fetch("https://mahmoudmody777-pocket-tts-test.hf.space/gradio_api/call/tts_generate", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    method: "POST", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ data: [text, voiceName] })
                 });
-                if(!postRes.ok) throw new Error("API POST Error");
+                if(!postRes.ok) throw new Error("API Error");
                 const { event_id } = await postRes.json();
 
-                // 2. Poll/Get request to fetch event stream result
                 const getRes = await fetch(`https://mahmoudmody777-pocket-tts-test.hf.space/gradio_api/call/tts_generate/${event_id}`);
                 const textData = await getRes.text();
                 
-                // Parse Server-Sent Events text output
-                // Looking for: event: complete ... data: [{"path":"...", "url":"..."}]
                 const urlMatch = textData.match(/"url":\s*"([^"]+)"/);
                 if(urlMatch && urlMatch[1]) {
-                    const audioUrl = urlMatch[1];
-                    // Fetch the actual audio file as ArrayBuffer
-                    const audioFetch = await fetch(audioUrl);
+                    const audioFetch = await fetch(urlMatch[1]);
                     return await audioFetch.arrayBuffer();
-                } else {
-                    throw new Error("لم يتم العثور على رابط الصوت في رد الخادم");
-                }
-            } catch (err) {
-                console.error(err);
-                return null;
-            }
+                } else { throw new Error("Audio URL not found"); }
+            } catch (err) { console.error(err); return null; }
         }
 
         async function generateAllAudio() {
             if(state.dialogues.length === 0) return alert("أضف سيناريو أولاً.");
             const btnText = document.getElementById('btn-fetch-text');
-            btnText.innerText = "جاري الاتصال بالذكاء الاصطناعي لتوليد الأصوات...";
+            btnText.innerText = "جاري توليد الأصوات (TTS)...";
             btnText.parentElement.classList.add('opacity-50', 'pointer-events-none');
 
             try {
                 window.AudioContext = window.AudioContext || window.webkitAudioContext; 
                 if(!state.audioCtx) state.audioCtx = new AudioContext();
+                
+                if(!state.analyser) { 
+                    state.analyser = state.audioCtx.createAnalyser(); 
+                    state.analyser.fftSize = 256; 
+                    state.dataArray = new Uint8Array(state.analyser.frequencyBinCount); 
+                }
 
                 let buffers = []; let globalTimeMs = 0;
 
                 for (let i = 0; i < state.dialogues.length; i++) {
                     let diag = state.dialogues[i];
-                    if(!diag.en.trim()) continue; // Skip empty english text
+                    if(!diag.en.trim()) continue; 
                     
                     let speaker = state.speakers.find(s => s.id === diag.speakerId);
                     let voiceToUse = speaker ? speaker.voice : "alba";
@@ -451,15 +477,13 @@
                     btnText.innerText = `توليد مشهد ${i + 1}/${state.dialogues.length} (${voiceToUse})...`;
                     
                     let arrayBuffer = await fetchHFVoice(diag.en, voiceToUse);
-                    if(!arrayBuffer) throw new Error(`فشل توليد مشهد ${i+1}`);
+                    if(!arrayBuffer) throw new Error(`فشل مشهد ${i+1}`);
 
                     let decodedBuffer = await state.audioCtx.decodeAudioData(arrayBuffer);
                     buffers.push(decodedBuffer);
                     
                     let durationMs = decodedBuffer.duration * 1000;
-                    
-                    // Add 0.5s pause between dialogues
-                    let pauseDuration = 500; 
+                    let pauseDuration = 600; // وقفة طبيعية
                     
                     diag.start = globalTimeMs;
                     diag.end = globalTimeMs + durationMs;
@@ -467,7 +491,6 @@
                     
                     globalTimeMs += durationMs + pauseDuration;
                     
-                    // Add silent buffer for pause
                     const silentBuffer = state.audioCtx.createBuffer(decodedBuffer.numberOfChannels, state.audioCtx.sampleRate * (pauseDuration/1000), state.audioCtx.sampleRate);
                     buffers.push(silentBuffer);
                 }
@@ -477,8 +500,7 @@
                     let wavBlob = bufferToWave(state.globalAudioBuffer); 
                     audioPlayer.src = URL.createObjectURL(wavBlob);
                     
-                    state.currentIndex = 0; 
-                    updateDialogueHighlight();
+                    state.currentIndex = 0; updateDialogueHighlight();
                     btnText.innerText = "اكتمل التوليد بنجاح!";
                     
                     audioPlayer.ontimeupdate = () => {
@@ -488,23 +510,20 @@
                             document.getElementById('time-total').innerText = formatTime(audioPlayer.duration);
                             
                             let timeMs = audioPlayer.currentTime * 1000;
-                            let activeIdx = state.dialogues.findIndex(d => timeMs >= d.start && timeMs <= d.end + 500); // include pause
+                            let activeIdx = state.dialogues.findIndex(d => timeMs >= d.start && timeMs <= d.end + 500); 
                             if(activeIdx !== -1 && activeIdx !== state.currentIndex) { 
-                                state.currentIndex = activeIdx; 
-                                updateDialogueHighlight(); 
+                                state.currentIndex = activeIdx; updateDialogueHighlight(); 
                             }
                         }
                     };
                 }
-            } catch(e) {
-                alert("حدث خطأ أثناء التوليد. تأكد من اتصال الإنترنت أو جرب لاحقاً.");
-            } finally {
+            } catch(e) { alert("حدث خطأ أثناء التوليد. حاول لاحقاً."); } 
+            finally {
                 setTimeout(() => btnText.innerText = "توليد الأصوات والمزامنة (TTS)", 3000);
                 btnText.parentElement.classList.remove('opacity-50', 'pointer-events-none');
             }
         }
 
-        // أدوات الصوتيات (دمج وتحويل)
         function mergeAudioBuffers(ctx, buffers) { let totalLength = 0; buffers.forEach(b => totalLength += b.length); const tmp = ctx.createBuffer(buffers[0].numberOfChannels, totalLength, buffers[0].sampleRate); let offset = 0; buffers.forEach(buffer => { for (let channel = 0; channel < buffer.numberOfChannels; channel++) { tmp.getChannelData(channel).set(buffer.getChannelData(channel), offset); } offset += buffer.length; }); return tmp; }
         function bufferToWave(abuffer) {
             let numOfChan = abuffer.numberOfChannels, length = abuffer.length * numOfChan * 2 + 44, buffer = new ArrayBuffer(length), view = new DataView(buffer), channels =[], i, sample, offset = 0, pos = 0;
@@ -519,7 +538,19 @@
         function togglePlay() {
             if(!audioPlayer.src) return alert("قم بتوليد الأصوات أولاً.");
             if (state.audioCtx && state.audioCtx.state === 'suspended') state.audioCtx.resume();
-            if (audioPlayer.paused) { audioPlayer.play(); document.getElementById('play-btn').innerHTML = '<i class="fa-solid fa-pause"></i>'; } else { audioPlayer.pause(); document.getElementById('play-btn').innerHTML = '<i class="fa-solid fa-play"></i>'; }
+            
+            // ربط الصوت بالمحلل البصري
+            if(!window.isAudioConnectedToViz && state.audioCtx && state.analyser) { 
+                try { 
+                    let source = state.audioCtx.createMediaElementSource(audioPlayer); 
+                    source.connect(state.analyser); 
+                    state.analyser.connect(state.audioCtx.destination); 
+                    window.isAudioConnectedToViz = true; 
+                } catch(e) {} 
+            }
+            
+            if (audioPlayer.paused) { audioPlayer.play(); document.getElementById('play-btn').innerHTML = '<i class="fa-solid fa-pause"></i>'; } 
+            else { audioPlayer.pause(); document.getElementById('play-btn').innerHTML = '<i class="fa-solid fa-play"></i>'; }
         }
         function seekAudio(val) { if(audioPlayer.src) audioPlayer.currentTime = (val / 100) * audioPlayer.duration; }
 
@@ -530,31 +561,25 @@
         function renderLoop() {
             offCtx.clearRect(0, 0, C_W, C_H);
             let s = state.settings;
-            
             let timeMs = state.isExporting ? (Date.now() - (window.exportStartTime || Date.now())) : (audioPlayer.currentTime * 1000);
 
             // 1. رسم الخلفية
-            let bg = state.bg;
-            if(bg.type !== 'none' && bg.media) { 
-                if(bg.type === 'video' && bg.media.readyState >= 2) drawCover(offCtx, bg.media, bg.media.videoWidth, bg.media.videoHeight); 
-                else if(bg.type === 'image') drawCover(offCtx, bg.media, bg.media.width, bg.media.height); 
+            if(state.bg.type !== 'none' && state.bg.media) { 
+                if(state.bg.type === 'video' && state.bg.media.readyState >= 2) drawCover(offCtx, state.bg.media, state.bg.media.videoWidth, state.bg.media.videoHeight); 
+                else if(state.bg.type === 'image') drawCover(offCtx, state.bg.media, state.bg.media.width, state.bg.media.height); 
             } else { 
                 let grad = offCtx.createLinearGradient(0,0,0,C_H); grad.addColorStop(0,"#1e3a8a"); grad.addColorStop(1,"#0f172a"); offCtx.fillStyle = grad; offCtx.fillRect(0,0,C_W,C_H); 
             }
-            
-            // تعتيم الخلفية
             offCtx.fillStyle = `rgba(0,0,0,${s.bgOp || 0.4})`; offCtx.fillRect(0,0,C_W,C_H);
 
-            // تحديد المشهد النشط
             let activeDiag = null;
-            if (state.globalAudioBuffer && state.dialogues.length > 0) {
-                activeDiag = state.dialogues.find(d => timeMs >= d.start && timeMs <= d.end);
-            } else if (state.dialogues.length > 0) {
-                activeDiag = state.dialogues[state.currentIndex];
-            }
+            if (state.globalAudioBuffer && state.dialogues.length > 0) activeDiag = state.dialogues.find(d => timeMs >= d.start && timeMs <= d.end);
+            else if (state.dialogues.length > 0) activeDiag = state.dialogues[state.currentIndex];
 
-            // 2. رسم الشخصيات
+            // 2. رسم الشخصيات (بدون قص دائري)
             state.speakers.forEach(speaker => {
+                if(!speaker.showImage) return; // تخطي إذا كان مخفياً
+
                 let isSpeaking = activeDiag && activeDiag.speakerId === speaker.id && state.globalAudioBuffer && !audioPlayer.paused;
                 
                 let sSize = C_W * (speaker.scale / 100);
@@ -562,90 +587,84 @@
                 let yPos = C_H * (speaker.y / 100);
                 
                 offCtx.save();
-                // تأثير التحدث (Bounce & Glow)
                 if(isSpeaking) {
-                    let bounce = Math.sin(timeMs / 100) * 10;
-                    yPos += bounce;
-                    offCtx.shadowColor = s.enHighlight;
-                    offCtx.shadowBlur = 30;
-                    offCtx.globalAlpha = 1.0;
-                    sSize *= 1.05; // تكبير طفيف
+                    yPos += Math.sin(timeMs / 100) * 8; // تأثير القفز
+                    offCtx.shadowColor = s.enHighlight; offCtx.shadowBlur = 35; offCtx.globalAlpha = 1.0;
+                    sSize *= 1.05;
                 } else {
-                    offCtx.globalAlpha = 0.6; // خفوت لغير المتحدث
-                    offCtx.shadowBlur = 0;
+                    offCtx.globalAlpha = 0.5; offCtx.shadowBlur = 0;
                 }
 
                 if(speaker.imageObj) {
-                    offCtx.beginPath();
-                    offCtx.arc(xPos, yPos, sSize/2, 0, Math.PI*2);
-                    offCtx.closePath();
-                    offCtx.clip();
-                    offCtx.drawImage(speaker.imageObj, xPos - sSize/2, yPos - sSize/2, sSize, sSize);
-                } else {
-                    offCtx.fillStyle = isSpeaking ? s.enHighlight : "#3f3f46";
-                    offCtx.beginPath();
-                    offCtx.arc(xPos, yPos, sSize/2, 0, Math.PI*2);
-                    offCtx.fill();
-                    offCtx.fillStyle = "#fff";
-                    offCtx.textAlign = "center";
-                    offCtx.textBaseline = "middle";
-                    offCtx.font = `bold ${sSize/4}px sans-serif`;
-                    offCtx.fillText(speaker.name, xPos, yPos);
+                    // رسم الصورة بأبعادها الأصلية مع الحفاظ على النسبة
+                    let ratio = speaker.imageObj.width / speaker.imageObj.height;
+                    let drawW = sSize; let drawH = sSize / ratio;
+                    offCtx.drawImage(speaker.imageObj, xPos - drawW/2, yPos - drawH/2, drawW, drawH);
                 }
-                
-                // رسم دائرة حول الشخصية المتحدثة
-                if(isSpeaking && speaker.imageObj) {
-                    offCtx.restore(); offCtx.save();
-                    offCtx.beginPath();
-                    offCtx.arc(xPos, yPos, sSize/2 + 5, 0, Math.PI*2);
-                    offCtx.lineWidth = 8;
-                    offCtx.strokeStyle = s.enHighlight;
-                    offCtx.stroke();
-                }
-
                 offCtx.restore();
             });
 
-            // 3. رسم النصوص (المحادثة)
+            // 3. رسم الموجات الصوتية (Visualizer)
+            if(s.vizOn && state.analyser && (!audioPlayer.paused || state.isExporting)) {
+                state.analyser.getByteFrequencyData(state.dataArray);
+                let count = 30; // عدد الأعمدة
+                let startX = C_W * s.vizX; 
+                let baseY = C_H * s.vizY;
+                let barW = (C_W * s.vizScale) / count;
+                
+                offCtx.shadowColor = s.vizColor; offCtx.shadowBlur = 10;
+                offCtx.fillStyle = s.vizColor; offCtx.beginPath();
+                
+                for(let i=0; i < count; i++) {
+                    let val = state.dataArray[i * 2]; // أخذ عينات متباعدة
+                    let h = (val / 255) * (C_H * 0.1 * s.vizScale); 
+                    if(h < 3) h = 3; 
+                    
+                    // رسم موجة متناظرة (أعمدة للأسفل والأعلى)
+                    let x = startX - ((count * barW)/2) + (i * barW);
+                    offCtx.roundRect(x, baseY - h/2, barW * 0.6, h, barW*0.3);
+                }
+                offCtx.fill(); offCtx.shadowBlur = 0;
+            }
+
+            // 4. رسم النصوص في الإحداثيات المخصصة
             if (activeDiag) {
-                // نص إنجليزي
+                let activeSpeaker = state.speakers.find(sp => sp.id === activeDiag.speakerId);
+                // تحديد مكان النص بناءً على الشخصية المتحدثة
+                let tX = C_W * (activeSpeaker ? activeSpeaker.textX / 100 : 0.5);
+                let tY = C_H * (activeSpeaker ? activeSpeaker.textY / 100 : 0.7);
+
                 if(activeDiag.en) {
                     offCtx.font = `bold ${s.enSize}px 'Outfit', sans-serif`; 
                     offCtx.textAlign = "center"; offCtx.textBaseline = "middle";
                     offCtx.fillStyle = s.enColor;
                     offCtx.shadowColor = "rgba(0,0,0,0.8)"; offCtx.shadowBlur = 10; offCtx.shadowOffsetY = 4;
                     
-                    let yEn = C_H * s.enY;
-                    
-                    // تأثير ظهور تدريجي للكلمات (Simulated Typewriter based on time)
                     let textToDraw = activeDiag.en;
                     if(state.globalAudioBuffer) {
                         let progress = (timeMs - activeDiag.start) / (activeDiag.end - activeDiag.start);
                         if(progress < 0) progress = 0; if(progress > 1) progress = 1;
-                        // Show text smoothly or word by word
                         let words = activeDiag.en.split(' ');
                         let wordsToShow = Math.ceil(progress * words.length);
                         textToDraw = words.slice(0, wordsToShow).join(' ');
                     }
                     
-                    wrapTextLine(offCtx, textToDraw, C_W/2, yEn, C_W * 0.85, s.enSize * 1.3);
+                    wrapTextLine(offCtx, textToDraw, tX, tY, C_W * 0.85, s.enSize * 1.3);
                 }
 
-                // ترجمة عربية
                 if(activeDiag.ar) {
                     offCtx.font = `bold ${s.arSize}px 'Cairo', sans-serif`; 
                     offCtx.fillStyle = s.arColor;
                     offCtx.direction = "rtl";
-                    let yAr = C_H * s.arY;
-                    wrapTextLine(offCtx, activeDiag.ar, C_W/2, yAr, C_W * 0.85, s.arSize * 1.5);
+                    // رسم الترجمة أسفل الإنجليزية بمسافة متناسبة مع حجم الخط
+                    let arY = tY + (s.enSize * 1.5);
+                    wrapTextLine(offCtx, activeDiag.ar, tX, arY, C_W * 0.85, s.arSize * 1.5);
                     offCtx.direction = "ltr";
                 }
             }
 
-            // النسخ للـ Canvas الرئيسي
             ctx.clearRect(0, 0, C_W, C_H);
             ctx.drawImage(offCanvas, 0, 0);
-
             requestAnimationFrame(renderLoop);
         }
 
@@ -665,11 +684,17 @@
                 
                 let exportAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); 
                 let dest = exportAudioCtx.createMediaStreamDestination();
+                
+                // ربط محلل الصوت للتصدير لتعمل الموجات
+                state.analyser = exportAudioCtx.createAnalyser(); 
+                state.analyser.fftSize = 256; 
+                state.dataArray = new Uint8Array(state.analyser.frequencyBinCount);
+
                 const canvasStream = canvas.captureStream(30); 
                 const combinedStream = new MediaStream([ ...canvasStream.getVideoTracks(), ...dest.stream.getAudioTracks() ]); 
 
                 let mime = 'video/webm;codecs=vp8'; if (MediaRecorder.isTypeSupported('video/webm;codecs=h264')) { mime = 'video/webm;codecs=h264'; }
-                const recorder = new MediaRecorder(combinedStream, { mimeType: mime, videoBitsPerSecond: 3000000 });
+                const recorder = new MediaRecorder(combinedStream, { mimeType: mime, videoBitsPerSecond: 4000000 });
                 let chunks = []; recorder.ondataavailable = e => { if(e.data.size > 0) chunks.push(e.data); };
                 
                 recorder.onstop = async () => {
@@ -680,17 +705,19 @@
                         let ffmpegArgs = []; if (mime.includes('h264')) { ffmpegArgs = ['-i', 'in.webm', '-c', 'copy', 'out.mp4']; } else { ffmpegArgs = ['-i', 'in.webm', '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '30', '-vf', 'scale=720:-2', '-c:a', 'aac', '-b:a', '128k', 'out.mp4']; }
                         await ffmpeg.run(...ffmpegArgs);
                         const mp4 = ffmpeg.FS('readFile', 'out.mp4');
-                        dLink.href = URL.createObjectURL(new Blob([mp4.buffer], {type: 'video/mp4'})); dLink.download = `EduLang_Studio_${Date.now()}.mp4`; dLink.innerHTML = '<i class="fa-solid fa-download ml-1"></i> تحميل الفيديو (MP4)'; dLink.className = "mt-4 w-full block bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl transition text-sm text-center shadow-lg shadow-emerald-600/30"; dLink.classList.remove('hidden');
+                        dLink.href = URL.createObjectURL(new Blob([mp4.buffer], {type: 'video/mp4'})); dLink.download = `EduLang_Pro_${Date.now()}.mp4`; dLink.innerHTML = '<i class="fa-solid fa-download ml-1"></i> تحميل الفيديو (MP4)'; dLink.className = "mt-4 w-full block bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl transition text-sm text-center shadow-lg shadow-emerald-600/30"; dLink.classList.remove('hidden');
                         msg.innerText = "✅ اكتمل التصدير بنجاح!"; bar.style.width = "100%"; ffmpeg.FS('unlink', 'in.webm'); ffmpeg.FS('unlink', 'out.mp4');
                     } catch (err) {
-                        dLink.href = URL.createObjectURL(videoBlob); dLink.download = `EduLang_Studio_${Date.now()}.webm`; dLink.innerHTML = '<i class="fa-solid fa-download ml-1"></i> تحميل الفيديو (WebM)'; dLink.className = "mt-4 w-full block bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl transition text-sm text-center"; dLink.classList.remove('hidden'); bar.style.width = "100%"; 
+                        dLink.href = URL.createObjectURL(videoBlob); dLink.download = `EduLang_Pro_${Date.now()}.webm`; dLink.innerHTML = '<i class="fa-solid fa-download ml-1"></i> تحميل الفيديو (WebM)'; dLink.className = "mt-4 w-full block bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl transition text-sm text-center"; dLink.classList.remove('hidden'); bar.style.width = "100%"; 
                         msg.innerText = "اكتمل التصدير (صيغة بديلة)!";
                     } finally { btn.disabled = false; }
                 };
 
                 recorder.start(); 
                 let source = exportAudioCtx.createBufferSource(); source.buffer = state.globalAudioBuffer; 
-                source.connect(dest); source.connect(exportAudioCtx.destination); 
+                source.connect(state.analyser); // لتعمل الموجات
+                state.analyser.connect(dest); 
+                source.connect(exportAudioCtx.destination); 
                 window.exportStartTime = Date.now(); 
                 source.onended = () => { setTimeout(() => recorder.stop(), 500); }; source.start(0);
 
