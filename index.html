@@ -102,6 +102,7 @@
             <button onclick="togglePlay(); event.stopPropagation();" id="play-btn" class="w-10 h-10 rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center transition shadow-lg ml-2"><i class="fa-solid fa-play"></i></button>
         </div>
         <audio id="audio-player" class="hidden"></audio>
+        <audio id="ambient-player" loop class="hidden"></audio>
     </main>
 
     <aside class="flex-1 md:w-[400px] bg-[#111113] flex flex-col overflow-hidden relative">
@@ -143,10 +144,42 @@
                         <option value="Husary.js" data-folder="Husary_128kbps">الحصري</option>
                         <option value="yasser_ad_dussary.js" data-folder="Yasser_Ad-Dussary_128kbps">ياسر الدوسري</option>
                     </select>
-                    <button onclick="generateQuranAudio()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded transition text-xs shadow-lg shadow-amber-600/20">
+                    <button onclick="generateQuranAudio()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded transition text-xs shadow-lg shadow-amber-600/20 mb-3">
                         <i class="fa-solid fa-volume-high"></i> <span id="btn-fetch-text">جلب الصوت والمزامنة للتصدير</span>
                     </button>
                 </div>
+
+                <details>
+                    <summary><i class="fa-solid fa-shield-halved text-amber-500"></i> حماية الصوت من حقوق الملكية</summary>
+                    <div class="details-body">
+                        <div class="text-[10px] text-zinc-400 mb-2">تساعد هذه الخيارات في تغيير البصمة الرقمية للصوت لتجنب مطابقة الحقوق التلقائية دون تشويه التلاوة.</div>
+                        
+                        <div>
+                            <label class="flex justify-between text-[10px] text-zinc-400 mb-1"><span>سرعة التشغيل (Tempo)</span> <span id="audio-speed-val">1.00</span></label>
+                            <input type="range" id="audio-speed" min="0.95" max="1.05" step="0.01" value="1.00" oninput="updateSettings(); document.getElementById('audio-speed-val').innerText=parseFloat(this.value).toFixed(2); if(audioPlayer) audioPlayer.playbackRate=parseFloat(this.value);">
+                        </div>
+
+                        <div>
+                            <label class="flex justify-between text-[10px] text-zinc-400 mb-1"><span>طبقة الصوت (Detune Cents)</span> <span id="audio-detune-val">0</span></label>
+                            <input type="range" id="audio-detune" min="-60" max="60" step="5" value="0" oninput="updateSettings(); document.getElementById('audio-detune-val').innerText=this.value;">
+                        </div>
+
+                        <div>
+                            <label class="flex justify-between text-[10px] text-zinc-400 mb-1"><span>صدى صوتي طبيعي (Reverb)</span> <span id="reverb-wet-val">0%</span></label>
+                            <input type="range" id="reverb-wet" min="0" max="50" value="0" oninput="updateSettings(); document.getElementById('reverb-wet-val').innerText=this.value+'%';">
+                        </div>
+
+                        <div class="border-t border-[#27272a] pt-3 mt-1">
+                            <label class="block text-[10px] text-amber-400 font-bold mb-2">دمج خلفية صوتية طبيعية (تشويش ذكي)</label>
+                            <div class="file-btn bg-[#27272a] hover:bg-[#3f3f46] text-zinc-200 text-[10px] p-2 mb-2">
+                                <i class="fa-solid fa-cloud-rain mb-1 text-sm"></i> رفع صوت طبيعي (مطر، رياح، بحر...)
+                                <input type="file" accept="audio/*" onchange="loadAmbientAudio(this)">
+                            </div>
+                            <label class="flex justify-between text-[10px] text-zinc-400 mb-1"><span>حجم الخلفية الصوتية</span> <span id="ambient-vol-val">0%</span></label>
+                            <input type="range" id="ambient-vol" min="0" max="40" value="0" oninput="updateSettings(); document.getElementById('ambient-vol-val').innerText=this.value+'%';">
+                        </div>
+                    </div>
+                </details>
             </div>
 
             <div id="tab-bg" class="panel-section space-y-3">
@@ -525,7 +558,8 @@
             phrases:[], originalPhrases: null, currentIndex: 0,
             globalBg: { type: 'none', media: null }, ayahBgs: {}, settings: {}, isExporting: false,
             audioCtx: null, audioBuffer: null, originalAudioBuffer: null, analyser: null, dataArray: null,
-            selectedWord: null, logoImage: null, trimStartWord: null, trimEndWord: null
+            selectedWord: null, logoImage: null, trimStartWord: null, trimEndWord: null,
+            ambientArrayBuffer: null
         };
 
         const audioPlayer = document.getElementById('audio-player');
@@ -544,6 +578,20 @@
         window.onload = async () => {
             document.getElementById('viz-y').value = 100;
             
+            const ambPlayer = document.getElementById('ambient-player');
+            audioPlayer.addEventListener('play', () => {
+                if (ambPlayer.src && state.settings.ambientVol > 0) {
+                    ambPlayer.volume = state.settings.ambientVol;
+                    ambPlayer.play().catch(e=>{});
+                }
+            });
+            audioPlayer.addEventListener('pause', () => {
+                ambPlayer.pause();
+            });
+            audioPlayer.addEventListener('ended', () => {
+                ambPlayer.pause();
+            });
+
             try {
                 let resS = await fetch('./surahs.json'); globalSurahs = await resS.json(); 
                 populateSurahs(globalSurahs);
@@ -618,11 +666,61 @@
 
         function loadLogo(input) { if(input.files && input.files[0]) { const reader = new FileReader(); reader.onload = e => { let img = new Image(); img.src = e.target.result; state.logoImage = img; }; reader.readAsDataURL(input.files[0]); } }
 
+        function loadAmbientAudio(input) {
+            if(input.files && input.files[0]) {
+                const file = input.files[0];
+                const url = URL.createObjectURL(file);
+                const ambPlayer = document.getElementById('ambient-player');
+                ambPlayer.src = url;
+                ambPlayer.load();
+                
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    state.ambientArrayBuffer = e.target.result;
+                };
+                reader.readAsArrayBuffer(file);
+            }
+        }
+
+        function connectAudioGraph(ctx, sourceNode, analyserNode, destNode, isExport) {
+            let s = state.settings;
+            let dryGain = ctx.createGain();
+            dryGain.gain.value = 1.0;
+            
+            let delayNode = ctx.createDelay();
+            delayNode.delayTime.value = 0.25;
+            
+            let feedbackGain = ctx.createGain();
+            feedbackGain.gain.value = 0.35;
+            
+            let wetGain = ctx.createGain();
+            wetGain.gain.value = (s.reverbWet || 0) / 100;
+            
+            if (!isExport) {
+                window.liveWetGainNode = wetGain;
+            }
+            
+            sourceNode.connect(dryGain);
+            dryGain.connect(analyserNode);
+            
+            sourceNode.connect(delayNode);
+            delayNode.connect(feedbackGain);
+            feedbackGain.connect(delayNode);
+            delayNode.connect(wetGain);
+            wetGain.connect(analyserNode);
+            
+            analyserNode.connect(destNode);
+        }
+
         function updateSettings() {
             state.settings = {
                 syncOffset: num('sync-offset'), ayahTrans: val('ayah-transition'),
                 transDimEnable: document.getElementById('trans-dim-enable').checked,
                 wordSpacing: num('word-spacing'),
+                audioSpeed: num('audio-speed'),
+                audioDetune: num('audio-detune'),
+                reverbWet: num('reverb-wet'),
+                ambientVol: num('ambient-vol') / 100,
                 style: val('highlight-style'), baseC: val('base-color'), hiC: val('highlight-color'),
                 strokeW: num('stroke-width'), strokeC: val('stroke-color'),
                 fontF: val('font-family'), fontS: num('font-size'), posY: num('pos-y'), transY: num('trans-y'), transColor: val('trans-color'), bgOp: num('bg-opacity') / 100,
@@ -637,6 +735,17 @@
                 animOn: document.getElementById('anim-enable').checked, animStyle: val('anim-style'), animInt: num('anim-intensity') / 100, animSpeed: num('anim-speed'),
                 textGlitchOn: document.getElementById('text-glitch-enable').checked, textGlitchInt: num('text-glitch-int')
             };
+
+            if (window.liveWetGainNode && state.audioCtx) {
+                window.liveWetGainNode.gain.setTargetAtTime((state.settings.reverbWet || 0) / 100, state.audioCtx.currentTime, 0.01);
+            }
+            if (audioPlayer) {
+                audioPlayer.playbackRate = state.settings.audioSpeed || 1.0;
+            }
+            const ambPlayer = document.getElementById('ambient-player');
+            if (ambPlayer) {
+                ambPlayer.volume = state.settings.ambientVol || 0;
+            }
         }
 
         function setBg(target, type, input) {
@@ -802,8 +911,21 @@
         function togglePlay() {
             if(!audioPlayer.src) return alert("قم بجلب الصوت أولاً.");
             if (state.audioCtx && state.audioCtx.state === 'suspended') state.audioCtx.resume();
-            if(!window.isAudioConnectedToViz && state.audioCtx) { try { let source = state.audioCtx.createMediaElementSource(audioPlayer); source.connect(state.analyser); state.analyser.connect(state.audioCtx.destination); window.isAudioConnectedToViz = true; } catch(e) {} }
-            if (audioPlayer.paused) { audioPlayer.play(); document.getElementById('play-btn').innerHTML = '<i class="fa-solid fa-pause"></i>'; } else { audioPlayer.pause(); document.getElementById('play-btn').innerHTML = '<i class="fa-solid fa-play"></i>'; }
+            if(!window.isAudioConnectedToViz && state.audioCtx) { 
+                try { 
+                    let source = state.audioCtx.createMediaElementSource(audioPlayer); 
+                    connectAudioGraph(state.audioCtx, source, state.analyser, state.audioCtx.destination, false);
+                    window.isAudioConnectedToViz = true; 
+                } catch(e) {} 
+            }
+            const ambPlayer = document.getElementById('ambient-player');
+            if (audioPlayer.paused) { 
+                audioPlayer.play(); 
+                document.getElementById('play-btn').innerHTML = '<i class="fa-solid fa-pause"></i>'; 
+            } else { 
+                audioPlayer.pause(); 
+                document.getElementById('play-btn').innerHTML = '<i class="fa-solid fa-play"></i>'; 
+            }
         }
         
         function seekAudio(val) { if(audioPlayer.src) audioPlayer.currentTime = (val / 100) * audioPlayer.duration; }
@@ -1135,8 +1257,43 @@
                     } finally { btn.disabled = false; }
                 };
 
-                recorder.start(); let source = exportAudioCtx.createBufferSource(); source.buffer = state.audioBuffer; source.connect(state.analyser); state.analyser.connect(dest); source.connect(exportAudioCtx.destination); 
-                window.exportStartTime = Date.now(); source.onended = () => { setTimeout(() => recorder.stop(), 500); }; source.start(0);
+                recorder.start(); 
+                
+                let source = exportAudioCtx.createBufferSource(); 
+                source.buffer = state.audioBuffer; 
+                source.playbackRate.value = state.settings.audioSpeed || 1.0;
+                source.detune.value = state.settings.audioDetune || 0;
+                
+                connectAudioGraph(exportAudioCtx, source, state.analyser, dest, true);
+
+                if (state.ambientArrayBuffer && state.settings.ambientVol > 0) {
+                    try {
+                        let ambientDecodedBuffer = await exportAudioCtx.decodeAudioData(state.ambientArrayBuffer.slice(0));
+                        let ambientSource = exportAudioCtx.createBufferSource();
+                        ambientSource.buffer = ambientDecodedBuffer;
+                        ambientSource.loop = true;
+                        
+                        let ambientGain = exportAudioCtx.createGain();
+                        ambientGain.gain.value = state.settings.ambientVol;
+                        
+                        ambientSource.connect(ambientGain);
+                        ambientGain.connect(state.analyser);
+                        
+                        ambientSource.start(0);
+                        window.activeExportAmbientSource = ambientSource;
+                    } catch(err) {
+                        console.error("Failed to mix ambient audio during export:", err);
+                    }
+                }
+
+                window.exportStartTime = Date.now(); 
+                source.onended = () => { 
+                    if(window.activeExportAmbientSource) {
+                        try { window.activeExportAmbientSource.stop(); } catch(e){}
+                    }
+                    setTimeout(() => recorder.stop(), 500); 
+                }; 
+                source.start(0);
 
             } catch(e) { console.error(e); msg.innerText = "❌ حدث خطأ أثناء التحضير."; btn.disabled = false; state.isExporting = false; }
         }
