@@ -565,7 +565,6 @@
     </nav>
 
     <!-- المحرك والبرمجيات الاحترافية للتشغيل والتصدير -->
-<!-- المحرك والبرمجيات الاحترافية المحدثة للتشغيل والمزامنة والتصدير -->
     <script>
         let C_W = 1080; let C_H = 1920;
         const canvas = document.getElementById('video-canvas'); const ctx = canvas.getContext('2d');
@@ -574,26 +573,20 @@
         let globalSurahs = []; let globalQuran = null; let previewDebounce = null;
         let isAudioConnectedToViz = false;
 
-        // هيكل البيانات وقائمة القراء مع مجلدات Every Ayah الدقيقة التي أرسلتها حرفياً
         let state = {
             phrases:[], originalPhrases: null, currentIndex: 0,
             globalBg: { type: 'none', media: null }, ayahBgs: {}, settings: {}, isExporting: false,
             audioCtx: null, audioBuffer: null, originalAudioBuffer: null, analyser: null, dataArray: null,
-            selectedWord: null, logoImage: null, trimStartWord: null, trimEndWord: null, currentMode: 'quran',
-            recitersList: [
-                { id: "Alafasy_128kbps", slug: "al_afasy", name: "مشاري راشد العفاسي", folder: "Alafasy_128kbps" },
-                { id: "mahmoud_ali_al_banna_32kbps", slug: "al_banna", name: "محمود علي البنا", folder: "mahmoud_ali_al_banna_32kbps" },
-                { id: "Husary_128kbps_Mujawwad", slug: "husary_mujawwad", name: "محمود خليل الحصري", folder: "Husary_128kbps_Mujawwad" },
-                { id: "Minshawy_Murattal_128kbps", slug: "minshawi_murattal", name: "محمد صديق المنشاوي", folder: "Minshawy_Murattal_128kbps" },
-                { id: "Nasser_Alqatami_128kbps", slug: "qatami", name: "ناصر القطامي", folder: "Nasser_Alqatami_128kbps" }
-            ]
+            selectedWord: null, logoImage: null, trimStartWord: null, trimEndWord: null, currentMode: 'quran'
         };
 
         const audioPlayer = document.getElementById('audio-player');
         
+        // ذرات نيون متحركة متناثرة في الخلفية (Canvas Particles)
         let particles = Array.from({length: 60}).map(() => ({ x: Math.random(), y: Math.random(), speedY: 0.2 + Math.random() * 0.5, speedX: -0.2 + Math.random() * 0.4, size: 0.5 + Math.random() * 2, opacity: Math.random(), phase: Math.random() * Math.PI * 2 }));
         let bokehs = Array.from({length: 20}).map(() => ({ x: Math.random(), y: Math.random(), speedY: 0.05 + Math.random() * 0.1, speedX: -0.05 + Math.random() * 0.1, size: 20 + Math.random() * 60, opacity: Math.random() * 0.3, phase: Math.random() * Math.PI * 2 }));
         
+        // تشويش كلاسيكي سينمائي (Film Grain Canvas Pattern)
         let grainCanvas = document.createElement('canvas'); grainCanvas.width = 300; grainCanvas.height = 300; let gCtx = grainCanvas.getContext('2d'); let gData = gCtx.createImageData(300, 300);
         for(let i=0; i<gData.data.length; i+=4) { let v = Math.random()*255; gData.data[i]=v; gData.data[i+1]=v; gData.data[i+2]=v; gData.data[i+3]=255; } gCtx.putImageData(gData,0,0);
 
@@ -610,6 +603,7 @@
             audioPlayer.addEventListener('pause', () => stopLiveAmbient());
             audioPlayer.addEventListener('ended', () => stopLiveAmbient());
 
+            // قراءة ملفات السور والقرآن المجهزة للرفع على Vercel مباشرة
             try {
                 let resS = await fetch('./surahs.json'); globalSurahs = await resS.json(); 
                 populateSurahs(globalSurahs);
@@ -618,19 +612,8 @@
 
             applyVideoSettings(); 
             requestAnimationFrame(renderLoop); 
-            populateRecitersDropdown();
-            handleReciterChange(); // تحميل التواقيت مع البداية بأمان
+            triggerLivePreview();
         };
-
-        function populateRecitersDropdown() {
-            const rSelect = document.getElementById('reciter'); rSelect.innerHTML = '';
-            state.recitersList.forEach(r => {
-                const opt = new Option(r.name, r.id);
-                opt.dataset.slug = r.slug;
-                opt.dataset.folder = r.folder;
-                rSelect.add(opt);
-            });
-        }
 
         function toggleEditMode(mode) {
             state.currentMode = mode;
@@ -702,54 +685,7 @@
             }, 300);
         }
 
-        // عزل ومعالجة ملفات التوقيت داخل Sandbox وتجنب الـ Syntax Error نهائياً
-        function handleReciterChange() {
-            const reciterSelect = document.getElementById('reciter');
-            const opt = reciterSelect.options[reciterSelect.selectedIndex];
-            if (!opt) return;
-            const slug = opt.dataset.slug;
-
-            const existingSandbox = document.getElementById('timestamp-sandbox');
-            if (existingSandbox) existingSandbox.remove();
-
-            window.quranTimestamps = undefined;
-
-            const iframe = document.createElement('iframe');
-            iframe.id = 'timestamp-sandbox';
-            iframe.style.display = 'none';
-            document.body.appendChild(iframe);
-
-            const onMessageReceived = (event) => {
-                if (event.data && event.data.type === 'TIMESTAMPS_LOADED') {
-                    window.quranTimestamps = event.data.data;
-                    window.removeEventListener('message', onMessageReceived);
-                    triggerLivePreview();
-                }
-            };
-            window.addEventListener('message', onMessageReceived);
-
-            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-            iframeDoc.open();
-            iframeDoc.write(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <script>
-                        window.onload = function() {
-                            window.parent.postMessage({
-                                type: 'TIMESTAMPS_LOADED',
-                                data: window.quranTimestamps
-                            }, '*');
-                        };
-                    </script>
-                    <script src="${slug}.js"><\/script>
-                </head>
-                <body></body>
-                </html>
-            `);
-            iframeDoc.close();
-        }
-
+        // تفريغ حر بالذكاء الاصطناعي للملف الصوتي الخارجي المرفوع منفرداً
         async function transcribeWithGroq() {
             const apiKey = document.getElementById('apiKey').value.trim();
             if (!apiKey) return showToast('يرجى كتابة مفتاح API للاتصال.', 'error');
@@ -826,6 +762,7 @@
                 isAyahNum: false
             }));
 
+            // تجميع الكلمات المفرغة في جملة/مقطع واحد للجدول الزمني
             state.phrases = [{
                 num: 1,
                 startTime: 0,
@@ -835,6 +772,7 @@
             }];
             state.originalPhrases = JSON.parse(JSON.stringify(state.phrases));
             
+            // تحضير الصوت للتفريد
             window.AudioContext = window.AudioContext || window.webkitAudioContext;
             if(!state.audioCtx) state.audioCtx = new AudioContext();
             if(!state.analyser) {
@@ -961,8 +899,7 @@
                 wmText: val('watermark-text'), wmFont: val('wm-font'), wmSize: num('wm-size'), logoScale: num('logo-scale') / 100, logoX: num('logo-x') / 100, logoY: num('logo-y') / 100,
                 vizOn: document.getElementById('viz-enable').checked, vizStyle: val('viz-style'), vizColor: val('viz-color'), vizX: num('viz-x') / 100, vizY: num('viz-y') / 100,
                 animOn: document.getElementById('anim-enable').checked, animStyle: val('anim-style'), animInt: num('anim-intensity') / 100, animSpeed: num('anim-speed'),
-                textGlitchOn: document.getElementById('text-glitch-enable').checked, textGlitchInt: num('text-glitch-int'),
-                align: document.querySelector('.align-btn.active')?.dataset.align || 'center' // تعيين المحاذاة الافتراضية
+                textGlitchOn: document.getElementById('text-glitch-enable').checked, textGlitchInt: num('text-glitch-int')
             };
 
             if (window.liveWetGainNode && state.audioCtx) {
@@ -1003,6 +940,7 @@
             document.querySelectorAll('.segment-block').forEach(b => b.classList.remove('active')); let block = document.getElementById(`block-${state.currentIndex}`); if(block) block.classList.add('active');
         }
 
+        async function fetchTimingFile(fileName) { try { let res = await fetch(`./${fileName}`); if (!res.ok) return null; let text = await res.text(); let match = text.match(/\[\s*\{[\s\S]*\}\s*\]/); if(match) return JSON.parse(match[0]); } catch(e) {} return null; }
         async function safeFetchAudio(surahNum, ayahNum, folder) {
             const pad = (n) => n.toString().padStart(3, '0'); const directUrl = `https://everyayah.com/data/${folder}/${pad(surahNum)}${pad(ayahNum)}.mp3`;
             const attempts = [ directUrl, `https://api.allorigins.win/raw?url=${encodeURIComponent(directUrl)}`, `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(directUrl)}` ];
@@ -1011,14 +949,11 @@
 
         async function generateQuranAudio() {
             if (state.phrases.length === 0) return alert("الرجاء انتظار تحميل الآيات في الشاشة أولاً.");
-            const btnText = document.getElementById('btn-fetch-text'); const surah = parseInt(val('surah')); const recSelect = document.getElementById('reciter'); const recId = recSelect.value;
-            const reciter = state.recitersList.find(r => r.id === recId);
-            const audioFolder = reciter.folder; 
-            
+            const btnText = document.getElementById('btn-fetch-text'); const surah = parseInt(val('surah')); const recSelect = document.getElementById('reciter'); const timingFile = recSelect.value; const audioFolder = recSelect.options[recSelect.selectedIndex].dataset.folder;
             btnText.innerText = "جاري جلب الصوتيات وربطها..."; btnText.parentElement.classList.add('opacity-50', 'pointer-events-none');
 
             try {
-                let fullTimingData = window.quranTimestamps;
+                let fullTimingData = await fetchTimingFile(timingFile);
                 window.AudioContext = window.AudioContext || window.webkitAudioContext; if(!state.audioCtx) state.audioCtx = new AudioContext();
                 if(!state.analyser) { state.analyser = state.audioCtx.createAnalyser(); state.analyser.fftSize = 256; state.dataArray = new Uint8Array(state.analyser.frequencyBinCount); }
 
@@ -1028,10 +963,7 @@
                     let phrase = state.phrases[i]; btnText.innerText = `جلب صوت الآية ${phrase.num}...`;
                     let arrayBuffer = await safeFetchAudio(surah, phrase.num, audioFolder); let decodedBuffer = await state.audioCtx.decodeAudioData(arrayBuffer); buffers.push(decodedBuffer);
                     let durationMs = decodedBuffer.duration * 1000;
-                    
-                    const timingKey = `${surah}:${phrase.num}`;
-                    let ayahTiming = fullTimingData ? fullTimingData[timingKey] : null; 
-                    let segments = ayahTiming ? ayahTiming[1] : [];
+                    let ayahTiming = fullTimingData ? fullTimingData.find(d => d.surah == surah && d.ayah == phrase.num) : null; let segments = ayahTiming ? ayahTiming.segments : [];
                     let ayahObj = surahTextData.find(a => a.verse == phrase.num); let cleanText = ayahObj.text.trim().replace(/\s+/g, ' '); let wordsArr = cleanText.split(' ');
                     
                     wordsArr[wordsArr.length - 1] += `\|\^${toArabicNumber(phrase.num)}`;
@@ -1041,7 +973,7 @@
 
                     wordsArr.forEach((wText, idx) => {
                         let wStart, wEnd;
-                        if (hasValidTimings && segments[idx]) { wStart = globalTimeMs + segments[idx][1] - ayahTiming[0][0]; wEnd = globalTimeMs + segments[idx][2] - ayahTiming[0][0]; } 
+                        if (hasValidTimings && segments[idx]) { wStart = globalTimeMs + segments[idx][2]; wEnd = globalTimeMs + segments[idx][3]; } 
                         else { let startRatio = cumulativeChars / totalChars; let endRatio = (cumulativeChars + wText.length) / totalChars; wStart = globalTimeMs + (startRatio * durationMs); wEnd = globalTimeMs + (endRatio * durationMs); cumulativeChars += wText.length; }
                         wordsData.push({ text: wText, start: wStart, end: wEnd, newPage: false, newLine: false, isAyahNum: false });
                     });
@@ -1148,9 +1080,10 @@
         function formatTime(secs) { if(isNaN(secs)) return "00:00"; let m = Math.floor(secs / 60); let s = Math.floor(secs % 60); return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
 
         function togglePlay() {
-            if(!audioPlayer.src) return alert("قم بجلب الصوت أولاً للبدء.");
+            if(!audioPlayer.src) return alert("قم برفع ملف الصوت أولاً للبدء.");
             if (state.audioCtx && state.audioCtx.state === 'suspended') state.audioCtx.resume();
             
+            // تهيئة الاتصال الآمن بالموجات الصوتية مرة واحدة فقط لمنع خطأ الـ createMediaElementSource
             if(!isAudioConnectedToViz && state.audioCtx) { 
                 try { 
                     let source = state.audioCtx.createMediaElementSource(audioPlayer); 
@@ -1198,7 +1131,7 @@
             }, 4000);
         }
 
-        // رندرة الكانفاس المتكامل والمنسق (مع دعم المحاذاة والتمييز المحدث بدقة متناهية)
+        // رندرة الكانفاس المتكامل والمنسق
         function renderLoop() {
             offCtx.clearRect(0, 0, C_W, C_H);
             let s = state.settings;
@@ -1343,7 +1276,7 @@
                 offCtx.globalAlpha = globalTransAlpha; 
                 if(globalTransBlur > 0) offCtx.filter = `blur(${globalTransBlur}px)`;
 
-                offCtx.font = `bold ${s.fontS}px ${s.fontF}`; offCtx.textBaseline = "middle";
+                offCtx.font = `bold ${s.fontS}px ${s.fontF}`; offCtx.textAlign = "center"; offCtx.textBaseline = "middle";
                 let lines = []; let currentLine =[]; let currentWidth = 0; 
                 let spaceW = offCtx.measureText(" ").width + (s.wordSpacing || 0); 
                 let maxW = C_W * 0.85;
@@ -1366,27 +1299,9 @@
                 let isCenterStyle = (s.style === 'center-focus' || s.style === 'center-focus-rainbow');
 
                 lines.forEach((line, i) => {
-                    let y = startY + (i * lineH);
-                    
-                    // احتساب تموضع الخطوط والمحاذاة الأفقية بدقة
-                    let startX = 0;
-                    if (s.align === 'left') {
-                        startX = C_W * 0.075; 
-                        offCtx.textAlign = "left";
-                    } else if (s.align === 'right') {
-                        startX = C_W * 0.925 - line.width;
-                        offCtx.textAlign = "right";
-                    } else { 
-                        startX = (C_W - line.width) / 2;
-                        offCtx.textAlign = "center";
-                    }
-
-                    let currentX = startX + line.width; 
-                    
+                    let y = startY + (i * lineH); let startX = (C_W / 2) + (line.width / 2); 
                     line.words.forEach(w => {
-                        let wWidth = offCtx.measureText(w.drawText).width; 
-                        let centerX = currentX - (wWidth / 2);
-                        
+                        let wWidth = offCtx.measureText(w.drawText).width; let centerX = startX - (wWidth / 2);
                         let isActive = (!state.audioBuffer) ? true : (timeMs >= w.start && timeMs <= w.end);
                         let wordProgress = (!state.audioBuffer) ? 1 : (isActive ? Math.min(1, (timeMs - w.start) / Math.max(1, w.end - w.start)) : 0);
                         
@@ -1439,7 +1354,7 @@
                         } else {
                             offCtx.save(); offCtx.translate(tx, ty + drawOffsetY); offCtx.rotate(drawRotation); offCtx.scale(drawScale, drawScale); renderTextStr(textToDraw, 0, 0); offCtx.restore();
                         }
-                        offCtx.globalAlpha = globalTransAlpha; offCtx.shadowBlur = 0; offCtx.shadowOffsetY = 0; offCtx.shadowOffsetX = 0; currentX -= (wWidth + spaceW);
+                        offCtx.globalAlpha = globalTransAlpha; offCtx.shadowBlur = 0; offCtx.shadowOffsetY = 0; offCtx.shadowOffsetX = 0; startX -= (wWidth + spaceW);
                     });
                 });
 
@@ -1459,6 +1374,7 @@
 
             offCtx.globalAlpha = 1; 
 
+            // دمج الإطار النهائي للمشاهد داخل الكانفاس الرئيسي بالتفاصيل المطلوبة
             ctx.clearRect(0, 0, C_W, C_H);
             
             let isTransGlitch = (s.ayahTrans === 'glitch-shift' && activePhrase && globalTransAlpha < 1 && globalTransAlpha > 0);
