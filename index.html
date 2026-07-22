@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EduLang Studio Ultra Master Pro</title>
+    <title>EduLang Studio Ultra Master Pro - Perfect Sync</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -60,7 +60,7 @@
         <div class="canvas-container mb-2 border border-[#27272a]" id="main-canvas-container">
             <canvas id="video-canvas"></canvas>
             <div class="absolute top-3 right-3 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-full text-[10px] text-blue-400 font-bold pointer-events-none border border-blue-500/30 flex items-center gap-2 shadow-lg">
-                <i class="fa-solid fa-hand-pointer animate-bounce"></i> اسحب وأفلت العناصر بالماوس لتغيير مكانها!
+                <i class="fa-solid fa-hand-pointer animate-bounce"></i> اسحب العناصر بالماوس لتعديل مكانها!
             </div>
         </div>
         <div class="h-16 bg-[#18181b] rounded-lg border border-[#27272a] flex items-center justify-between px-3 shrink-0">
@@ -74,6 +74,7 @@
             <button onclick="togglePlay()" id="play-btn" class="w-10 h-10 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center transition shadow-lg ml-2"><i class="fa-solid fa-play"></i></button>
         </div>
         <audio id="audio-player" class="hidden"></audio>
+        <audio id="bgm-player" loop class="hidden"></audio>
     </main>
 
     <aside class="flex-1 md:w-[450px] bg-[#111113] flex flex-col overflow-hidden relative">
@@ -126,14 +127,13 @@
                 <div id="dialogues-container" class="space-y-2"></div>
 
                 <button onclick="generateAllAudio()" class="w-full mt-4 bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded transition text-sm shadow-lg shadow-blue-600/20">
-                    <i class="fa-solid fa-microphone-lines"></i> <span id="btn-fetch-text">توليد كل الأصوات الناقصة</span>
+                    <i class="fa-solid fa-microphone-lines"></i> <span id="btn-fetch-text">توليد كل الأصوات الناقصة والمزامنة</span>
                 </button>
             </div>
 
             <!-- تبويب الخطوط والتصميم والتوهج النيون -->
             <div id="tab-design" class="panel-section space-y-3">
                 
-                <!-- محرك اختيار الخطوط -->
                 <div class="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 p-3 rounded-lg border border-blue-500/40">
                     <h3 class="text-xs font-bold text-blue-300 mb-3"><i class="fa-solid fa-font text-blue-400 ml-1"></i> محرك الخطوط المتقدم (Google Fonts)</h3>
                     <div class="space-y-2">
@@ -171,7 +171,6 @@
                     </div>
                 </div>
 
-                <!-- خيارات توهج النصوص والـ Neon Highlight -->
                 <div class="bg-gradient-to-r from-purple-900/30 to-pink-900/30 p-3 rounded-lg border border-purple-500/40">
                     <h3 class="text-xs font-bold text-pink-300 mb-3"><i class="fa-solid fa-wand-magic-sparkles text-pink-400 ml-1"></i> توهج النيون ومؤثرات النص (Neon Glow Engine)</h3>
                     <div class="grid grid-cols-2 gap-3 mb-2">
@@ -193,7 +192,7 @@
 
                     <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mt-3">
                         <input type="checkbox" id="particles-on" onchange="updateSettings()" checked class="w-3.5 h-3.5 accent-blue-500 rounded">
-                        <span class="text-[11px] text-zinc-200 font-bold">تفعيل جزيئات ضوئية متحركة (Particles Effect)</span>
+                        <span class="text-[11px] text-zinc-200 font-bold">تفعيل جزيئات ضوئية متحركة (Particles)</span>
                     </label>
                 </div>
 
@@ -240,7 +239,7 @@
             <div id="tab-export" class="panel-section text-center p-2">
                 <div class="bg-blue-900/20 p-5 rounded-xl border border-blue-900/30 mb-4">
                     <i class="fa-solid fa-clapperboard text-4xl text-blue-500 mb-3 block"></i>
-                    <h3 class="text-white font-bold mb-2">إنتاج وتصدير الفيديو</h3>
+                    <h3 class="text-white font-bold mb-2">إنتاج وتصدير الفيديو بـ MP4</h3>
                 </div>
                 
                 <button id="btn-export" onclick="startExport()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl transition shadow-lg shadow-blue-600/30 text-sm">
@@ -342,7 +341,7 @@
             };
         }
 
-        // -------- نظام جزيئات الخلفية المتحركة Particles --------
+        // -------- نظام جزيئات الخلفية Particles --------
         function initParticles() {
             state.particles = [];
             for(let i=0; i<40; i++) {
@@ -371,7 +370,7 @@
             ctxToDraw.restore();
         }
 
-        // -------- نظام التفاعل والسحب بالماوس فوق الكانفاس Drag & Drop --------
+        // -------- نظام السحب المباشر بالماوس Drag & Drop --------
         function initCanvasDragEvents() {
             const getCanvasCoords = (e) => {
                 const rect = canvas.getBoundingClientRect();
@@ -539,7 +538,7 @@
             reader.readAsDataURL(file);
         }
 
-        // -------- نظام الشخصيات ومواقعها المخصصة --------
+        // -------- نظام الشخصيات --------
         function generateId() { return Math.random().toString(36).substr(2, 9); }
 
         function addSpeaker(codeStr = null) {
@@ -695,10 +694,10 @@
             }
         }
 
-        // -------- نظام السيناريو --------
+        // -------- نظام السيناريو وتحديد الوقفات والتكرار الدقيق --------
         function addDialogueRow() {
             const id = generateId();
-            state.dialogues.push({ id: id, speakerId: state.speakers.length > 0 ? state.speakers[0].id : '', target: '', pronunciation: '', native: '', baseAudioBuffer: null, repeat: 1, pauseAfter: 1, start: 0, end: 0, bgMedia: null, bgBase64: null });
+            state.dialogues.push({ id: id, speakerId: state.speakers.length > 0 ? state.speakers[0].id : '', target: '', pronunciation: '', native: '', baseAudioBuffer: null, repeat: 1, pauseAfter: 1, start: 0, end: 0, bgMedia: null, bgBase64: null, repeatsInfo: [] });
             renderDialoguesUI();
         }
 
@@ -768,7 +767,6 @@
             document.getElementById('preview-label').innerText = `معاينة المشهد: ${state.currentIndex + 1}`;
         }
 
-        // المؤثر الصوتي للانتقالات بدون أي ملفات خارجية (Web Audio Synthesizer)
         function playWhooshSFX() {
             if(!state.audioCtx) return;
             try {
@@ -852,23 +850,41 @@
                 await processAudioForDialogue(diag);
             }
             renderDialoguesUI(); rebuildGlobalTimeline();
-            btnText.innerText = "اكتمل بنجاح!"; setTimeout(() => { btnText.innerText = "توليد كل الأصوات الناقصة"; btnText.parentElement.classList.remove('opacity-50', 'pointer-events-none'); }, 2000);
+            btnText.innerText = "اكتمل بنجاح!"; setTimeout(() => { btnText.innerText = "توليد كل الأصوات الناقصة والمزامنة"; btnText.parentElement.classList.remove('opacity-50', 'pointer-events-none'); }, 2000);
         }
 
         function createSilentBuffer(ctx, seconds) { return ctx.createBuffer(1, ctx.sampleRate * seconds, ctx.sampleRate); }
 
+        // الخوارزمية العبقرية لإعادة حساب الخط الزمني الدقيق للوقفات والتكرار
         function rebuildGlobalTimeline() {
             if(!state.audioCtx) return;
             let buffers = []; let globalTimeMs = 0;
             for (let d of state.dialogues) {
                 if(!d.baseAudioBuffer) continue;
                 d.start = globalTimeMs;
+                d.repeatsInfo = [];
+
+                let durationMs = d.baseAudioBuffer.duration * 1000;
+                
                 for(let r=0; r < d.repeat; r++) {
-                    buffers.push(d.baseAudioBuffer); globalTimeMs += d.baseAudioBuffer.duration * 1000;
-                    if(r < d.repeat - 1) { let pBuf = createSilentBuffer(state.audioCtx, 0.5); buffers.push(pBuf); globalTimeMs += 500; }
+                    buffers.push(d.baseAudioBuffer); 
+                    let repStart = globalTimeMs;
+                    let repEnd = globalTimeMs + durationMs;
+                    d.repeatsInfo.push({ start: repStart, end: repEnd });
+                    globalTimeMs += durationMs;
+
+                    if(r < d.repeat - 1) { 
+                        let pBuf = createSilentBuffer(state.audioCtx, 0.5); 
+                        buffers.push(pBuf); 
+                        globalTimeMs += 500; 
+                    }
                 }
-                d.end = globalTimeMs;
-                let pauseBuf = createSilentBuffer(state.audioCtx, d.pauseAfter); buffers.push(pauseBuf); globalTimeMs += d.pauseAfter * 1000;
+                d.end = globalTimeMs; // نهاية التكرارات الصوتية
+
+                // صمت إضافي بعد المشهد
+                let pauseBuf = createSilentBuffer(state.audioCtx, d.pauseAfter); 
+                buffers.push(pauseBuf); 
+                globalTimeMs += d.pauseAfter * 1000;
             }
 
             if(buffers.length > 0) {
@@ -878,7 +894,8 @@
                     if(!state.isExporting) {
                         document.getElementById('progress-bar-audio').value = (audioPlayer.currentTime / audioPlayer.duration) * 100;
                         document.getElementById('time-current').innerText = formatTime(audioPlayer.currentTime); document.getElementById('time-total').innerText = formatTime(audioPlayer.duration);
-                        let timeMs = audioPlayer.currentTime * 1000; let activeIdx = state.dialogues.findIndex(d => timeMs >= d.start && timeMs <= d.end + (d.pauseAfter*1000)); 
+                        let timeMs = audioPlayer.currentTime * 1000; 
+                        let activeIdx = state.dialogues.findIndex(d => timeMs >= d.start && timeMs <= d.end + (d.pauseAfter*1000)); 
                         if(activeIdx !== -1 && activeIdx !== state.currentIndex) { state.currentIndex = activeIdx; updateDialogueHighlight(); }
                     }
                 };
@@ -910,7 +927,7 @@
             return segments;
         }
 
-        // رسم النص الذكي ومطابقة النيون المطور للكلمات
+        // رسم النص والتوهج النيون
         function drawColoredLineCentered(ctxToDraw, segments, x, y, fontCss, direction = "ltr", isSpeaking = false) {
             ctxToDraw.font = fontCss; ctxToDraw.textBaseline = "middle";
             let totalWidth = 0;
@@ -928,7 +945,6 @@
                 ctxToDraw.lineWidth = state.settings.strokeWidth !== undefined ? state.settings.strokeWidth : 6; 
                 ctxToDraw.lineJoin = "round";
                 
-                // تطبيق توهج النيون العبقري والمطور عند الحديث
                 if(isSpeaking) {
                     ctxToDraw.shadowColor = state.settings.glowColor || "#3b82f6";
                     ctxToDraw.shadowBlur = state.settings.glowBlur !== undefined ? state.settings.glowBlur : 25;
@@ -947,16 +963,33 @@
             ctxToDraw.restore();
         }
 
-        // -------- حلقة الرسم وتوليد الإطارات (Render Loop) --------
+        // -------- حلقة الرسم الحسابية المطلقة (Direct Clock Audio Sync) --------
         function renderLoop() {
             offCtx.clearRect(0, 0, C_W, C_H);
             let s = state.settings;
-            let timeMs = state.isExporting ? (Date.now() - (window.exportStartTime || Date.now())) : (audioPlayer.currentTime * 1000);
+            
+            // حساب زمن الصوت الدقيق المطلق للحد من أي تشويه أو انحراف في التوقيت
+            let timeMs = 0;
+            if(state.isExporting && window.exportAudioCtxRef) {
+                timeMs = (window.exportAudioCtxRef.currentTime - window.exportStartTime) * 1000;
+            } else {
+                timeMs = audioPlayer.currentTime * 1000;
+            }
+
             let isPlaying = (!audioPlayer.paused && audioPlayer.src) || state.isExporting;
 
             let activeDiag = null;
-            if (state.globalAudioBuffer && state.dialogues.length > 0) { activeDiag = state.dialogues.find(d => timeMs >= d.start && timeMs <= d.end); } 
-            if (!activeDiag && !isPlaying && state.dialogues.length > 0) { activeDiag = state.dialogues[state.currentIndex]; }
+            let activeSubRepeat = null;
+
+            if (state.globalAudioBuffer && state.dialogues.length > 0) { 
+                activeDiag = state.dialogues.find(d => timeMs >= d.start && timeMs <= (d.end + d.pauseAfter * 1000)); 
+                if(activeDiag && activeDiag.repeatsInfo) {
+                    activeSubRepeat = activeDiag.repeatsInfo.find(r => timeMs >= r.start && timeMs <= r.end);
+                }
+            } 
+            if (!activeDiag && !isPlaying && state.dialogues.length > 0) { 
+                activeDiag = state.dialogues[state.currentIndex]; 
+            }
 
             // 1. رسم الخلفية
             if(activeDiag && activeDiag.bgMedia) {
@@ -969,12 +1002,12 @@
             }
             offCtx.fillStyle = `rgba(0,0,0,${s.bgOp || 0.4})`; offCtx.fillRect(0,0,C_W,C_H);
 
-            // 2. تحديث ورسم جزيئات الخلفية
+            // 2. رسم جزيئات الخلفية
             updateAndDrawParticles(offCtx);
 
-            // 3. رسم الشخصيات والموجات الصوتية وإطارات التحديد المباشر عند السحب
+            // 3. رسم الشخصيات والموجات الصوتية بحسب تلاؤم التكرار الحقيقي
             state.speakers.forEach(speaker => {
-                let isSpeaking = activeDiag && activeDiag.speakerId === speaker.id && isPlaying;
+                let isSpeaking = activeDiag && activeSubRepeat && activeDiag.speakerId === speaker.id && isPlaying;
                 
                 if(speaker.showImage) {
                     let sSize = C_W * (speaker.scale / 100); let xPos = C_W * (speaker.x / 100); let yPos = C_H * (speaker.y / 100);
@@ -986,7 +1019,6 @@
                         let ratio = speaker.imageObj.width / speaker.imageObj.height; let drawW = sSize; let drawH = sSize / ratio;
                         offCtx.drawImage(speaker.imageObj, xPos - drawW/2, yPos - drawH/2, drawW, drawH);
                         
-                        // إطار تحديد بصري عند السحب بالماوس Dragging
                         if(activeDrag && activeDrag.id === speaker.id && activeDrag.type === 'speaker') {
                             offCtx.strokeStyle = '#3b82f6'; offCtx.lineWidth = 4; offCtx.setLineDash([8, 8]);
                             offCtx.strokeRect(xPos - drawW/2 - 5, yPos - drawH/2 - 5, drawW + 10, drawH + 10);
@@ -1015,7 +1047,6 @@
                         }
                         offCtx.fill(); offCtx.shadowBlur = 0;
 
-                        // إطار تحديد للموجة عند السحب
                         if(activeDrag && activeDrag.id === speaker.id && activeDrag.type === 'viz') {
                             offCtx.strokeStyle = '#3b82f6'; offCtx.lineWidth = 3; offCtx.setLineDash([4, 4]);
                             offCtx.strokeRect(startX - (C_W*(speaker.vizScale/100))/2 - 10, baseY - 40, (C_W*(speaker.vizScale/100)) + 20, 80);
@@ -1024,10 +1055,10 @@
                 }
             });
 
-            // 4. رسم النصوص والتوهج النيون مع دعم أصل موقع السحب
+            // 4. رسم النصوص مع مزامنة نيون متجاوبة مع التكرارات
             if (activeDiag) {
                 let activeSpeaker = state.speakers.find(sp => sp.id === activeDiag.speakerId);
-                let isSpeaking = activeSpeaker && activeDiag && isPlaying;
+                let isSpeaking = activeSpeaker && activeSubRepeat && isPlaying;
                 let tX = C_W * (activeSpeaker ? activeSpeaker.textX / 100 : 0.5);
                 let tY = C_H * (activeSpeaker ? activeSpeaker.textY / 100 : 0.7);
                 let lSpace = s.lineSpace || 70;
@@ -1038,21 +1069,22 @@
 
                 let tAlpha = 1, tScale = 1, tYOffset = 0;
 
-                if (isPlaying && activeDiag.baseAudioBuffer) {
-                    let timeIn = timeMs - activeDiag.start;
-                    let timeOut = activeDiag.end - timeMs;
+                // تحريك أنيميشن ظهور النصوص في بداية ونهاية المشهد
+                if (isPlaying && activeSubRepeat) {
+                    let timeIn = timeMs - activeSubRepeat.start;
+                    let timeOut = activeSubRepeat.end - timeMs;
                     let animType = s.textAnim || 'zoom';
 
                     if(animType !== 'none') {
-                        if (timeIn < 250) { 
-                            tAlpha = Math.max(0, timeIn / 250);
+                        if (timeIn < 200) { 
+                            tAlpha = Math.max(0, timeIn / 200);
                             if(animType === 'zoom') tScale = 0.85 + (0.15 * tAlpha);
-                            if(animType === 'slide') tYOffset = 25 * (1 - tAlpha);
+                            if(animType === 'slide') tYOffset = 20 * (1 - tAlpha);
                         } 
-                        else if (timeOut < 250) { 
-                            tAlpha = Math.max(0, timeOut / 250);
+                        else if (timeOut < 200) { 
+                            tAlpha = Math.max(0, timeOut / 200);
                             if(animType === 'zoom') tScale = 1 + (0.1 * (1 - tAlpha));
-                            if(animType === 'slide') tYOffset = -25 * (1 - tAlpha);
+                            if(animType === 'slide') tYOffset = -20 * (1 - tAlpha);
                         }
                     }
                 }
@@ -1063,25 +1095,21 @@
                 offCtx.scale(tScale, tScale);
                 offCtx.translate(-tX, -tY - tYOffset);
 
-                // إطار تحديد للنص عند السحب
                 if(activeSpeaker && activeDrag && activeDrag.id === activeSpeaker.id && activeDrag.type === 'text') {
                     offCtx.strokeStyle = '#10b981'; offCtx.lineWidth = 3; offCtx.setLineDash([6, 6]);
                     offCtx.strokeRect(tX - (C_W*0.4), tY - 30, C_W*0.8, lSpace * 3);
                 }
 
-                // رسم الخط الإنجليزي بالتوهج النيون
                 let fontEnCss = `900 ${s.enSize || 50}px ${s.fontEn || "'Outfit', sans-serif"}`;
                 let segmentsEn = parseColoredText(textEn, s.defaultColor || "#ffffff");
                 drawColoredLineCentered(offCtx, segmentsEn, tX, tY + tYOffset, fontEnCss, "ltr", isSpeaking);
 
-                // رسم خط النطق الصوتيات بالتوهج النيون
                 if(textPr) {
                     let fontPrCss = `800 ${s.prSize || 40}px ${s.fontPr || "'Cairo', sans-serif"}`;
                     let segmentsPr = parseColoredText(textPr, s.defaultColor || "#ffffff");
                     drawColoredLineCentered(offCtx, segmentsPr, tX, tY + tYOffset + lSpace, fontPrCss, "rtl", isSpeaking);
                 }
 
-                // رسم الخط العربي بالتوهج النيون
                 if(textAr) {
                     let fontArCss = `900 ${s.arSize || 40}px ${s.fontAr || "'Cairo', sans-serif"}`;
                     let segmentsAr = parseColoredText(textAr, s.defaultColor || "#ffffff");
@@ -1095,10 +1123,10 @@
             ctx.clearRect(0, 0, C_W, C_H); ctx.drawImage(offCanvas, 0, 0); requestAnimationFrame(renderLoop);
         }
 
-        // -------- نظام التصدير المباشر والمضمون المطور --------
+        // -------- نظام التصدير المباشر بـ MP4 الحقيقي المتقن --------
         let ffmpeg = null;
         async function startExport() {
-            if(state.dialogues.length === 0 || !state.globalAudioBuffer) return alert("الرجاء توليد الأصوات أولاً.");
+            if(state.dialogues.length === 0 || !state.globalAudioBuffer) return alert("الرجاء توليد الأصوات والمزامنة أولاً.");
             
             const btn = document.getElementById('btn-export'); 
             const msg = document.getElementById('status-msg'); 
@@ -1112,11 +1140,13 @@
             audioPlayer.pause();
 
             try {
-                msg.innerText = "🔴 جاري التسجيل المباشر للفيديو..."; 
+                msg.innerText = "🔴 جاري التسجيل والمزامنة المباشرة للفيديو..."; 
                 bar.style.width = "30%";
 
                 let exportAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); 
+                window.exportAudioCtxRef = exportAudioCtx;
                 let dest = exportAudioCtx.createMediaStreamDestination();
+                
                 state.analyser = exportAudioCtx.createAnalyser(); 
                 state.analyser.fftSize = 256; 
                 state.dataArray = new Uint8Array(state.analyser.frequencyBinCount);
@@ -1124,10 +1154,8 @@
                 const canvasStream = canvas.captureStream(30); 
                 const combinedStream = new MediaStream([ ...canvasStream.getVideoTracks(), ...dest.stream.getAudioTracks() ]); 
 
-                // اختيار أفضل صيغة تسجيل مدعومة في المتصفح
-                let mime = 'video/webm;codecs=vp9,opus';
-                if (!MediaRecorder.isTypeSupported(mime)) { mime = 'video/webm;codecs=vp8,opus'; }
-                if (!MediaRecorder.isTypeSupported(mime)) { mime = 'video/webm'; }
+                let mime = 'video/webm;codecs=vp8'; 
+                if (MediaRecorder.isTypeSupported('video/webm;codecs=h264')) { mime = 'video/webm;codecs=h264'; }
 
                 const recorder = new MediaRecorder(combinedStream, { mimeType: mime, videoBitsPerSecond: 5000000 });
                 let chunks = []; 
@@ -1135,11 +1163,11 @@
                 
                 recorder.onstop = async () => {
                     state.isExporting = false; 
+                    window.exportAudioCtxRef = null;
                     bar.style.width = "70%";
-                    const videoBlob = new Blob(chunks, { type: 'video/webm' });
+                    const videoBlob = new Blob(chunks, { type: mime });
 
-                    // كود المعالجة الذكي: تجربة التحويل إلى MP4 بمهلة أمان لمنع التجميد على Vercel
-                    msg.innerText = "⚡ جاري تحضير ملف الفيديو الجاهز للتحميل..."; 
+                    msg.innerText = "⚙️ جاري التغليف الاحترافي إلى MP4..."; 
                     
                     let mp4Success = false;
                     try {
@@ -1148,7 +1176,7 @@
                             ffmpeg = createFFmpeg({ log: false, corePath: "https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js" }); 
                             await Promise.race([
                                 ffmpeg.load(),
-                                new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 4000))
+                                new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 5000))
                             ]);
                         }
                         
@@ -1156,17 +1184,20 @@
                             const webmData = new Uint8Array(await videoBlob.arrayBuffer()); 
                             ffmpeg.FS('writeFile', 'in.webm', webmData);
                             
-                            // تشغيل معالجة سريعة جداً مع مهلة 8 ثوانٍ فقط
+                            let ffmpegArgs = mime.includes('h264') ? 
+                                ['-i', 'in.webm', '-c', 'copy', 'out.mp4'] : 
+                                ['-i', 'in.webm', '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '28', '-c:a', 'aac', 'out.mp4'];
+
                             await Promise.race([
-                                ffmpeg.run('-i', 'in.webm', '-c', 'copy', 'out.mp4'),
-                                new Promise((_, reject) => setTimeout(() => reject(new Error("FFmpeg Timeout")), 8000))
+                                ffmpeg.run(...ffmpegArgs),
+                                new Promise((_, reject) => setTimeout(() => reject(new Error("FFmpeg Timeout")), 12000))
                             ]);
                             
                             const mp4 = ffmpeg.FS('readFile', 'out.mp4');
                             const finalBlob = new Blob([mp4.buffer], { type: 'video/mp4' });
                             
                             dLink.href = URL.createObjectURL(finalBlob); 
-                            dLink.download = `EduLang_Ultra_${Date.now()}.mp4`; 
+                            dLink.download = `EduLang_Perfect_${Date.now()}.mp4`; 
                             dLink.innerHTML = '<i class="fa-solid fa-download ml-1"></i> تحميل الفيديو (MP4 High Quality)'; 
                             dLink.className = "mt-4 w-full block bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl transition text-sm text-center shadow-lg shadow-emerald-600/30"; 
                             mp4Success = true;
@@ -1174,19 +1205,18 @@
                             ffmpeg.FS('unlink', 'out.mp4');
                         }
                     } catch (err) {
-                        console.log("استخدام محرك التصدير المباشر السريع لتفادي التأخير:", err);
+                        console.log("استخدام محرك الاستخراج المباشر بدلاً من FFmpeg:", err);
                     }
 
-                    // إذا تعثر MP4 أو استغرق وقتاً، يتم تقديم الفيديو المكتمل مباشرةً بدون أي انتظر أو تعليق
                     if(!mp4Success) {
                         dLink.href = URL.createObjectURL(videoBlob); 
-                        dLink.download = `EduLang_Ultra_${Date.now()}.webm`; 
+                        dLink.download = `EduLang_Perfect_${Date.now()}.webm`; 
                         dLink.innerHTML = '<i class="fa-solid fa-download ml-1"></i> تحميل الفيديو المكتمل (WebM/MP4)'; 
                         dLink.className = "mt-4 w-full block bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl transition text-sm text-center shadow-lg shadow-blue-600/30"; 
                     }
 
                     dLink.classList.remove('hidden'); 
-                    msg.innerText = "✅ اكتمل التصدير بنجاح وفوراً!"; 
+                    msg.innerText = "✅ اكتمل التصدير والمزامنة 100% بنجاح!"; 
                     bar.style.width = "100%"; 
                     btn.disabled = false; 
                 };
@@ -1197,7 +1227,8 @@
                 source.connect(state.analyser); 
                 state.analyser.connect(dest); 
                 source.connect(exportAudioCtx.destination); 
-                window.exportStartTime = Date.now(); 
+                
+                window.exportStartTime = exportAudioCtx.currentTime; 
                 source.onended = () => { setTimeout(() => recorder.stop(), 400); }; 
                 source.start(0);
 
