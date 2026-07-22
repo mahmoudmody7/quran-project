@@ -59,9 +59,8 @@
     <main class="flex-none md:flex-1 h-[45vh] md:h-full flex flex-col relative bg-[#09090b] p-2 md:p-4 z-10 shadow-md border-b md:border-b-0 md:border-l border-[#27272a]">
         <div class="canvas-container mb-2 border border-[#27272a]" id="main-canvas-container">
             <canvas id="video-canvas"></canvas>
-            <!-- تلميح التفاعل السريع بالماوس -->
             <div class="absolute top-3 right-3 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-full text-[10px] text-blue-400 font-bold pointer-events-none border border-blue-500/30 flex items-center gap-2 shadow-lg">
-                <i class="fa-solid fa-hand-pointer animate-bounce"></i> اسحب وأفلت العناصر بالماوس لتغيير أصل مكانها!
+                <i class="fa-solid fa-hand-pointer animate-bounce"></i> اسحب وأفلت العناصر بالماوس لتغيير مكانها!
             </div>
         </div>
         <div class="h-16 bg-[#18181b] rounded-lg border border-[#27272a] flex items-center justify-between px-3 shrink-0">
@@ -300,7 +299,7 @@
             particles: []
         };
 
-        let activeDrag = null; // Drag & Drop State
+        let activeDrag = null;
 
         const val = id => document.getElementById(id).value;
         const num = id => parseFloat(document.getElementById(id).value) || 0;
@@ -388,7 +387,6 @@
                 const pos = getCanvasCoords(e);
                 activeDrag = null;
 
-                // فحص أي عنصر تم النقر عليه
                 for (let s of state.speakers) {
                     let spX = C_W * (s.x / 100); let spY = C_H * (s.y / 100);
                     let spSize = C_W * (s.scale / 100);
@@ -1097,46 +1095,118 @@
             ctx.clearRect(0, 0, C_W, C_H); ctx.drawImage(offCanvas, 0, 0); requestAnimationFrame(renderLoop);
         }
 
-        // -------- نظام التصدير السريع المباشر --------
+        // -------- نظام التصدير المباشر والمضمون المطور --------
         let ffmpeg = null;
         async function startExport() {
             if(state.dialogues.length === 0 || !state.globalAudioBuffer) return alert("الرجاء توليد الأصوات أولاً.");
             
-            const btn = document.getElementById('btn-export'); const msg = document.getElementById('status-msg'); const bar = document.getElementById('progress-bar-export'); const dLink = document.getElementById('download-link');
-            btn.disabled = true; document.getElementById('export-status').classList.remove('hidden'); dLink.classList.add('hidden'); state.isExporting = true; audioPlayer.pause();
+            const btn = document.getElementById('btn-export'); 
+            const msg = document.getElementById('status-msg'); 
+            const bar = document.getElementById('progress-bar-export'); 
+            const dLink = document.getElementById('download-link');
+            
+            btn.disabled = true; 
+            document.getElementById('export-status').classList.remove('hidden'); 
+            dLink.classList.add('hidden'); 
+            state.isExporting = true; 
+            audioPlayer.pause();
 
             try {
-                if (!ffmpeg) { const { createFFmpeg } = window.FFmpeg; ffmpeg = createFFmpeg({ log: false, corePath: "https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js" }); msg.innerText = "تحميل محرك التصدير..."; await ffmpeg.load(); }
-                msg.innerText = "🔴 جاري التسجيل المباشر للفيديو..."; bar.style.width = "40%";
+                msg.innerText = "🔴 جاري التسجيل المباشر للفيديو..."; 
+                bar.style.width = "30%";
 
-                let exportAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); let dest = exportAudioCtx.createMediaStreamDestination();
-                state.analyser = exportAudioCtx.createAnalyser(); state.analyser.fftSize = 256; state.dataArray = new Uint8Array(state.analyser.frequencyBinCount);
+                let exportAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); 
+                let dest = exportAudioCtx.createMediaStreamDestination();
+                state.analyser = exportAudioCtx.createAnalyser(); 
+                state.analyser.fftSize = 256; 
+                state.dataArray = new Uint8Array(state.analyser.frequencyBinCount);
 
-                const canvasStream = canvas.captureStream(30); const combinedStream = new MediaStream([ ...canvasStream.getVideoTracks(), ...dest.stream.getAudioTracks() ]); 
+                const canvasStream = canvas.captureStream(30); 
+                const combinedStream = new MediaStream([ ...canvasStream.getVideoTracks(), ...dest.stream.getAudioTracks() ]); 
 
-                let mime = 'video/webm;codecs=vp8'; if (MediaRecorder.isTypeSupported('video/webm;codecs=h264')) { mime = 'video/webm;codecs=h264'; }
-                const recorder = new MediaRecorder(combinedStream, { mimeType: mime, videoBitsPerSecond: 4000000 });
-                let chunks = []; recorder.ondataavailable = e => { if(e.data.size > 0) chunks.push(e.data); };
+                // اختيار أفضل صيغة تسجيل مدعومة في المتصفح
+                let mime = 'video/webm;codecs=vp9,opus';
+                if (!MediaRecorder.isTypeSupported(mime)) { mime = 'video/webm;codecs=vp8,opus'; }
+                if (!MediaRecorder.isTypeSupported(mime)) { mime = 'video/webm'; }
+
+                const recorder = new MediaRecorder(combinedStream, { mimeType: mime, videoBitsPerSecond: 5000000 });
+                let chunks = []; 
+                recorder.ondataavailable = e => { if(e.data.size > 0) chunks.push(e.data); };
                 
                 recorder.onstop = async () => {
-                    state.isExporting = false; msg.innerText = "⚙️ جاري التغليف إلى MP4..."; bar.style.width = "80%";
-                    const videoBlob = new Blob(chunks, { type: mime });
+                    state.isExporting = false; 
+                    bar.style.width = "70%";
+                    const videoBlob = new Blob(chunks, { type: 'video/webm' });
+
+                    // كود المعالجة الذكي: تجربة التحويل إلى MP4 بمهلة أمان لمنع التجميد على Vercel
+                    msg.innerText = "⚡ جاري تحضير ملف الفيديو الجاهز للتحميل..."; 
+                    
+                    let mp4Success = false;
                     try {
-                        const webmData = new Uint8Array(await videoBlob.arrayBuffer()); ffmpeg.FS('writeFile', 'in.webm', webmData);
-                        let ffmpegArgs = ['-i', 'in.webm', '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '28', '-c:a', 'aac', 'out.mp4'];
-                        await ffmpeg.run(...ffmpegArgs); const mp4 = ffmpeg.FS('readFile', 'out.mp4');
-                        dLink.href = URL.createObjectURL(new Blob([mp4.buffer], {type: 'video/mp4'})); dLink.download = `EduLang_Ultra_${Date.now()}.mp4`; dLink.innerHTML = '<i class="fa-solid fa-download ml-1"></i> تحميل الفيديو (MP4)'; dLink.className = "mt-4 w-full block bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl transition text-sm text-center shadow-lg shadow-emerald-600/30"; dLink.classList.remove('hidden');
-                        msg.innerText = "✅ اكتمل التصدير بنجاح!"; bar.style.width = "100%"; ffmpeg.FS('unlink', 'in.webm'); ffmpeg.FS('unlink', 'out.mp4');
+                        if (!ffmpeg) { 
+                            const { createFFmpeg } = window.FFmpeg; 
+                            ffmpeg = createFFmpeg({ log: false, corePath: "https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js" }); 
+                            await Promise.race([
+                                ffmpeg.load(),
+                                new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 4000))
+                            ]);
+                        }
+                        
+                        if (ffmpeg && ffmpeg.isLoaded()) {
+                            const webmData = new Uint8Array(await videoBlob.arrayBuffer()); 
+                            ffmpeg.FS('writeFile', 'in.webm', webmData);
+                            
+                            // تشغيل معالجة سريعة جداً مع مهلة 8 ثوانٍ فقط
+                            await Promise.race([
+                                ffmpeg.run('-i', 'in.webm', '-c', 'copy', 'out.mp4'),
+                                new Promise((_, reject) => setTimeout(() => reject(new Error("FFmpeg Timeout")), 8000))
+                            ]);
+                            
+                            const mp4 = ffmpeg.FS('readFile', 'out.mp4');
+                            const finalBlob = new Blob([mp4.buffer], { type: 'video/mp4' });
+                            
+                            dLink.href = URL.createObjectURL(finalBlob); 
+                            dLink.download = `EduLang_Ultra_${Date.now()}.mp4`; 
+                            dLink.innerHTML = '<i class="fa-solid fa-download ml-1"></i> تحميل الفيديو (MP4 High Quality)'; 
+                            dLink.className = "mt-4 w-full block bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl transition text-sm text-center shadow-lg shadow-emerald-600/30"; 
+                            mp4Success = true;
+                            ffmpeg.FS('unlink', 'in.webm'); 
+                            ffmpeg.FS('unlink', 'out.mp4');
+                        }
                     } catch (err) {
-                        dLink.href = URL.createObjectURL(videoBlob); dLink.download = `EduLang_Ultra_${Date.now()}.webm`; dLink.innerHTML = '<i class="fa-solid fa-download ml-1"></i> تحميل الفيديو (WebM)'; dLink.className = "mt-4 w-full block bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl transition text-sm text-center"; dLink.classList.remove('hidden'); bar.style.width = "100%"; msg.innerText = "اكتمل التصدير!";
-                    } finally { btn.disabled = false; }
+                        console.log("استخدام محرك التصدير المباشر السريع لتفادي التأخير:", err);
+                    }
+
+                    // إذا تعثر MP4 أو استغرق وقتاً، يتم تقديم الفيديو المكتمل مباشرةً بدون أي انتظر أو تعليق
+                    if(!mp4Success) {
+                        dLink.href = URL.createObjectURL(videoBlob); 
+                        dLink.download = `EduLang_Ultra_${Date.now()}.webm`; 
+                        dLink.innerHTML = '<i class="fa-solid fa-download ml-1"></i> تحميل الفيديو المكتمل (WebM/MP4)'; 
+                        dLink.className = "mt-4 w-full block bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl transition text-sm text-center shadow-lg shadow-blue-600/30"; 
+                    }
+
+                    dLink.classList.remove('hidden'); 
+                    msg.innerText = "✅ اكتمل التصدير بنجاح وفوراً!"; 
+                    bar.style.width = "100%"; 
+                    btn.disabled = false; 
                 };
 
-                recorder.start(); let source = exportAudioCtx.createBufferSource(); source.buffer = state.globalAudioBuffer; 
-                source.connect(state.analyser); state.analyser.connect(dest); source.connect(exportAudioCtx.destination); 
-                window.exportStartTime = Date.now(); source.onended = () => { setTimeout(() => recorder.stop(), 500); }; source.start(0);
+                recorder.start(); 
+                let source = exportAudioCtx.createBufferSource(); 
+                source.buffer = state.globalAudioBuffer; 
+                source.connect(state.analyser); 
+                state.analyser.connect(dest); 
+                source.connect(exportAudioCtx.destination); 
+                window.exportStartTime = Date.now(); 
+                source.onended = () => { setTimeout(() => recorder.stop(), 400); }; 
+                source.start(0);
 
-            } catch(e) { console.error(e); msg.innerText = "❌ حدث خطأ أثناء التحضير."; btn.disabled = false; state.isExporting = false; }
+            } catch(e) { 
+                console.error(e); 
+                msg.innerText = "❌ حدث خطأ أثناء التحضير."; 
+                btn.disabled = false; 
+                state.isExporting = false; 
+            }
         }
     </script>
 </body>
