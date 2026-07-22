@@ -1,1289 +1,1121 @@
-
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Quran Studio - Ultimate Pro V8</title>
+    <title>EduLang Studio Ultra Master Pro</title>
     
-    <link rel="icon" type="image/png" href="icons/app_logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
 
-    <style>
-        @font-face { font-family: 'Hafs'; src: url('./fonts/Hafs.ttf'); }
-        @font-face { font-family: 'Kitab'; src: url('./fonts/Kitab-Bold.ttf'); }
-        @font-face { font-family: 'QuranKarim'; src: url('./fonts/Qurankarim114.ttf'); }
-        @font-face { font-family: 'AmiriQuran'; src: url('./fonts/AmiriQuran-Regular.ttf'); }
-        @font-face { font-family: 'Cairo'; src: url('./fonts/Cairo-Regular.ttf'); }
-        @font-face { font-family: 'ReemKufi'; src: url('./fonts/reem-kufi-regular.ttf'); }
-        @font-face { font-family: 'Attari'; src: url('./fonts/Attari_Quran_Shipped.ttf'); }
-        @font-face { font-family: 'Muhammadi'; src: url('./fonts/MUHAMMADI QURANIC FONT....ttf'); }
-        @font-face { font-family: 'NotoNaskh'; src: url('./fonts/NotoNaskhArabic-Bold.ttf'); }
-        @font-face { font-family: 'Saleem'; src: url('./fonts/PDMS_Saleem_QuranFont_ship...ttf'); }
-        @font-face { font-family: 'AyatQuran'; src: url('./fonts/ayatquran9-6RYBv.ttf'); }
+    <!-- استدعاء أفضل مكتبة خطوط عربية وإنجليزية سحابية -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@700;800&family=Amiri:ital,wght@1,700&family=Anton&family=Bangers&family=Cairo:wght@400;700;900&family=Changa:wght@700;800&family=El+Messiri:wght@700&family=Kufam:wght@700&family=Montserrat:wght@800;900&family=Outfit:wght@400;700;900&family=Pacifico&family=Poppins:wght@800;900&family=Readex+Pro:wght@700&family=Tajawal:wght@700;900&display=swap" rel="stylesheet">
 
+    <style>
         body { font-family: 'Cairo', sans-serif; background-color: #09090b; color: #f4f4f5; margin:0; overflow: hidden; height: 100dvh; display: flex; flex-direction: column; }
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #e11d48; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
 
-        input[type="range"] { -webkit-appearance: none; width: 100%; height: 6px; background: #3f3f46; border-radius: 4px; outline: none; margin: 8px 0; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #e11d48; cursor: pointer; box-shadow: 0 0 8px rgba(225, 29, 72, 0.6); }
-        select, input[type="text"], input[type="number"], input[type="color"] { width: 100%; padding: 10px; background: #18181b; border: 1px solid #27272a; border-radius: 6px; color: white; font-size: 12px; outline: none; transition: 0.2s; }
-        select:focus, input:focus { border-color: #e11d48; }
+        input[type="range"] { -webkit-appearance: none; width: 100%; height: 6px; background: #27272a; border-radius: 4px; outline: none; margin: 8px 0; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #3b82f6; cursor: pointer; box-shadow: 0 0 8px rgba(59, 130, 246, 0.6); }
+        select, input[type="text"], textarea, input[type="color"] { width: 100%; padding: 10px; background: #18181b; border: 1px solid #27272a; border-radius: 6px; color: white; font-size: 11px; outline: none; transition: 0.2s; }
+        select:focus, input:focus, textarea:focus { border-color: #3b82f6; }
         
         details { background: #18181b; border: 1px solid #27272a; border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
-        summary { padding: 14px; font-size: 13px; font-weight: bold; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; color: #cbd5e1; user-select: none; }
+        summary { padding: 12px; font-size: 12px; font-weight: bold; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; color: #cbd5e1; user-select: none; }
         summary::-webkit-details-marker { display: none; }
         summary::after { content: '\f078'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: #52525b; transition: 0.3s; }
-        details[open] summary::after { transform: rotate(180deg); color: #e11d48; }
-        details[open] summary { border-bottom: 1px solid #27272a; color: #e11d48; background: rgba(225, 29, 72, 0.05); }
-        .details-body { padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+        details[open] summary::after { transform: rotate(180deg); color: #3b82f6; }
+        details[open] summary { border-bottom: 1px solid #27272a; color: #3b82f6; background: rgba(59, 130, 246, 0.05); }
+        .details-body { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
 
         .canvas-container { flex: 1; position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background-image: radial-gradient(#27272a 1px, transparent 1px); background-size: 15px 15px; background-color: #000; border-radius: 8px; overflow: hidden; min-width: 0; min-height: 0; }
-        canvas { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; box-shadow: 0 5px 20px rgba(0,0,0,0.8); }
+        canvas { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; box-shadow: 0 5px 20px rgba(0,0,0,0.8); cursor: crosshair; }
 
-        .panel-section { display: none; animation: fadeIn 0.3s ease; }
+        .panel-section { display: none; animation: fadeIn 0.25s ease; }
         .panel-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
         .tab-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 10px; font-weight: bold; color: #a1a1aa; transition: 0.2s; cursor: pointer; flex: 1; padding: 10px 4px; border-bottom: 3px solid transparent; }
         .tab-btn:hover { color: #fff; background: rgba(255,255,255,0.02); }
-        .tab-btn.active { color: #fbbf24; border-bottom-color: #f59e0b; background: #18181b; }
+        .tab-btn.active { color: #3b82f6; border-bottom-color: #3b82f6; background: #18181b; }
 
-        @media (min-width: 768px) { body { flex-direction: row; } .tab-btn { border-bottom: none; border-right: 3px solid transparent; padding: 15px 8px; } .tab-btn.active { border-right-color: #f59e0b; border-bottom-color: transparent; } }
+        @media (min-width: 768px) { body { flex-direction: row; } .tab-btn { border-bottom: none; border-right: 3px solid transparent; padding: 15px 8px; } .tab-btn.active { border-right-color: #3b82f6; border-bottom-color: transparent; } }
 
-        .file-btn { position: relative; overflow: hidden; text-align: center; cursor: pointer; font-size: 11px; font-weight: bold; padding: 12px; border-radius: 6px; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .file-btn { position: relative; overflow: hidden; text-align: center; cursor: pointer; font-size: 11px; font-weight: bold; padding: 10px; border-radius: 6px; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px; border: 1px solid #3f3f46; }
         .file-btn input[type=file] { position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-        
-        .segment-block { margin-bottom: 8px; background: #18181b; border-radius: 6px; border: 1px solid #27272a; overflow: hidden; transition: 0.3s; }
-        .segment-block.active { border-color: #f59e0b; box-shadow: 0 0 10px rgba(245, 158, 11, 0.2); }
 
-        .tl-word { display: inline-block; padding: 2px 4px; border-radius: 4px; cursor: pointer; transition: 0.2s; border-bottom: 2px solid transparent; position: relative; }
-        .tl-word:hover { background: #3f3f46; }
-        .tl-word.selected { background: rgba(245, 158, 11, 0.3); border-bottom-color: #f59e0b; }
-        .tl-word.page-break { border-right: 2px solid #e11d48; margin-right: 4px; padding-right: 4px; }
-        .tl-word.page-break::after { content: " ✂️"; font-size: 10px; position: absolute; top: -10px; left: 0; }
-        .tl-word.line-break { border-bottom: 2px dashed #3b82f6; }
-        .tl-word.line-break::before { content: " ⏎"; font-size: 10px; color: #3b82f6; }
-
-        #word-context-menu { position: absolute; display: none; background: #18181b; border: 1px solid #3f3f46; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.9); z-index: 1000; padding: 4px; min-width: 160px; }
-        .menu-item { display: block; width: 100%; text-align: right; padding: 8px 10px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.2s; color: #d4d4d8; border: none; background: transparent; }
-        .menu-item:hover { background: #27272a; color: #fff; }
-        .menu-item i { margin-left: 6px; width: 14px; text-align: center; }
+        .dialogue-card { background: #09090b; border: 1px solid #3f3f46; border-radius: 8px; padding: 10px; margin-bottom: 10px; position: relative; transition: 0.3s; }
+        .dialogue-card.active { border-color: #3b82f6; box-shadow: 0 0 15px rgba(59, 130, 246, 0.2); }
     </style>
 </head>
 <body>
 
-    <div id="word-context-menu">
-        <button class="menu-item text-blue-400" onclick="applyWordAction('lineBreak')"><i class="fa-solid fa-arrow-turn-down"></i> سطر جديد من هنا</button>
-        <button class="menu-item text-pink-400" onclick="applyWordAction('pageBreak')"><i class="fa-solid fa-scissors"></i> شاشة جديدة من هنا</button>
-        <hr class="border-[#3f3f46] my-1">
-        <button class="menu-item text-emerald-400" onclick="applyWordAction('setStart')"><i class="fa-solid fa-play"></i> بدء الفيديو من هنا</button>
-        <button class="menu-item text-red-400" onclick="applyWordAction('setEnd')"><i class="fa-solid fa-stop"></i> إنهاء الفيديو هنا</button>
-    </div>
-
-    <main class="flex-none md:flex-1 h-[45vh] md:h-full flex flex-col relative bg-[#09090b] p-2 md:p-4 z-10 shadow-md border-b md:border-b-0 md:border-l border-[#27272a]" onclick="hideContextMenu()">
+    <main class="flex-none md:flex-1 h-[45vh] md:h-full flex flex-col relative bg-[#09090b] p-2 md:p-4 z-10 shadow-md border-b md:border-b-0 md:border-l border-[#27272a]">
         <div class="canvas-container mb-2 border border-[#27272a]" id="main-canvas-container">
             <canvas id="video-canvas"></canvas>
+            <!-- تلميح التفاعل السريع بالماوس -->
+            <div class="absolute top-3 right-3 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-full text-[10px] text-blue-400 font-bold pointer-events-none border border-blue-500/30 flex items-center gap-2 shadow-lg">
+                <i class="fa-solid fa-hand-pointer animate-bounce"></i> اسحب وأفلت العناصر بالماوس لتغيير أصل مكانها!
+            </div>
         </div>
         <div class="h-16 bg-[#18181b] rounded-lg border border-[#27272a] flex items-center justify-between px-3 shrink-0">
-            <button onclick="changeAyah(-1); event.stopPropagation();" class="text-white bg-[#27272a] hover:bg-amber-600 px-3 py-2 rounded text-xs font-bold transition"><i class="fa-solid fa-chevron-right"></i> السابقة</button>
+            <button onclick="changeDialogue(-1)" class="text-white bg-[#27272a] hover:bg-blue-600 px-3 py-2 rounded text-xs font-bold transition"><i class="fa-solid fa-chevron-right"></i> السابق</button>
             <div class="flex-1 px-4 text-center">
                 <div class="flex justify-between text-[10px] text-zinc-400 mb-1"><span id="time-current">00:00</span><span id="time-total">00:00</span></div>
-                <input type="range" id="progress-bar-audio" min="0" max="100" value="0" class="w-full !h-1.5 !m-0 !accent-amber-500" onchange="seekAudio(this.value); event.stopPropagation();">
-                <span id="preview-ayah-label" class="block text-[10px] text-amber-500 font-bold mt-1">المعاينة متوقفة</span>
+                <input type="range" id="progress-bar-audio" min="0" max="100" value="0" class="w-full !h-1.5 !m-0 !accent-blue-500" onchange="seekAudio(this.value)">
+                <span id="preview-label" class="block text-[10px] text-blue-500 font-bold mt-1"></span>
             </div>
-            <button onclick="changeAyah(1); event.stopPropagation();" class="text-white bg-[#27272a] hover:bg-amber-600 px-3 py-2 rounded text-xs font-bold transition">التالية <i class="fa-solid fa-chevron-left"></i></button>
-            <button onclick="togglePlay(); event.stopPropagation();" id="play-btn" class="w-10 h-10 rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center transition shadow-lg ml-2"><i class="fa-solid fa-play"></i></button>
+            <button onclick="changeDialogue(1)" class="text-white bg-[#27272a] hover:bg-blue-600 px-3 py-2 rounded text-xs font-bold transition">التالي <i class="fa-solid fa-chevron-left"></i></button>
+            <button onclick="togglePlay()" id="play-btn" class="w-10 h-10 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center transition shadow-lg ml-2"><i class="fa-solid fa-play"></i></button>
         </div>
         <audio id="audio-player" class="hidden"></audio>
-        <audio id="ambient-player" loop class="hidden"></audio>
     </main>
 
-    <aside class="flex-1 md:w-[400px] bg-[#111113] flex flex-col overflow-hidden relative">
+    <aside class="flex-1 md:w-[450px] bg-[#111113] flex flex-col overflow-hidden relative">
         <div class="h-12 border-b border-[#27272a] flex items-center px-4 shrink-0 bg-[#18181b] shadow-sm z-10 justify-between">
-            <h2 id="panel-title" class="font-bold text-sm text-white"><i class="fa-solid fa-book-open text-amber-500 ml-2"></i> المحتوى والآيات</h2>
+            <h2 id="panel-title" class="font-bold text-sm text-white"><i class="fa-solid fa-folder-open text-blue-500 ml-2"></i> المشاريع والبيانات</h2>
         </div>
 
         <div class="flex-1 overflow-y-auto p-3 space-y-2 pb-20 md:pb-4 custom-scrollbar">
             
-            <div id="tab-quran" class="panel-section active space-y-3">
-                <div class="bg-amber-900/10 p-3 rounded-lg border border-amber-900/30">
-                    <label class="block text-xs font-bold text-amber-400 mb-2">البحث والسورة</label>
-                    <input type="text" id="surah-search" placeholder="🔍 ابحث عن اسم السورة بدون تشكيل..." class="mb-2 !bg-black !text-amber-300 !border-amber-900 focus:!border-amber-500" onkeyup="filterSurahs()">
-                    <select id="surah" class="mb-3" onchange="triggerLivePreview()"></select>
-                    
-                    <div class="grid grid-cols-2 gap-3 mb-3">
-                        <div><label class="block text-[10px] text-zinc-500 mb-1">من آية</label><input type="number" id="start-ayah" value="1" min="1" oninput="triggerLivePreview()"></div>
-                        <div><label class="block text-[10px] text-zinc-500 mb-1">إلى آية</label><input type="number" id="end-ayah" value="3" min="1" oninput="triggerLivePreview()"></div>
-                    </div>
-                    <label class="block text-xs font-bold text-amber-400 mt-2 mb-2">لغة الترجمة / التفسير</label>
-                    <select id="trans-type" class="mb-2" onchange="updateTranslationOnly()">
-                        <option value="none">بدون ترجمة</option>
-                        <option value="en.asad">English Translation (Asad)</option>
-                        <option value="ar.muyassar">التفسير الميسر (عربي)</option>
-                        <option value="fr.hamidullah">Français (French)</option>
-                        <option value="ur.jalandhry">Urdu (اردو)</option>
-                        <option value="id.indonesian">Indonesian</option>
-                    </select>
+            <!-- تبويب المشاريع -->
+            <div id="tab-data" class="panel-section active space-y-3">
+                <div class="bg-[#18181b] p-3 rounded-lg border border-amber-500/30 mb-3">
+                    <h3 class="text-[11px] font-bold text-amber-400 mb-2">إعدادات Cartesia API</h3>
+                    <input type="text" id="cartesia-api-key" value="sk_car_3MbiQ4oVEod5F6JYW4dQSb" class="!bg-[#09090b] text-[10px] text-zinc-400" placeholder="مفتاح Cartesia API">
                 </div>
 
-                <div class="bg-[#18181b] p-3 rounded-lg border border-[#27272a]">
-                    <label class="block text-xs font-bold text-zinc-300 mb-2">القارئ والصوتيات</label>
-                    <select id="reciter" class="mb-3">
-                        <option value="Alafasy.js" data-folder="Alafasy_128kbps">مشاري العفاسي</option>
-                        <option value="minshawy_murattal.js" data-folder="Minshawy_Murattal_128kbps">محمد صديق المنشاوي (مرتل)</option>
-                        <option value="Minshawy_Mujawwad.js" data-folder="Minshawy_Mujawwad_192kbps">محمد صديق المنشاوي (مجود)</option>
-                        <option value="Abdul_Basit_Murattal.js" data-folder="Abdul_Basit_Murattal_64kbps">عبد الباسط عبد الصمد (مرتل)</option>
-                        <option value="Abdul_Basit_Mujawwad.js" data-folder="Abdul_Basit_Mujawwad_128kbps">عبد الباسط (مجود)</option>
-                        <option value="Husary.js" data-folder="Husary_128kbps">الحصري</option>
-                        <option value="yasser_ad_dussary.js" data-folder="Yasser_Ad-Dussary_128kbps">ياسر الدوسري</option>
-                    </select>
-                    <button onclick="generateQuranAudio()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded transition text-xs shadow-lg shadow-amber-600/20 mb-3">
-                        <i class="fa-solid fa-volume-high"></i> <span id="btn-fetch-text">جلب الصوت والمزامنة للتصدير</span>
-                    </button>
+                <div class="bg-indigo-900/20 p-4 rounded-lg border border-indigo-500/30">
+                    <h3 class="text-xs font-bold text-indigo-300 mb-2"><i class="fa-solid fa-robot"></i> استيراد سيناريو الذكاء الاصطناعي</h3>
+                    <p class="text-[10px] text-indigo-200/70 mb-3">ارفع ملف JSON الذي ولده لك الذكاء الاصطناعي.</p>
+                    <div class="file-btn bg-indigo-600 hover:bg-indigo-500 text-white"><i class="fa-solid fa-file-code text-xl mb-1"></i> استيراد ملف (JSON)<input type="file" accept=".json" onchange="importAIScript(this)"></div>
                 </div>
 
-                <details>
-                    <summary><i class="fa-solid fa-shield-halved text-amber-500"></i> حماية الصوت من حقوق الملكية</summary>
-                    <div class="details-body">
-                        <div class="text-[10px] text-zinc-400 mb-2">تساعد هذه الخيارات في تغيير البصمة الرقمية للصوت لتجنب مطابقة الحقوق التلقائية دون تشويه التلاوة.</div>
-                        
-                        <div>
-                            <label class="flex justify-between text-[10px] text-zinc-400 mb-1"><span>سرعة التشغيل (Tempo)</span> <span id="audio-speed-val">1.00</span></label>
-                            <input type="range" id="audio-speed" min="0.90" max="1.10" step="0.01" value="1.00" oninput="updateSettings(); document.getElementById('audio-speed-val').innerText=parseFloat(this.value).toFixed(2);">
-                        </div>
-
-                        <div>
-                            <label class="flex justify-between text-[10px] text-zinc-400 mb-1"><span>طبقة الصوت (Detune Cents)</span> <span id="audio-detune-val">0</span></label>
-                            <input type="range" id="audio-detune" min="-120" max="120" step="5" value="0" oninput="updateSettings(); document.getElementById('audio-detune-val').innerText=this.value;">
-                        </div>
-
-                        <div>
-                            <label class="flex justify-between text-[10px] text-zinc-400 mb-1"><span>صدى صوتي طبيعي (Reverb)</span> <span id="reverb-wet-val">0%</span></label>
-                            <input type="range" id="reverb-wet" min="0" max="60" value="0" oninput="updateSettings(); document.getElementById('reverb-wet-val').innerText=this.value+'%';">
-                        </div>
-
-                        <div class="border-t border-[#27272a] pt-3 mt-1">
-                            <label class="block text-[10px] text-amber-400 font-bold mb-2">دمج خلفية صوتية طبيعية (تشويش ذكي)</label>
-                            <div class="text-[9px] text-zinc-400 mb-2">سيقوم التطبيق بتوليد هسيس طبيعي (مطر/رياح خفيفة) بشكل تلقائي برمجياً لتدمير خوارزمية المطابقة.</div>
-                            <label class="flex justify-between text-[10px] text-zinc-400 mb-1"><span>قوة الخلفية الصوتية المدمجة</span> <span id="ambient-vol-val">0%</span></label>
-                            <input type="range" id="ambient-vol" min="0" max="50" value="0" oninput="updateSettings(); document.getElementById('ambient-vol-val').innerText=this.value+'%';">
-                        </div>
+                <div class="bg-blue-900/20 p-4 rounded-lg border border-blue-500/30">
+                    <h3 class="text-xs font-bold text-blue-300 mb-2"><i class="fa-solid fa-save"></i> حفظ وإدارة المشاريع</h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="exportProject()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded text-[11px]"><i class="fa-solid fa-download"></i> حفظ المشروع</button>
+                        <div class="file-btn bg-[#27272a] hover:bg-[#3f3f46] text-white !py-2 !text-[11px]"><i class="fa-solid fa-upload"></i> فتح مشروع<input type="file" accept=".edulang" onchange="importProject(this)"></div>
                     </div>
-                </details>
-            </div>
-
-            <div id="tab-bg" class="panel-section space-y-3">
-                <div class="bg-amber-900/20 p-3 rounded-lg border border-amber-800/40">
-                    <h3 class="text-xs font-bold text-amber-300 mb-2"><i class="fa-solid fa-crop text-amber-500 ml-1"></i> أبعاد وجودة الفيديو</h3>
-                    <select id="video-ratio" onchange="applyVideoSettings()" class="w-full bg-amber-950/50 text-amber-100 border border-amber-800/50 mb-2">
-                        <option value="portrait">طولي - ريلز / تيك توك / شورتس (9:16)</option>
-                        <option value="landscape">عرضي - يوتيوب (16:9)</option>
-                        <option value="square">مربع - انستجرام / فيسبوك (1:1)</option>
-                    </select>
-                    <select id="video-quality" onchange="applyVideoSettings()" class="w-full bg-amber-950/50 text-amber-100 border border-amber-800/50">
-                        <option value="720">720p HD (سريع جداً، حجم صغير)</option>
-                        <option value="1080" selected>1080p FHD (جودة عالية الافتراضية)</option>
-                    </select>
-                </div>
-
-                <div class="bg-[#18181b] p-3 rounded-lg border border-[#27272a]">
-                    <h3 class="text-xs font-bold text-white mb-3"><i class="fa-solid fa-globe text-amber-500 ml-1"></i> خلفية الفيديو العامة</h3>
-                    <div class="grid grid-cols-2 gap-2 mb-3">
-                        <div class="file-btn bg-[#27272a] hover:bg-[#3f3f46] text-zinc-200"><i class="fa-solid fa-image text-xl mb-1"></i> رفع صورة<input type="file" accept="image/*" onchange="setBg('global', 'image', this)"></div>
-                        <div class="file-btn bg-[#27272a] hover:bg-[#3f3f46] text-zinc-200"><i class="fa-solid fa-video text-xl mb-1"></i> رفع فيديو<input type="file" accept="video/*" onchange="setBg('global', 'video', this)"></div>
-                    </div>
-                    <label class="flex justify-between text-[10px] text-zinc-300 mb-1"><span>تعتيم الخلفية (Opacity)</span></label>
-                    <input type="range" id="bg-opacity" min="0" max="100" value="60" oninput="updateSettings()">
-                </div>
-
-                <details open>
-                    <summary><i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i> تأثيرات بصرية سينمائية</summary>
-                    <div class="details-body">
-                        <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-2">
-                            <input type="checkbox" id="particles-enable" checked onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
-                            <span class="text-[10px] text-zinc-300 font-bold">✨ ذرات غبار نورانية (Particles)</span>
-                        </label>
-                        <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-2">
-                            <input type="checkbox" id="vignette-enable" checked onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
-                            <span class="text-[10px] text-zinc-300 font-bold">🌑 حواف داكنة (Vignette)</span>
-                        </label>
-                        <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-2">
-                            <input type="checkbox" id="bloom-enable" onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
-                            <span class="text-[10px] text-zinc-300 font-bold">🌟 وهج سينمائي ناعم (Bloom Glow)</span>
-                        </label>
-                        <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-2">
-                            <input type="checkbox" id="leaks-enable" onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
-                            <span class="text-[10px] text-zinc-300 font-bold">🌈 تسريبات ضوئية متحركة (Light Leaks)</span>
-                        </label>
-                        <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-2">
-                            <input type="checkbox" id="bokeh-enable" onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
-                            <span class="text-[10px] text-zinc-300 font-bold">🫧 ضبابية العدسة الخلفية (Bokeh Blur)</span>
-                        </label>
-                        <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-4">
-                            <input type="checkbox" id="bars-enable" checked onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
-                            <span class="text-[10px] text-zinc-300 font-bold">🎬 أشرطة سينمائية (Letterbox)</span>
-                        </label>
-                        <div class="border-t border-[#3f3f46] pt-3">
-                            <label class="flex justify-between text-[10px] text-zinc-400 font-bold mb-1"><span>🎞️ تشويش كلاسيكي (Film Grain)</span> <span id="grain-int-val">0</span></label>
-                            <input type="range" id="grain-intensity" min="0" max="50" value="0" class="mb-2" oninput="updateSettings(); document.getElementById('grain-int-val').innerText=this.value;">
-                        </div>
-                        <div class="border-t border-[#3f3f46] pt-3">
-                            <label class="flex justify-between text-[10px] text-red-400 font-bold mb-1"><span>📺 تأثير التشويش على الشاشة (Screen Glitch)</span> <span id="glitch-int-val">0</span></label>
-                            <input type="range" id="glitch-intensity" min="0" max="50" value="0" class="mb-2 !accent-red-500" oninput="updateSettings(); document.getElementById('glitch-int-val').innerText=this.value;">
-                        </div>
-                        <div class="border-t border-[#3f3f46] pt-3 mt-2">
-                            <label class="flex justify-between text-[10px] text-blue-400 font-bold mb-1"><span>💧 تأثير التموج المائي</span> <span id="ripple-int-val">0</span></label>
-                            <input type="range" id="ripple-intensity" min="0" max="50" value="0" class="mb-2 !accent-blue-500" oninput="updateSettings(); document.getElementById('ripple-int-val').innerText=this.value;">
-                        </div>
-                    </div>
-                </details>
-                
-                <details>
-                    <summary><i class="fa-solid fa-camera text-amber-500"></i> الكاميرا والفلاتر</summary>
-                    <div class="details-body">
-                        <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-2">
-                            <input type="checkbox" id="cam-enable" onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
-                            <span class="text-[10px] text-zinc-300 font-bold">تفعيل حركة الكاميرا (ذهاب وعودة)</span>
-                        </label>
-                        <select id="cam-type" onchange="updateSettings()" class="mb-3">
-                            <option value="combined" selected>حركة عشوائية مركبة سينمائية</option>
-                            <option value="zoom">تكبير وتصغير (Zoom In & Out)</option>
-                            <option value="pan">تمرير يمين ويسار (Pan L & R)</option>
-                            <option value="kenburns">زحف سينمائي (Ken Burns)</option>
-                        </select>
-                        <label class="text-[10px] text-zinc-500 block mb-1">الفلتر اللوني العام</label>
-                        <select id="color-filter" onchange="updateSettings()">
-                            <option value="none">بدون فلتر</option>
-                            <option value="bw">أبيض وأسود</option>
-                            <option value="warm">دافئ سينمائي</option>
-                            <option value="cool">أزرق بارد</option>
-                        </select>
-                    </div>
-                </details>
-            </div>
-
-            <div id="tab-brand" class="panel-section space-y-3">
-                <details open>
-                    <summary><i class="fa-solid fa-user text-amber-500"></i> معلومات السورة والقارئ</summary>
-                    <div class="details-body border-b border-[#3f3f46] pb-3">
-                        <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-2">
-                            <input type="checkbox" id="info-enable" checked onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
-                            <span class="text-[10px] text-zinc-300 font-bold">إظهار اسم السورة والقارئ في الفيديو</span>
-                        </label>
-                        <div class="grid grid-cols-2 gap-2 mb-2">
-                            <select id="info-font" onchange="updateSettings()">
-                                <option value="'Cairo'">خط كايرو</option>
-                                <option value="'Kitab'">خط كتاب بولد</option>
-                                <option value="'ReemKufi'">خط ريم كوفي</option>
-                                <option value="'Hafs'">خط حفص</option>
-                            </select>
-                            <input type="color" id="info-color" value="#ffffff" onchange="updateSettings()" class="h-10 p-0 border-0 rounded">
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div><label class="text-[9px] text-zinc-500 block">موقع العرض (X)</label><input type="range" id="info-x" min="0" max="100" value="50" oninput="updateSettings()"></div>
-                            <div><label class="text-[9px] text-zinc-500 block">موقع الارتفاع (Y)</label><input type="range" id="info-y" min="0" max="100" value="85" oninput="updateSettings()"></div>
-                        </div>
-                    </div>
-                </details>
-
-                <details open>
-                    <summary><i class="fa-solid fa-stamp text-amber-500"></i> اللوجو والهوية</summary>
-                    <div class="details-body border-b border-[#3f3f46] pb-3">
-                        <div class="file-btn bg-[#27272a] hover:bg-[#3f3f46] text-zinc-200 mb-2 text-[10px] p-2">
-                            <i class="fa-solid fa-upload"></i> رفع صورة اللوجو
-                            <input type="file" accept="image/png, image/jpeg" onchange="loadLogo(this)">
-                        </div>
-                        <label class="text-[9px] text-zinc-400 block mb-1">حجم صورة اللوجو تكبير/تصغير</label>
-                        <input type="range" id="logo-scale" min="10" max="100" value="30" oninput="updateSettings()" class="mb-3">
-
-                        <hr class="border-[#3f3f46] my-2">
-                        <label class="text-[9px] text-zinc-400 block mb-1">النص (العلامة المائية)</label>
-                        <input type="text" id="watermark-text" placeholder="اكتب نص العلامة المائية هنا..." value="MAHMOUDSHOKRI7" class="mb-2" oninput="updateSettings()">
-                        
-                        <div class="grid grid-cols-2 gap-2 mb-2">
-                            <div><label class="text-[9px] text-zinc-400 block mb-1">خط النص</label>
-                                <select id="wm-font" onchange="updateSettings()" class="!p-1"><option value="'Cairo'">كايرو</option><option value="'ReemKufi'">ريم كوفي</option><option value="Arial">Arial</option></select>
-                            </div>
-                            <div><label class="text-[9px] text-zinc-400 block mb-1">حجم النص</label><input type="range" id="wm-size" min="10" max="100" value="28" oninput="updateSettings()"></div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-2 mt-2">
-                            <div><label class="text-[9px] text-amber-500 font-bold block">موقع العرض (X)</label><input type="range" id="logo-x" min="0" max="100" value="50" oninput="updateSettings()"></div>
-                            <div><label class="text-[9px] text-amber-500 font-bold block">موقع الارتفاع (Y)</label><input type="range" id="logo-y" min="0" max="100" value="10" oninput="updateSettings()"></div>
-                        </div>
-                    </div>
-                </details>
-                
-                <details open>
-                    <summary><i class="fa-solid fa-wave-square text-amber-500"></i> الموجات الصوتية الشاملة</summary>
-                    <div class="details-body">
-                        <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-2">
-                            <input type="checkbox" id="viz-enable" checked onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
-                            <span class="text-[10px] text-zinc-300 font-bold">تفعيل الموجات الصوتية</span>
-                        </label>
-                        <div class="grid grid-cols-2 gap-2 mb-2">
-                            <select id="viz-style" onchange="updateSettings()">
-                                <option value="bars">أعمدة سفلية</option>
-                                <option value="wave">خط متصل</option>
-                                <option value="dots">نقاط متناثرة</option>
-                                <option value="symmetric">أعمدة متناظرة علوي سفلي</option>
-                                <option value="circle">موجة دائرية</option>
-                                <option value="double-wave">موجة عاكسة</option>
-                                <option value="pulse-ring">حلقة نابضة</option>
-                                <option value="radial-bars">أشعة دائرية</option>
-                                <option value="block-bars">بلوكات متقطعة</option>
-                                <option value="line-glow">نبض خطي متوهج</option>
-                                <option value="bounce-dots">نقاط قافزة</option>
-                                <option value="corner">زوايا الشاشة</option>
-                                <option value="top-drop">سقوط من الأعلى</option>
-                                <option value="hexagon">شكل سداسي</option>
-                                <option value="heartbeat">نبضات القلب</option>
-                            </select>
-                            <input type="color" id="viz-color" value="#f59e0b" onchange="updateSettings()" class="h-10 p-0 border-0 rounded">
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div><label class="text-[9px] text-zinc-500 block">موقع العرض (X)</label><input type="range" id="viz-x" min="0" max="100" value="50" oninput="updateSettings()"></div>
-                            <div><label class="text-[9px] text-zinc-500 block">موقع الارتفاع (Y)</label><input type="range" id="viz-y" min="0" max="100" value="100" oninput="updateSettings()"></div>
-                        </div>
-                    </div>
-                </details>
-            </div>
-
-            <div id="tab-design" class="panel-section space-y-2">
-                <div class="bg-[#18181b] p-3 rounded-lg border border-[#27272a]">
-                    
-                    <div class="bg-indigo-900/20 p-2 rounded border border-indigo-500/30 mb-3">
-                        <label class="text-[10px] text-indigo-300 font-bold block mb-1">🎬 انتقالات سينمائية بين الآيات</label>
-                        <select id="ayah-transition" onchange="updateSettings()" class="w-full !bg-indigo-950/50 !text-white !border-indigo-500/50 mb-2">
-                            <option value="blur-fade">تلاشي ضبابي سينمائي (Blur Fade)</option>
-                            <option value="zoom-fade">زوم خارجي ناعم (Zoom Fade)</option>
-                            <option value="slide-blur">انزلاق من الأسفل بضبابية (Slide Up Blur)</option>
-                            <option value="flash-burn">وميض ضوئي خاطف (Flash Burn)</option>
-                            <option value="glitch-shift">تشوه لوني لحظي (Glitch Shift)</option>
-                            <option value="fade">تلاشي ناعم كلاسيكي (Smooth Fade)</option>
-                        </select>
-                        <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer">
-                            <input type="checkbox" id="trans-dim-enable" checked onchange="updateSettings()" class="w-3 h-3 accent-indigo-500 rounded">
-                            <span class="text-[10px] text-zinc-300 font-bold">تعتيم الخلفية أثناء الانتقال (Blackout)</span>
-                        </label>
-                    </div>
-
-                    <label class="text-[10px] text-zinc-500 block mb-1">الخط القرآني</label>
-                    <select id="font-family" onchange="updateSettings()" class="mb-3">
-                        <option value="'Hafs'">حفص (Hafs) - يظهر بترقيمه الأصلي المدمج</option>
-                        <option value="'Kitab'">كتاب بولد (Kitab)</option>
-                        <option value="'QuranKarim'">قرآن كريم 114</option>
-                        <option value="'AmiriQuran'">الأميري قرآن</option>
-                        <option value="'Cairo'">كايرو (Cairo)</option>
-                        <option value="'ReemKufi'">ريم كوفي</option>
-                        <option value="'Attari'">خط العطاري</option>
-                        <option value="'Muhammadi'">خط محمدي</option>
-                        <option value="'NotoNaskh'">نوتو نسخ (Noto Naskh)</option>
-                        <option value="'Saleem'">خط سليم (PDMS Saleem)</option>
-                    </select>
-
-                    <label class="text-[10px] text-zinc-500 block mb-1">نمط تلوين الكلمة المقروءة (Highlight)</label>
-                    <select id="highlight-style" onchange="updateSettings()" class="mb-3">
-                        <option value="quran-gold">✨ لون سادة للكلمة المقروءة</option>
-                        <option value="center-focus">👁️ كلمة بكلمة لون سادة في المنتصف</option>
-                        <option value="center-focus-rainbow">👁️🌈 كلمة بكلمة طيف متغير في المنتصف</option>
-                        <option value="quran-dim">🌑 إضاءة خافتة للباقي</option>
-                        <option value="gradient-fill">🌈 تعبئة متدرجة سينمائية</option>
-                        <option value="neon-border">🌟 إضاءة نيون قوية حول الكلمة</option>
-                        <option value="shadow-pop">🔲 ظل منفصل بارز</option>
-                        <option value="invert-box">⬛ خلفية معكوسة للكلمة</option>
-                        <option value="underline-glow">_ خط سفلي متوهج</option>
-                        <option value="hollow-active">⭕ نص مفرغ للنشط</option>
-                        <option value="gold-foil">🪙 فويل ذهبي معدني</option>
-                        <option value="fire-text">🔥 ألوان النار</option>
-                        <option value="glass-morphism">🧊 فقاعة زجاجية</option>
-                        <option value="silver-chrome">⚙️ كروم فضي</option>
-                        <option value="moonlight">🌙 توهج القمر الأزرق</option>
-                        <option value="rainbow">🏳️‍🌈 طيف ألوان متغيرة</option>
-                    </select>
-
-                    <div class="grid grid-cols-2 gap-3 mb-3">
-                        <div><label class="text-[10px] text-zinc-500 block mb-1">اللون الأساسي للنص</label><input type="color" id="base-color" value="#ffffff" oninput="updateSettings()" class="h-10 p-0 border-0 rounded"></div>
-                        <div><label class="text-[10px] text-zinc-500 block mb-1">لون التمييز (المقروء)</label><input type="color" id="highlight-color" value="#fbbf24" oninput="updateSettings()" class="h-10 p-0 border-0 rounded"></div>
-                    </div>
-
-                    <div class="mt-2 mb-3 bg-[#09090b] p-2 rounded border border-[#27272a]">
-                        <label class="text-[10px] text-emerald-400 font-bold block mb-1">🖌️ حواف النص (Stroke)</label>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div><label class="text-[9px] text-zinc-500 block">سُمك الحافة</label><input type="range" id="stroke-width" min="0" max="10" value="0" oninput="updateSettings()"></div>
-                            <div><label class="text-[9px] text-zinc-500 block">لون الحافة</label><input type="color" id="stroke-color" value="#000000" oninput="updateSettings()" class="h-6 p-0 border-0 rounded w-full"></div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3 mb-3">
-                        <div>
-                            <label class="flex justify-between text-[10px] text-zinc-500 mb-1"><span>حجم الخط القرآني</span> <span id="q-size-val">90</span></label>
-                            <input type="range" id="font-size" min="40" max="150" value="90" oninput="updateSettings(); document.getElementById('q-size-val').innerText=this.value;">
-                        </div>
-                        <div>
-                            <label class="flex justify-between text-[10px] text-zinc-500 mb-1"><span>تباعد الكلمات (px)</span> <span id="word-space-val">10</span></label>
-                            <input type="range" id="word-spacing" min="0" max="100" value="10" oninput="updateSettings(); document.getElementById('word-space-val').innerText=this.value;">
-                        </div>
-                    </div>
-                    
-                    <div class="mt-3 bg-[#09090b] p-3 rounded border border-[#27272a]">
-                        <label class="text-[10px] text-zinc-300 flex flex-col gap-1 mb-2">ارتفاع الآية (Y): <input type="range" id="pos-y" min="0" max="100" value="40" oninput="updateSettings()"></label>
-                        <div class="grid grid-cols-2 gap-3">
-                            <label class="text-[10px] text-zinc-300 flex flex-col gap-1">ارتفاع الترجمة (Y): <input type="range" id="trans-y" min="0" max="100" value="55" oninput="updateSettings()"></label>
-                            <label class="text-[10px] text-zinc-300 flex flex-col gap-1">لون الترجمة: <input type="color" id="trans-color" value="#cbd5e1" oninput="updateSettings()" class="h-8 w-full p-0 border-0 rounded"></label>
-                        </div>
-                    </div>
-
-                    <details open class="mt-6 border border-amber-800/50 rounded-xl bg-amber-950/10">
-                        <summary class="text-xs font-bold text-amber-300 flex items-center">
-                            <i class="fa-solid fa-magic text-amber-500 mr-2"></i> أنيميشن النص القرآني
-                        </summary>
-                        <div class="details-body pt-4 border-t border-amber-800/30">
-                            <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-3">
-                                <input type="checkbox" id="anim-enable" checked onchange="updateSettings()" class="w-3 h-3 accent-amber-500 rounded">
-                                <span class="text-[10px] text-zinc-300 font-bold">تفعيل حركة للكلمة المقروءة</span>
-                            </label>
-
-                            <!-- ميزة إضافة التشويش للنص القرآني فقط -->
-                            <div class="bg-red-900/20 p-2 rounded border border-red-500/30 mb-3">
-                                <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-2">
-                                    <input type="checkbox" id="text-glitch-enable" onchange="updateSettings()" class="w-3 h-3 accent-red-500 rounded">
-                                    <span class="text-[10px] text-red-300 font-bold">📺 تشويش (Glitch) للنص القرآني فقط</span>
-                                </label>
-                                <input type="range" id="text-glitch-int" min="0" max="50" value="10" class="!accent-red-500" oninput="updateSettings()">
-                            </div>
-
-                            <select id="anim-style" onchange="updateSettings()" class="mb-3">
-                                <option value="none">بدون أنيميشن (ثابت)</option>
-                                <option value="pulse-glow" selected>✨ نبض ذهبي خفيف</option>
-                                <option value="pop-scale">🔥 انفجار تكبير سريع</option>
-                                <option value="slide-up">⬆️ انزلاق ناعم من الأسفل</option>
-                                <option value="typewriter">⌨️ كتابة متدرجة</option>
-                                <option value="rotate-in">🔄 دوران وانبثاق</option>
-                                <option value="bounce-drop">🏀 سقوط وارتداد</option>
-                                <option value="blur-focus">📷 تركيز عدسة الزوم</option>
-                                <option value="elastic-pop">🎈 مطاطي تكبير وتقلص</option>
-                                <option value="typewriter-cursor">👨‍💻 كتابة مع مؤشر</option>
-                                <option value="shake-intense">⚡ اهتزاز قوي درامي</option>
-                                <option value="flip-x">🪞 التفاف أفقي 3D</option>
-                                <option value="zoom-out-fade">📉 تصغير من حجم كبير</option>
-                                <option value="wave-text">🌊 طفو موجي</option>
-                                <option value="ghost-trail">👻 طيف متصاعد</option>
-                                <option value="swing-3d">🔔 تأرجح البندول</option>
-                            </select>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="flex justify-between text-[10px] text-zinc-500 mb-1"><span>شدة الحركة</span> <span id="anim-int-val">70</span></label>
-                                    <input type="range" id="anim-intensity" min="0" max="100" value="70" oninput="updateSettings(); document.getElementById('anim-int-val').innerText=this.value;">
-                                </div>
-                                <div>
-                                    <label class="flex justify-between text-[10px] text-zinc-500 mb-1"><span>السرعة</span> <span id="anim-speed-val">1.5</span></label>
-                                    <input type="range" id="anim-speed" min="0.5" max="3" step="0.1" value="1.5" oninput="updateSettings(); document.getElementById('anim-speed-val').innerText=this.value;">
-                                </div>
-                            </div>
-                        </div>
-                    </details>
                 </div>
             </div>
 
-            <div id="tab-timeline" class="panel-section">
-                
-                <div class="bg-blue-900/20 p-3 rounded-lg border border-blue-500/30 mb-3">
-                    <label class="text-[10px] text-blue-300 font-bold block mb-1">⏱️ تزامن الصوت مع النص (Sync Offset)</label>
-                    <div class="text-[9px] text-zinc-400 mb-2">لتقديم النص اكتب رقم سالب (مثال: -0.5)، ولتأخير النص اكتب رقم موجب (مثال: 0.5) بالثواني.</div>
-                    <input type="number" id="sync-offset" step="0.1" value="0" placeholder="0.0" oninput="updateSettings()" class="!bg-blue-950/50 !border-blue-500/50 text-center font-bold">
+            <!-- تبويب الشخصيات -->
+            <div id="tab-chars" class="panel-section space-y-3">
+                <div class="bg-[#18181b] p-3 rounded-lg border border-[#27272a] text-[11px] text-zinc-300 mb-3">
+                    أضف شخصياتك، خصص موقع كل شخصية ونصوصها بالسحب بالماوس أو عبر السلايدرات.
                 </div>
-
-                <div class="bg-amber-900/20 p-3 rounded-lg border border-amber-800/40 mb-2 text-[11px] text-amber-200">
-                    💡 <b>أدوات المونتاج:</b> انقر على أي كلمة لتظهر لك قائمة تمكنك من (تقسيم الشاشات، إضافة سطر جديد، أو قص الفيديو ليبدأ/ينتهي عندها).
-                </div>
-                
-                <button id="btn-reset-trim" onclick="resetTrim()" class="hidden w-full mb-3 bg-red-900/50 hover:bg-red-800 text-white text-xs font-bold py-2 rounded border border-red-800 transition shadow-lg">
-                    <i class="fa-solid fa-rotate-left ml-1"></i> تراجع عن قص الصوت
+                <div id="speakers-container" class="space-y-3"></div>
+                <button onclick="addSpeaker()" class="w-full bg-[#27272a] hover:bg-[#3f3f46] text-white font-bold py-3 rounded transition text-xs border border-dashed border-[#52525b]">
+                    <i class="fa-solid fa-plus"></i> إضافة شخصية جديدة
                 </button>
-
-                <div id="timeline-container" class="space-y-2 pb-10"></div>
             </div>
 
+            <!-- تبويب السيناريو -->
+            <div id="tab-scenario" class="panel-section space-y-3">
+                <div class="bg-emerald-900/10 p-3 rounded-lg border border-emerald-900/30 mb-3 flex justify-between items-center">
+                    <span class="text-[11px] text-emerald-300 font-bold">يمكنك استخدام [كلمة]{#لون} للتلوين</span>
+                    <button onclick="addDialogueRow()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] px-3 py-1 rounded shadow">إضافة سطر</button>
+                </div>
+
+                <div id="dialogues-container" class="space-y-2"></div>
+
+                <button onclick="generateAllAudio()" class="w-full mt-4 bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded transition text-sm shadow-lg shadow-blue-600/20">
+                    <i class="fa-solid fa-microphone-lines"></i> <span id="btn-fetch-text">توليد كل الأصوات الناقصة</span>
+                </button>
+            </div>
+
+            <!-- تبويب الخطوط والتصميم والتوهج النيون -->
+            <div id="tab-design" class="panel-section space-y-3">
+                
+                <!-- محرك اختيار الخطوط -->
+                <div class="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 p-3 rounded-lg border border-blue-500/40">
+                    <h3 class="text-xs font-bold text-blue-300 mb-3"><i class="fa-solid fa-font text-blue-400 ml-1"></i> محرك الخطوط المتقدم (Google Fonts)</h3>
+                    <div class="space-y-2">
+                        <div>
+                            <label class="text-[10px] text-zinc-300 block mb-1 font-bold">خط النص الإنجليزي (Target Font)</label>
+                            <select id="font-en" onchange="updateSettings()" class="!bg-[#09090b] font-bold text-amber-400">
+                                <option value="'Outfit', sans-serif">Outfit (عصري سينمائي)</option>
+                                <option value="'Bangers', cursive">Bangers (جريء للتيك توك)</option>
+                                <option value="'Anton', sans-serif">Anton (بارز وضخم)</option>
+                                <option value="'Poppins', sans-serif">Poppins (أنيق وواضح)</option>
+                                <option value="'Montserrat', sans-serif">Montserrat (احترافي)</option>
+                                <option value="'Pacifico', cursive">Pacifico (يدوي وانسيابي)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-zinc-300 block mb-1 font-bold">خط نص النطق (Pronunciation Font)</label>
+                            <select id="font-pr" onchange="updateSettings()" class="!bg-[#09090b] font-bold text-emerald-400">
+                                <option value="'Cairo', sans-serif">Cairo (كايرو افتراضي)</option>
+                                <option value="'Tajawal', sans-serif">Tajawal (تجوال ناعم)</option>
+                                <option value="'El Messiri', sans-serif">El Messiri (المسيري)</option>
+                                <option value="'Kufam', cursive">Kufam (كوفام حديث)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-zinc-300 block mb-1 font-bold">خط النص العربي (Native Font)</label>
+                            <select id="font-ar" onchange="updateSettings()" class="!bg-[#09090b] font-bold text-blue-400">
+                                <option value="'Cairo', sans-serif">Cairo (كايرو واضح)</option>
+                                <option value="'Changa', sans-serif">Changa (شانجا عريض وثقيل)</option>
+                                <option value="'Tajawal', sans-serif">Tajawal (تجوال عصري)</option>
+                                <option value="'Almarai', sans-serif">Almarai (المراعي)</option>
+                                <option value="'Amiri', serif">Amiri (أميري أصيل)</option>
+                                <option value="'Readex Pro', sans-serif">Readex Pro (مودرن)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- خيارات توهج النصوص والـ Neon Highlight -->
+                <div class="bg-gradient-to-r from-purple-900/30 to-pink-900/30 p-3 rounded-lg border border-purple-500/40">
+                    <h3 class="text-xs font-bold text-pink-300 mb-3"><i class="fa-solid fa-wand-magic-sparkles text-pink-400 ml-1"></i> توهج النيون ومؤثرات النص (Neon Glow Engine)</h3>
+                    <div class="grid grid-cols-2 gap-3 mb-2">
+                        <div><label class="text-[10px] text-zinc-300 block mb-1">لون التوهج (Glow Color)</label><input type="color" id="text-glow-color" value="#3b82f6" oninput="updateSettings()" class="h-8 p-0 border-0 rounded w-full"></div>
+                        <div><label class="text-[10px] text-zinc-300 block mb-1">اللون الافتراضي للنص</label><input type="color" id="default-color" value="#ffffff" oninput="updateSettings()" class="h-8 p-0 border-0 rounded w-full"></div>
+                    </div>
+                    <label class="flex justify-between text-[10px] text-zinc-300 mb-1">قوة توهج النيون للكلمة المضيئة <span id="text-glow-blur-val">25</span></label>
+                    <input type="range" id="text-glow-blur" min="0" max="60" value="25" oninput="updateSettings(); document.getElementById('text-glow-blur-val').innerText=this.value;">
+                </div>
+
+                <div class="bg-[#18181b] p-3 rounded-lg border border-[#27272a]">
+                    <h3 class="text-xs font-bold text-white mb-3"><i class="fa-solid fa-image text-blue-500 ml-1"></i> خلفية المشهد العامة ومؤثرات الجزيئات</h3>
+                    <div class="grid grid-cols-2 gap-2 mb-3">
+                        <div class="file-btn bg-[#27272a] hover:bg-[#3f3f46] text-zinc-200"><i class="fa-solid fa-image text-xl mb-1"></i> صورة عامة<input type="file" accept="image/*" onchange="setBg('image', this)"></div>
+                        <div class="file-btn bg-[#27272a] hover:bg-[#3f3f46] text-zinc-200"><i class="fa-solid fa-video text-xl mb-1"></i> فيديو عام<input type="file" accept="video/*" onchange="setBg('video', this)"></div>
+                    </div>
+                    <label class="flex justify-between text-[10px] text-zinc-300 mb-1"><span>تعتيم الخلفية</span></label>
+                    <input type="range" id="bg-opacity" min="0" max="100" value="40" oninput="updateSettings()">
+
+                    <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mt-3">
+                        <input type="checkbox" id="particles-on" onchange="updateSettings()" checked class="w-3.5 h-3.5 accent-blue-500 rounded">
+                        <span class="text-[11px] text-zinc-200 font-bold">تفعيل جزيئات ضوئية متحركة (Particles Effect)</span>
+                    </label>
+                </div>
+
+                <div class="bg-[#18181b] p-3 rounded-lg border border-[#27272a]">
+                    <h3 class="text-xs font-bold text-blue-400 mb-3"><i class="fa-solid fa-sliders text-blue-500"></i> الأحجام والتباعد والحدود</h3>
+                    
+                    <div class="mb-3 bg-[#09090b] p-2 rounded border border-[#3f3f46]">
+                        <label class="text-[10px] text-zinc-400 block mb-1">حركة النص (Text Transition)</label>
+                        <select id="text-anim" onchange="updateSettings()" class="!p-1 text-[10px] w-full">
+                            <option value="zoom" selected>تكبير وتلاشي سينمائي (Zoom In)</option>
+                            <option value="fade">تلاشي ناعم (Fade In/Out)</option>
+                            <option value="slide">انزلاق للأعلى (Slide Up)</option>
+                            <option value="none">بدون حركة (ثابت)</option>
+                        </select>
+                    </div>
+
+                    <label class="flex justify-between text-[10px] text-zinc-500 mb-1 mt-3">حجم الخط الإنجليزي <span id="en-size-val">50</span></label>
+                    <input type="range" id="en-size" min="20" max="120" value="50" oninput="updateSettings(); document.getElementById('en-size-val').innerText=this.value;">
+                    
+                    <label class="flex justify-between text-[10px] text-zinc-500 mb-1">حجم خط النطق <span id="pr-size-val">40</span></label>
+                    <input type="range" id="pr-size" min="20" max="100" value="40" oninput="updateSettings(); document.getElementById('pr-size-val').innerText=this.value;">
+
+                    <label class="flex justify-between text-[10px] text-zinc-500 mb-1">حجم الخط العربي <span id="ar-size-val">40</span></label>
+                    <input type="range" id="ar-size" min="20" max="100" value="40" oninput="updateSettings(); document.getElementById('ar-size-val').innerText=this.value;">
+                    
+                    <label class="flex justify-between text-[10px] text-zinc-500 mb-1 mt-3">تباعد الأسطر <span id="line-space-val">70</span></label>
+                    <input type="range" id="line-space" min="30" max="150" value="70" oninput="updateSettings(); document.getElementById('line-space-val').innerText=this.value;">
+
+                    <label class="flex justify-between text-[10px] text-zinc-500 mb-1 mt-3">سمك حدود الخط (Stroke Width) <span id="stroke-width-val">6</span></label>
+                    <input type="range" id="stroke-width" min="0" max="20" value="6" oninput="updateSettings(); document.getElementById('stroke-width-val').innerText=this.value;">
+                </div>
+
+                <div class="bg-[#18181b] p-3 rounded-lg border border-[#27272a]">
+                    <h3 class="text-xs font-bold text-white mb-3">أبعاد الفيديو</h3>
+                    <select id="video-ratio" onchange="applyVideoSettings()" class="w-full bg-[#09090b]">
+                        <option value="portrait">طولي - ريلز / تيك توك (9:16)</option>
+                        <option value="landscape">عرضي - يوتيوب (16:9)</option>
+                        <option value="square">مربع (1:1)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- تبويب التصدير -->
             <div id="tab-export" class="panel-section text-center p-2">
-                <div class="bg-emerald-900/20 p-5 rounded-xl border border-emerald-900/30 mb-4">
-                    <i class="fa-solid fa-clapperboard text-4xl text-emerald-500 mb-3 block"></i>
+                <div class="bg-blue-900/20 p-5 rounded-xl border border-blue-900/30 mb-4">
+                    <i class="fa-solid fa-clapperboard text-4xl text-blue-500 mb-3 block"></i>
                     <h3 class="text-white font-bold mb-2">إنتاج وتصدير الفيديو</h3>
                 </div>
                 
-                <button id="btn-export" onclick="startExport()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl transition shadow-lg shadow-emerald-600/30 text-sm">
-                    <i class="fa-solid fa-rocket ml-1"></i> بدء التصدير
+                <button id="btn-export" onclick="startExport()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl transition shadow-lg shadow-blue-600/30 text-sm">
+                    <i class="fa-solid fa-rocket ml-1"></i> بدء التسجيل والتصدير
                 </button>
 
                 <div id="export-status" class="mt-4 hidden text-right bg-[#18181b] p-4 rounded-xl border border-[#27272a]">
-                    <p id="status-msg" class="text-emerald-400 text-xs font-bold mb-3 animate-pulse">جاري التحضير...</p>
+                    <p id="status-msg" class="text-blue-400 text-xs font-bold mb-3 animate-pulse">جاري التحضير...</p>
                     <div class="w-full bg-[#09090b] h-3 rounded-full overflow-hidden border border-[#27272a]">
-                        <div id="progress-bar-export" class="bg-emerald-500 h-full w-0 transition-all duration-300"></div>
+                        <div id="progress-bar-export" class="bg-blue-500 h-full w-0 transition-all duration-300"></div>
                     </div>
                 </div>
-                
                 <a id="download-link" class="hidden mt-4 w-full block text-white font-bold py-4 rounded-xl transition text-sm text-center"></a>
             </div>
 
         </div>
     </aside>
 
-    <nav class="w-full md:w-[70px] bg-[#09090b] border-t md:border-t-0 md:border-r border-[#27272a] flex md:flex-col overflow-x-auto shrink-0 z-20 absolute md:relative bottom-0 left-0 right-0">
-        <button onclick="switchTab('quran', 'المحتوى والآيات', this)" class="tab-btn active"><i class="fa-solid fa-book-open text-xl mb-1"></i>القرآن</button>
-        <button onclick="switchTab('bg', 'الخلفية والكاميرا', this)" class="tab-btn"><i class="fa-solid fa-video text-xl mb-1"></i>المشهد</button>
-        <button onclick="switchTab('brand', 'اللوجو والهوية', this)" class="tab-btn"><i class="fa-solid fa-stamp text-xl mb-1"></i>الهوية</button>
-        <button onclick="switchTab('design', 'التصميم والخطوط', this)" class="tab-btn"><i class="fa-solid fa-font text-xl mb-1"></i>النصوص</button>
-        <button onclick="switchTab('timeline', 'تقسيم الشاشات', this)" class="tab-btn"><i class="fa-solid fa-cut text-xl mb-1"></i>الشاشات</button>
-        <button onclick="switchTab('export', 'التصدير النهائي', this)" class="tab-btn text-emerald-500"><i class="fa-solid fa-clapperboard text-xl mb-1"></i>إنتاج</button>
+    <nav class="w-full md:w-[80px] bg-[#09090b] border-t md:border-t-0 md:border-r border-[#27272a] flex md:flex-col overflow-x-auto shrink-0 z-20 absolute md:relative bottom-0 left-0 right-0">
+        <button onclick="switchTab('data', 'المشاريع', this)" class="tab-btn active"><i class="fa-solid fa-folder-open text-xl mb-1"></i>المشاريع</button>
+        <button onclick="switchTab('chars', 'الشخصيات', this)" class="tab-btn"><i class="fa-solid fa-users text-xl mb-1"></i>الشخصيات</button>
+        <button onclick="switchTab('scenario', 'السيناريو', this)" class="tab-btn"><i class="fa-solid fa-list text-xl mb-1"></i>السيناريو</button>
+        <button onclick="switchTab('design', 'التصميم والخطوط', this)" class="tab-btn"><i class="fa-solid fa-wand-magic-sparkles text-xl mb-1"></i>التصميم</button>
+        <button onclick="switchTab('export', 'التصدير', this)" class="tab-btn text-emerald-500"><i class="fa-solid fa-clapperboard text-xl mb-1"></i>إنتاج</button>
     </nav>
 
     <script>
         let C_W = 1080; let C_H = 1920;
         const canvas = document.getElementById('video-canvas'); const ctx = canvas.getContext('2d');
         const offCanvas = document.createElement('canvas'); const offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
-        
-        let globalSurahs = []; let globalQuran = null; let previewDebounce = null;
-        
-        let state = {
-            phrases:[], originalPhrases: null, currentIndex: 0,
-            globalBg: { type: 'none', media: null }, ayahBgs: {}, settings: {}, isExporting: false,
-            audioCtx: null, audioBuffer: null, originalAudioBuffer: null, analyser: null, dataArray: null,
-            selectedWord: null, logoImage: null, trimStartWord: null, trimEndWord: null
-        };
-
         const audioPlayer = document.getElementById('audio-player');
         
-        let particles = Array.from({length: 60}).map(() => ({ x: Math.random(), y: Math.random(), speedY: 0.2 + Math.random() * 0.5, speedX: -0.2 + Math.random() * 0.4, size: 0.5 + Math.random() * 2, opacity: Math.random(), phase: Math.random() * Math.PI * 2 }));
-        let bokehs = Array.from({length: 20}).map(() => ({ x: Math.random(), y: Math.random(), speedY: 0.05 + Math.random() * 0.1, speedX: -0.05 + Math.random() * 0.1, size: 20 + Math.random() * 60, opacity: Math.random() * 0.3, phase: Math.random() * Math.PI * 2 }));
-        
-        let grainCanvas = document.createElement('canvas'); grainCanvas.width = 300; grainCanvas.height = 300; let gCtx = grainCanvas.getContext('2d'); let gData = gCtx.createImageData(300, 300);
-        for(let i=0; i<gData.data.length; i+=4) { let v = Math.random()*255; gData.data[i]=v; gData.data[i+1]=v; gData.data[i+2]=v; gData.data[i+3]=255; } gCtx.putImageData(gData,0,0);
+        const POCKET_VOICES = ["alba", "marius", "javert", "jean", "fantine", "cosette", "eponine", "azelma", "Stella.wav", "Tyler.wav", "Juniper.wav"];
+        const CARTESIA_VOICES = [
+            { id: "95d51f79-c397-46f9-b49a-23763d3eaa2d", name: "Cartesia Default" },
+            { id: "694f9389-aac1-45b6-b726-9d9369183238", name: "Sarah (EN)" },
+            { id: "a0e99841-438c-4a64-b679-ae501e7d6091", name: "Arthur (EN)" }
+        ];
+        const CARTESIA_LANGS = [
+            { code: "en", name: "إنجليزي (English)" },
+            { code: "ar", name: "عربي (Arabic)" },
+            { code: "hi", name: "هندي (Hindi)" },
+            { code: "fr", name: "فرنسي (French)" },
+            { code: "es", name: "إسباني (Spanish)" }
+        ];
 
-        function normalizeArabic(text) {
-            if (!text) return "";
-            return text.replace(/[\u064B-\u065F\u0670]/g, '').replace(/[أإآا]/g, 'ا').replace(/[ةه]/g, 'ه').replace(/[يى]/g, 'ي').replace(/^سوره |^سوره /g, '').replace(/\s+/g, ' ').trim();
-        }
-
-        window.onload = async () => {
-            document.getElementById('viz-y').value = 100;
-            
-            const ambPlayer = document.getElementById('ambient-player');
-            audioPlayer.addEventListener('play', () => {
-                if (state.settings.ambientVol > 0) {
-                    playLiveAmbient();
-                }
-            });
-            audioPlayer.addEventListener('pause', () => {
-                stopLiveAmbient();
-            });
-            audioPlayer.addEventListener('ended', () => {
-                stopLiveAmbient();
-            });
-
-            try {
-                let resS = await fetch('./surahs.json'); globalSurahs = await resS.json(); 
-                populateSurahs(globalSurahs);
-            } catch(e) {}
-            try { let resQ = await fetch('./quran.json'); globalQuran = await resQ.json(); } catch(e) {}
-
-            applyVideoSettings(); requestAnimationFrame(renderLoop); triggerLivePreview();
+        let state = {
+            speakers: [], 
+            dialogues: [], 
+            bg: { type: 'none', base64: null, media: null },
+            settings: {},
+            audioCtx: null, analyser: null, dataArray: null,
+            globalAudioBuffer: null,
+            currentIndex: 0,
+            isExporting: false,
+            particles: []
         };
 
-        function populateSurahs(list) {
-            const sSelect = document.getElementById('surah'); sSelect.innerHTML = '';
-            list.forEach(s => { sSelect.options.add(new Option(`${s.number}. ${s.name} (${s.numberOfAyahs} آية)`, s.number)); });
-        }
+        let activeDrag = null; // Drag & Drop State
 
-        function filterSurahs() {
-            let term = document.getElementById('surah-search').value;
-            if(!term.trim()) { populateSurahs(globalSurahs); return; }
-            let normalizedTerm = normalizeArabic(term);
-            let filtered = globalSurahs.filter(s => { let normalizedName = normalizeArabic(s.name.replace('سُورَةُ ', '')); let numberMatch = s.number.toString().includes(term); return normalizedName.includes(normalizedTerm) || numberMatch; });
-            populateSurahs(filtered); if(filtered.length > 0) triggerLivePreview();
-        }
+        const val = id => document.getElementById(id).value;
+        const num = id => parseFloat(document.getElementById(id).value) || 0;
 
-        async function updateTranslationOnly() {
-            if(!globalQuran || state.phrases.length === 0) return;
-            const surah = document.getElementById('surah').value; const tType = document.getElementById('trans-type').value;
-            let dataTr = null;
-            if (tType !== 'none') { try { let resTr = await fetch(`https://api.alquran.cloud/v1/surah/${surah}/${tType}`); let jsonTr = await resTr.json(); dataTr = jsonTr.data.ayahs; } catch(e){} }
-            for (let i = 0; i < state.phrases.length; i++) { let verseNum = state.phrases[i].num; state.phrases[i].trans = dataTr ? dataTr[verseNum-1].text : ""; }
-            if(state.originalPhrases) { for (let i = 0; i < state.originalPhrases.length; i++) { let verseNum = state.originalPhrases[i].num; state.originalPhrases[i].trans = dataTr ? dataTr[verseNum-1].text : ""; } }
-        }
-
-        function triggerLivePreview() {
-            clearTimeout(previewDebounce);
-            previewDebounce = setTimeout(async () => {
-                if (!globalQuran || !globalSurahs.length || !document.getElementById('surah').value) return;
-                const surah = document.getElementById('surah').value; let start = parseInt(document.getElementById('start-ayah').value) || 1; let end = parseInt(document.getElementById('end-ayah').value) || 3;
-                const tType = document.getElementById('trans-type').value;
-                let maxAyahs = globalSurahs.find(s => s.number == surah)?.numberOfAyahs || 286;
-                if (end < start) end = start; if (end > maxAyahs) end = maxAyahs; document.getElementById('end-ayah').value = end;
-                let surahTextData = globalQuran[surah]; if (!surahTextData) return;
-                let dataTr = null; if (tType !== 'none') { try { let resTr = await fetch(`https://api.alquran.cloud/v1/surah/${surah}/${tType}`); let jsonTr = await resTr.json(); dataTr = jsonTr.data.ayahs; } catch(e){} }
-
-                let newPhrases = [];
-                for (let i = start; i <= end; i++) {
-                    let ayahObj = surahTextData.find(a => a.verse == i); if (!ayahObj) continue;
-                    let cleanText = ayahObj.text.trim().replace(/\s+/g, ' '); let transText = dataTr ? dataTr[i-1].text : "";
-                    let wordsArr = cleanText.split(' ');
-                    wordsArr[wordsArr.length - 1] += `|^${toArabicNumber(i)}`;
-                    let wordsData = wordsArr.map((w) => ({ text: w, start: 0, end: 1000000, newPage: false, newLine: false, isAyahNum: false }));
-                    newPhrases.push({ num: i, startTime: 0, endTime: 1000000, words: wordsData, trans: transText });
-                }
-
-                state.phrases = newPhrases; state.originalPhrases = null; state.originalAudioBuffer = null;
-                state.currentIndex = 0; state.audioBuffer = null; audioPlayer.src = ""; 
-                document.getElementById('btn-reset-trim').classList.add('hidden'); updatePreviewUI(); renderTimelineUI();
-            }, 300);
-        }
-
-        function applyVideoSettings() {
-            const ratio = document.getElementById('video-ratio').value; const quality = parseInt(document.getElementById('video-quality').value);
-            if (quality === 720) { if (ratio === 'landscape') { C_W = 1280; C_H = 720; } else if (ratio === 'square') { C_W = 720; C_H = 720; } else { C_W = 720; C_H = 1280; } } 
-            else { if (ratio === 'landscape') { C_W = 1920; C_H = 1080; } else if (ratio === 'square') { C_W = 1080; C_H = 1080; } else { C_W = 1080; C_H = 1920; } }
-            canvas.width = C_W; canvas.height = C_H; offCanvas.width = C_W; offCanvas.height = C_H; updateSettings();
-        }
+        window.onload = () => {
+            applyVideoSettings();
+            addSpeaker('A'); addSpeaker('B');
+            addDialogueRow();
+            initCanvasDragEvents();
+            initParticles();
+            requestAnimationFrame(renderLoop);
+        };
 
         function switchTab(id, title, btn) {
             document.querySelectorAll('.panel-section').forEach(el => el.classList.remove('active')); document.getElementById(`tab-${id}`).classList.add('active');
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active')); btn.classList.add('active'); document.getElementById('panel-title').innerHTML = `<i class="fa-solid fa-check-circle text-amber-500 ml-2"></i> ${title}`;
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active')); btn.classList.add('active'); document.getElementById('panel-title').innerHTML = `<i class="fa-solid fa-check-circle text-blue-500 ml-2"></i> ${title}`;
         }
 
-        const val = id => document.getElementById(id).value; const num = id => parseFloat(document.getElementById(id).value) || 0;
-
-        function loadLogo(input) { if(input.files && input.files[0]) { const reader = new FileReader(); reader.onload = e => { let img = new Image(); img.src = e.target.result; state.logoImage = img; }; reader.readAsDataURL(input.files[0]); } }
-
-        // دالة لتوليد صوت هسيس خلفية طبيعي (تشويش ذكي ضد خوارزميات الحقوق)
-        function createProceduralNoise(ctx) {
-            let bufferSize = 2 * ctx.sampleRate;
-            let noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-            let output = noiseBuffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                output[i] = Math.random() * 2 - 1; 
-            }
-            
-            let noiseSource = ctx.createBufferSource();
-            noiseSource.buffer = noiseBuffer;
-            noiseSource.loop = true;
-            
-            // فلتر منخفض الترددات لجعل الهسيس شبيهاً بصوت رياح أو مطر هادئ
-            let filter = ctx.createBiquadFilter();
-            filter.type = 'lowpass';
-            filter.frequency.value = 650; 
-            
-            noiseSource.connect(filter);
-            return { source: noiseSource, filter: filter };
-        }
-
-        function playLiveAmbient() {
-            if (!state.audioCtx || state.settings.ambientVol <= 0) return;
-            stopLiveAmbient();
-            
-            let noise = createProceduralNoise(state.audioCtx);
-            let ambGain = state.audioCtx.createGain();
-            ambGain.gain.value = state.settings.ambientVol;
-            
-            noise.filter.connect(ambGain);
-            ambGain.connect(state.audioCtx.destination);
-            
-            noise.source.start(0);
-            window.liveAmbientSource = noise.source;
-            window.liveAmbientGain = ambGain;
-        }
-
-        function stopLiveAmbient() {
-            if (window.liveAmbientSource) {
-                try { window.liveAmbientSource.stop(); } catch(e){}
-                window.liveAmbientSource = null;
-            }
-            window.liveAmbientGain = null;
-        }
-
-        function connectAudioGraph(ctx, sourceNode, analyserNode, destNode, isExport) {
-            let s = state.settings;
-            
-            // إضافة فلتر رنين دقيق (Acoustic EQ) لتعديل طيف الصوت البشري لتشتيت الخوارزمية تلقائياً دون تدمير نقاوته للأذن
-            let eqFilter = ctx.createBiquadFilter();
-            eqFilter.type = "peaking";
-            eqFilter.frequency.value = 1450; 
-            eqFilter.Q.value = 1.0;
-            eqFilter.gain.value = -3.5; 
-            
-            let dryGain = ctx.createGain();
-            dryGain.gain.value = 1.0;
-            
-            let delayNode = ctx.createDelay();
-            delayNode.delayTime.value = 0.25;
-            
-            let feedbackGain = ctx.createGain();
-            feedbackGain.gain.value = 0.35;
-            
-            let wetGain = ctx.createGain();
-            wetGain.gain.value = (s.reverbWet || 0) / 100;
-            
-            if (!isExport) {
-                window.liveWetGainNode = wetGain;
-            }
-            
-            sourceNode.connect(eqFilter);
-            
-            eqFilter.connect(dryGain);
-            dryGain.connect(analyserNode);
-            
-            eqFilter.connect(delayNode);
-            delayNode.connect(feedbackGain);
-            feedbackGain.connect(delayNode);
-            delayNode.connect(wetGain);
-            wetGain.connect(analyserNode);
-            
-            analyserNode.connect(destNode);
+        function applyVideoSettings() {
+            const ratio = document.getElementById('video-ratio').value;
+            if (ratio === 'landscape') { C_W = 1920; C_H = 1080; } else if (ratio === 'square') { C_W = 1080; C_H = 1080; } else { C_W = 1080; C_H = 1920; }
+            canvas.width = C_W; canvas.height = C_H; offCanvas.width = C_W; offCanvas.height = C_H;
+            updateSettings();
         }
 
         function updateSettings() {
             state.settings = {
-                syncOffset: num('sync-offset'), ayahTrans: val('ayah-transition'),
-                transDimEnable: document.getElementById('trans-dim-enable').checked,
-                wordSpacing: num('word-spacing'),
-                audioSpeed: num('audio-speed'),
-                audioDetune: num('audio-detune'),
-                reverbWet: num('reverb-wet'),
-                ambientVol: num('ambient-vol') / 100,
-                style: val('highlight-style'), baseC: val('base-color'), hiC: val('highlight-color'),
-                strokeW: num('stroke-width'), strokeC: val('stroke-color'),
-                fontF: val('font-family'), fontS: num('font-size'), posY: num('pos-y'), transY: num('trans-y'), transColor: val('trans-color'), bgOp: num('bg-opacity') / 100,
-                camOn: document.getElementById('cam-enable').checked, camType: val('cam-type'), filter: val('color-filter'),
-                rippleInt: num('ripple-intensity'), glitchInt: num('glitch-intensity'), grainInt: num('grain-intensity'),
-                partOn: document.getElementById('particles-enable').checked, vigOn: document.getElementById('vignette-enable').checked,
-                bloomOn: document.getElementById('bloom-enable').checked, leaksOn: document.getElementById('leaks-enable').checked,
-                bokehOn: document.getElementById('bokeh-enable').checked, barsOn: document.getElementById('bars-enable').checked,
-                infoOn: document.getElementById('info-enable').checked, infoFont: val('info-font'), infoColor: val('info-color'), infoX: num('info-x') / 100, infoY: num('info-y') / 100,
-                wmText: val('watermark-text'), wmFont: val('wm-font'), wmSize: num('wm-size'), logoScale: num('logo-scale') / 100, logoX: num('logo-x') / 100, logoY: num('logo-y') / 100,
-                vizOn: document.getElementById('viz-enable').checked, vizStyle: val('viz-style'), vizColor: val('viz-color'), vizX: num('viz-x') / 100, vizY: num('viz-y') / 100,
-                animOn: document.getElementById('anim-enable').checked, animStyle: val('anim-style'), animInt: num('anim-intensity') / 100, animSpeed: num('anim-speed'),
-                textGlitchOn: document.getElementById('text-glitch-enable').checked, textGlitchInt: num('text-glitch-int')
+                bgOp: num('bg-opacity') / 100,
+                textAnim: val('text-anim'),
+                defaultColor: val('default-color'),
+                glowColor: val('text-glow-color'),
+                glowBlur: num('text-glow-blur'),
+                enSize: num('en-size'), prSize: num('pr-size'), arSize: num('ar-size'),
+                lineSpace: num('line-space'),
+                strokeWidth: num('stroke-width'),
+                fontEn: val('font-en'),
+                fontPr: val('font-pr'),
+                fontAr: val('font-ar'),
+                particlesOn: document.getElementById('particles-on').checked
+            };
+        }
+
+        // -------- نظام جزيئات الخلفية المتحركة Particles --------
+        function initParticles() {
+            state.particles = [];
+            for(let i=0; i<40; i++) {
+                state.particles.push({
+                    x: Math.random() * C_W,
+                    y: Math.random() * C_H,
+                    radius: Math.random() * 3 + 1,
+                    alpha: Math.random() * 0.6 + 0.2,
+                    speedY: Math.random() * -1 - 0.5,
+                    speedX: (Math.random() - 0.5) * 0.5
+                });
+            }
+        }
+
+        function updateAndDrawParticles(ctxToDraw) {
+            if(!state.settings.particlesOn) return;
+            ctxToDraw.save();
+            state.particles.forEach(p => {
+                p.y += p.speedY; p.x += p.speedX;
+                if(p.y < 0) { p.y = C_H; p.x = Math.random() * C_W; }
+                ctxToDraw.fillStyle = `rgba(255, 255, 255, ${p.alpha})`;
+                ctxToDraw.beginPath();
+                ctxToDraw.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctxToDraw.fill();
+            });
+            ctxToDraw.restore();
+        }
+
+        // -------- نظام التفاعل والسحب بالماوس فوق الكانفاس Drag & Drop --------
+        function initCanvasDragEvents() {
+            const getCanvasCoords = (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return {
+                    x: (clientX - rect.left) * (C_W / rect.width),
+                    y: (clientY - rect.top) * (C_H / rect.height)
+                };
             };
 
-            if (window.liveWetGainNode && state.audioCtx) {
-                window.liveWetGainNode.gain.setTargetAtTime((state.settings.reverbWet || 0) / 100, state.audioCtx.currentTime, 0.01);
-            }
-            if (audioPlayer) {
-                audioPlayer.playbackRate = state.settings.audioSpeed || 1.0;
-                audioPlayer.preservesPitch = false;
-                audioPlayer.mozPreservesPitch = false;
-                audioPlayer.webkitPreservesPitch = false;
-            }
-            if (window.liveAmbientGain && state.audioCtx) {
-                window.liveAmbientGain.gain.setTargetAtTime(state.settings.ambientVol, state.audioCtx.currentTime, 0.01);
-            }
-            if (state.settings.ambientVol > 0 && !window.liveAmbientSource && !audioPlayer.paused) {
-                playLiveAmbient();
-            } else if (state.settings.ambientVol <= 0 && window.liveAmbientSource) {
-                stopLiveAmbient();
-            }
-        }
+            const onStart = (e) => {
+                const pos = getCanvasCoords(e);
+                activeDrag = null;
 
-        function setBg(target, type, input) {
-            const file = input.files[0]; if(!file) return; const url = URL.createObjectURL(file);
-            let mediaObj = type === 'video' ? document.createElement('video') : new Image();
-            if(type === 'video') { mediaObj.muted = true; mediaObj.loop = true; mediaObj.playsInline = true; mediaObj.preload = "auto"; mediaObj.disablePictureInPicture = true; mediaObj.src = url; mediaObj.load(); mediaObj.play().catch(e=>{}); } 
-            else { mediaObj.src = url; }
-            if(target === 'global') { state.globalBg = { type, media: mediaObj }; } 
-        }
-
-        function changeAyah(step) {
-            if(state.phrases.length === 0) return; state.currentIndex += step;
-            if(state.currentIndex < 0) state.currentIndex = 0; if(state.currentIndex >= state.phrases.length) state.currentIndex = state.phrases.length - 1;
-            if (state.audioBuffer && audioPlayer.src) { audioPlayer.currentTime = state.phrases[state.currentIndex].startTime / 1000; }
-            updatePreviewUI();
-        }
-
-        function updatePreviewUI() {
-            if(state.phrases.length === 0) return; let item = state.phrases[state.currentIndex];
-            let lbl = document.getElementById('preview-ayah-label'); if(lbl) lbl.innerText = `معاينة الآية: ${item.num}`;
-            document.querySelectorAll('.segment-block').forEach(b => b.classList.remove('active')); let block = document.getElementById(`block-${state.currentIndex}`); if(block) block.classList.add('active');
-        }
-
-        async function fetchTimingFile(fileName) { try { let res = await fetch(`./${fileName}`); if (!res.ok) return null; let text = await res.text(); let match = text.match(/\[\s*\{[\s\S]*\}\s*\]/); if(match) return JSON.parse(match[0]); } catch(e) {} return null; }
-        async function safeFetchAudio(surahNum, ayahNum, folder) {
-            const pad = (n) => n.toString().padStart(3, '0'); const directUrl = `https://everyayah.com/data/${folder}/${pad(surahNum)}${pad(ayahNum)}.mp3`;
-            const attempts = [ directUrl, `https://api.allorigins.win/raw?url=${encodeURIComponent(directUrl)}`, `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(directUrl)}` ];
-            for (let url of attempts) { try { let res = await fetch(url); if (res.ok) { let buffer = await res.arrayBuffer(); if (buffer.byteLength > 5000) return buffer; } } catch (e) {} } throw new Error("فشل");
-        }
-
-        async function generateQuranAudio() {
-            if (state.phrases.length === 0) return alert("الرجاء انتظار تحميل الآيات في الشاشة أولاً.");
-            const btnText = document.getElementById('btn-fetch-text'); const surah = parseInt(val('surah')); const recSelect = document.getElementById('reciter'); const timingFile = recSelect.value; const audioFolder = recSelect.options[recSelect.selectedIndex].dataset.folder;
-            btnText.innerText = "جاري جلب الصوتيات وربطها..."; btnText.parentElement.classList.add('opacity-50', 'pointer-events-none');
-
-            try {
-                let fullTimingData = await fetchTimingFile(timingFile);
-                window.AudioContext = window.AudioContext || window.webkitAudioContext; if(!state.audioCtx) state.audioCtx = new AudioContext();
-                if(!state.analyser) { state.analyser = state.audioCtx.createAnalyser(); state.analyser.fftSize = 256; state.dataArray = new Uint8Array(state.analyser.frequencyBinCount); }
-
-                let buffers = []; let globalTimeMs = 0; let surahTextData = globalQuran[surah];
-
-                for (let i = 0; i < state.phrases.length; i++) {
-                    let phrase = state.phrases[i]; btnText.innerText = `جلب صوت الآية ${phrase.num}...`;
-                    let arrayBuffer = await safeFetchAudio(surah, phrase.num, audioFolder); let decodedBuffer = await state.audioCtx.decodeAudioData(arrayBuffer); buffers.push(decodedBuffer);
-                    let durationMs = decodedBuffer.duration * 1000;
-                    let ayahTiming = fullTimingData ? fullTimingData.find(d => d.surah == surah && d.ayah == phrase.num) : null; let segments = ayahTiming ? ayahTiming.segments : [];
-                    let ayahObj = surahTextData.find(a => a.verse == phrase.num); let cleanText = ayahObj.text.trim().replace(/\s+/g, ' '); let wordsArr = cleanText.split(' ');
-                    
-                    wordsArr[wordsArr.length - 1] += `|^${toArabicNumber(phrase.num)}`;
-
-                    phrase.startTime = globalTimeMs; phrase.endTime = globalTimeMs + durationMs;
-                    let hasValidTimings = (segments.length === wordsArr.length); let totalChars = wordsArr.reduce((sum, w) => sum + w.length, 0); let cumulativeChars = 0; let wordsData = [];
-
-                    wordsArr.forEach((wText, idx) => {
-                        let wStart, wEnd;
-                        if (hasValidTimings && segments[idx]) { wStart = globalTimeMs + segments[idx][2]; wEnd = globalTimeMs + segments[idx][3]; } 
-                        else { let startRatio = cumulativeChars / totalChars; let endRatio = (cumulativeChars + wText.length) / totalChars; wStart = globalTimeMs + (startRatio * durationMs); wEnd = globalTimeMs + (endRatio * durationMs); cumulativeChars += wText.length; }
-                        wordsData.push({ text: wText, start: wStart, end: wEnd, newPage: phrase.words[idx].newPage, newLine: phrase.words[idx].newLine, isAyahNum: false });
-                    });
-                    
-                    phrase.words = wordsData; globalTimeMs += durationMs;
-                }
-
-                state.audioBuffer = mergeAudioBuffers(state.audioCtx, buffers); state.originalAudioBuffer = state.audioBuffer; state.originalPhrases = JSON.parse(JSON.stringify(state.phrases));
-                let wavBlob = bufferToWave(state.audioBuffer); audioPlayer.src = URL.createObjectURL(wavBlob);
-                renderTimelineUI(); state.currentIndex = 0; updatePreviewUI();
-                btnText.innerText = "اكتملت المزامنة بنجاح!"; setTimeout(() => btnText.innerText = "جلب الصوت والمزامنة للتصدير", 3000);
-
-                audioPlayer.ontimeupdate = () => {
-                    if(!state.isExporting) {
-                        document.getElementById('progress-bar-audio').value = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-                        let tc = document.getElementById('time-current'); if(tc) tc.innerText = formatTime(audioPlayer.currentTime); let tt = document.getElementById('time-total'); if(tt) tt.innerText = formatTime(audioPlayer.duration);
-                        let baseTimeMs = audioPlayer.currentTime * 1000;
-                        let timeMs = baseTimeMs + ((state.settings.syncOffset || 0) * 1000);
-                        let activeIdx = state.phrases.findIndex(p => timeMs >= p.startTime && timeMs <= p.endTime);
-                        if(activeIdx !== -1 && activeIdx !== state.currentIndex) { state.currentIndex = activeIdx; updatePreviewUI(); }
+                // فحص أي عنصر تم النقر عليه
+                for (let s of state.speakers) {
+                    let spX = C_W * (s.x / 100); let spY = C_H * (s.y / 100);
+                    let spSize = C_W * (s.scale / 100);
+                    if(Math.hypot(pos.x - spX, pos.y - spY) < spSize / 1.5) {
+                        activeDrag = { type: 'speaker', id: s.id }; break;
                     }
-                };
-            } catch (e) { console.error(e); alert("فشل جلب بعض الصوتيات."); } finally { btnText.parentElement.classList.remove('opacity-50', 'pointer-events-none'); }
-        }
 
-        function showContextMenu(pIdx, wIdx, el, event) {
-            event.stopPropagation(); document.querySelectorAll('.tl-word').forEach(n => n.classList.remove('selected'));
-            el.classList.add('selected'); state.selectedWord = { pIdx, wIdx };
-            let menu = document.getElementById('word-context-menu'); menu.style.display = 'block';
-            let rect = el.getBoundingClientRect(); let menuX = rect.left; let menuY = rect.bottom + window.scrollY;
-            if (menuX + 160 > window.innerWidth) menuX = window.innerWidth - 170;
-            menu.style.left = menuX + 'px'; menu.style.top = menuY + 'px';
-        }
+                    let txtX = C_W * (s.textX / 100); let txtY = C_H * (s.textY / 100);
+                    if(Math.hypot(pos.x - txtX, pos.y - txtY) < 80) {
+                        activeDrag = { type: 'text', id: s.id }; break;
+                    }
 
-        function hideContextMenu() { document.getElementById('word-context-menu').style.display = 'none'; }
-
-        async function applyWordAction(action) {
-            hideContextMenu(); if (!state.selectedWord) return;
-            let pIdx = state.selectedWord.pIdx; let wIdx = state.selectedWord.wIdx; let word = state.phrases[pIdx].words[wIdx];
-            if(action === 'pageBreak') { word.newPage = !word.newPage; renderTimelineUI(); } 
-            else if(action === 'lineBreak') { word.newLine = !word.newLine; renderTimelineUI(); } 
-            else if(action === 'setStart') { if (!state.originalAudioBuffer) return alert("قم بجلب الصوت أولاً لتتمكن من قصه."); state.trimStartWord = { pIdx, wIdx, timeMs: word.start }; alert("تم تحديد هذه الكلمة كبداية. انقر على كلمة أخرى لتعيينها كنهاية ليتم القص."); } 
-            else if(action === 'setEnd') { if (!state.originalAudioBuffer) return alert("قم بجلب الصوت أولاً."); if (!state.trimStartWord) return alert("الرجاء تحديد (البداية) أولاً من قائمة الكلمات."); state.trimEndWord = { pIdx, wIdx, timeMs: word.end }; if (state.trimStartWord.timeMs >= state.trimEndWord.timeMs) { return alert("خطأ: يجب أن تكون نقطة النهاية بعد نقطة البداية."); } executeAudioTrim(); }
-        }
-
-        function executeAudioTrim() {
-            let startMs = state.trimStartWord.timeMs; let endMs = state.trimEndWord.timeMs;
-            state.audioBuffer = sliceAudioBuffer(state.originalAudioBuffer, startMs, endMs, state.audioCtx);
-            let newPhrases = []; let ogPhrases = JSON.parse(JSON.stringify(state.originalPhrases));
-            ogPhrases.forEach((p) => {
-                if(p.endTime > startMs && p.startTime < endMs) {
-                    let newWords = [];
-                    p.words.forEach((w) => { if(w.end > startMs && w.start < endMs) { w.start = Math.max(0, w.start - startMs); w.end = Math.min(endMs - startMs, w.end - startMs); newWords.push(w); } });
-                    if(newWords.length > 0) { p.startTime = Math.max(0, p.startTime - startMs); p.endTime = Math.min(endMs - startMs, p.endTime - startMs); p.words = newWords; newPhrases.push(p); }
+                    let vizX = C_W * (s.vizX / 100); let vizY = C_H * (s.vizY / 100);
+                    if(Math.hypot(pos.x - vizX, pos.y - vizY) < 60) {
+                        activeDrag = { type: 'viz', id: s.id }; break;
+                    }
                 }
-            });
-            state.phrases = newPhrases; state.currentIndex = 0; let wavBlob = bufferToWave(state.audioBuffer); audioPlayer.src = URL.createObjectURL(wavBlob);
-            state.trimStartWord = null; state.trimEndWord = null; document.getElementById('btn-reset-trim').classList.remove('hidden'); renderTimelineUI(); updatePreviewUI();
+            };
+
+            const onMove = (e) => {
+                if(!activeDrag) return;
+                const pos = getCanvasCoords(e);
+                let speaker = state.speakers.find(s => s.id === activeDrag.id);
+                if(!speaker) return;
+
+                let newPctX = Math.max(0, Math.min(100, (pos.x / C_W) * 100));
+                let newPctY = Math.max(0, Math.min(100, (pos.y / C_H) * 100));
+
+                if(activeDrag.type === 'speaker') { speaker.x = newPctX; speaker.y = newPctY; }
+                else if(activeDrag.type === 'text') { speaker.textX = newPctX; speaker.textY = newPctY; }
+                else if(activeDrag.type === 'viz') { speaker.vizX = newPctX; speaker.vizY = newPctY; }
+
+                renderSpeakersUI();
+            };
+
+            const onEnd = () => { activeDrag = null; };
+
+            canvas.addEventListener('mousedown', onStart);
+            canvas.addEventListener('mousemove', onMove);
+            window.addEventListener('mouseup', onEnd);
+
+            canvas.addEventListener('touchstart', onStart, {passive: true});
+            canvas.addEventListener('touchmove', onMove, {passive: true});
+            window.addEventListener('touchend', onEnd);
         }
 
-        function sliceAudioBuffer(buffer, beginMs, endMs, ctx) {
-            const sampleRate = buffer.sampleRate; const startOffset = Math.floor((beginMs / 1000) * sampleRate); const endOffset = Math.floor((endMs / 1000) * sampleRate);
-            const frameCount = endOffset - startOffset; const newBuffer = ctx.createBuffer(buffer.numberOfChannels, frameCount, sampleRate);
-            for (let i = 0; i < buffer.numberOfChannels; i++) { const channelData = buffer.getChannelData(i); const newChannelData = newBuffer.getChannelData(i); newChannelData.set(channelData.subarray(startOffset, endOffset)); }
-            return newBuffer;
+        // -------- نظام الحفظ والتصدير للمشروع --------
+        function exportProject() {
+            let projectData = {
+                speakers: state.speakers,
+                dialogues: state.dialogues.map(d => ({ ...d, baseAudioBuffer: null })), 
+                settings: state.settings, 
+                bg: { type: state.bg.type, base64: state.bg.base64 }
+            };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(projectData));
+            const downloadAnchorNode = document.createElement('a'); downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", `EduLang_Project_${Date.now()}.edulang`);
+            document.body.appendChild(downloadAnchorNode); downloadAnchorNode.click(); downloadAnchorNode.remove();
         }
 
-        function resetTrim() {
-            if(!state.originalAudioBuffer) return; state.audioBuffer = state.originalAudioBuffer; state.phrases = JSON.parse(JSON.stringify(state.originalPhrases));
-            let wavBlob = bufferToWave(state.audioBuffer); audioPlayer.src = URL.createObjectURL(wavBlob); state.currentIndex = 0;
-            document.getElementById('btn-reset-trim').classList.add('hidden'); renderTimelineUI(); updatePreviewUI();
+        function importProject(input) {
+            const file = input.files[0]; if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    let data = JSON.parse(e.target.result);
+                    state.settings = data.settings || state.settings;
+                    
+                    document.getElementById('bg-opacity').value = (state.settings.bgOp || 0.4) * 100;
+                    document.getElementById('text-anim').value = state.settings.textAnim || 'zoom';
+                    document.getElementById('default-color').value = state.settings.defaultColor || '#ffffff';
+                    if(state.settings.glowColor) document.getElementById('text-glow-color').value = state.settings.glowColor;
+                    if(state.settings.glowBlur !== undefined) document.getElementById('text-glow-blur').value = state.settings.glowBlur;
+                    document.getElementById('en-size').value = state.settings.enSize || 50;
+                    document.getElementById('pr-size').value = state.settings.prSize || 40;
+                    document.getElementById('ar-size').value = state.settings.arSize || 40;
+                    document.getElementById('line-space').value = state.settings.lineSpace || 70;
+                    if(state.settings.strokeWidth !== undefined) document.getElementById('stroke-width').value = state.settings.strokeWidth;
+                    if(state.settings.fontEn) document.getElementById('font-en').value = state.settings.fontEn;
+                    if(state.settings.fontPr) document.getElementById('font-pr').value = state.settings.fontPr;
+                    if(state.settings.fontAr) document.getElementById('font-ar').value = state.settings.fontAr;
+
+                    state.bg.type = data.bg.type; state.bg.base64 = data.bg.base64;
+                    if(data.bg.base64) {
+                        if(data.bg.type === 'image') { let img = new Image(); img.src = data.bg.base64; state.bg.media = img; }
+                        else if(data.bg.type === 'video') { let vid = document.createElement('video'); vid.muted = true; vid.loop = true; vid.src = data.bg.base64; vid.load(); vid.play().catch(e=>{}); state.bg.media = vid; }
+                    }
+
+                    state.speakers = data.speakers;
+                    state.speakers.forEach(s => {
+                        if(s.imageBase64) { let img = new Image(); img.src = s.imageBase64; s.imageObj = img; }
+                    });
+
+                    state.dialogues = data.dialogues;
+                    state.dialogues.forEach(d => {
+                        if(d.bgBase64) { let img = new Image(); img.src = d.bgBase64; d.bgMedia = img; }
+                    });
+
+                    state.globalAudioBuffer = null; audioPlayer.src = ""; state.currentIndex = 0;
+                    renderSpeakersUI(); renderDialoguesUI(); updateSettings(); alert("تم تحميل المشروع بنجاح!");
+                } catch(err) { alert("ملف مشروع غير صالح!"); }
+            };
+            reader.readAsText(file);
         }
 
-        function renderTimelineUI() {
-            const container = document.getElementById('timeline-container'); container.innerHTML = '';
-            state.phrases.forEach((p, i) => {
-                let div = document.createElement('div'); div.className = 'segment-block'; div.id = `block-${i}`; let isAudioReady = !!state.audioBuffer;
+        function importAIScript(input) {
+            const file = input.files[0]; if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    let arr = JSON.parse(e.target.result);
+                    if(!Array.isArray(arr)) throw new Error("الملف ليس JSON Array");
+                    state.dialogues = [];
+                    arr.forEach((item, index) => {
+                        let spCode = item.speaker || (index % 2 === 0 ? "A" : "B");
+                        let speaker = state.speakers.find(s => s.code === spCode);
+                        if(!speaker) { addSpeaker(spCode); speaker = state.speakers[state.speakers.length - 1]; } 
+
+                        state.dialogues.push({
+                            id: generateId(), speakerId: speaker.id,
+                            target: item.target || "", pronunciation: item.pronunciation || "", native: item.native || "",
+                            baseAudioBuffer: null, repeat: 1, pauseAfter: 1, start: 0, end: 0, bgMedia: null
+                        });
+                    });
+                    renderSpeakersUI(); renderDialoguesUI(); alert("تم استيراد السيناريو بنجاح!");
+                } catch(err) { alert("خطأ في قراءة ملف الـ AI."); }
+            };
+            reader.readAsText(file);
+        }
+
+        function setBg(type, input) {
+            const file = input.files[0]; if(!file) return; 
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                let base64 = e.target.result; state.bg = { type, base64, media: null };
+                if(type === 'video') { let vid = document.createElement('video'); vid.muted = true; vid.loop = true; vid.src = base64; vid.load(); vid.play().catch(er=>{}); state.bg.media = vid; } 
+                else { let img = new Image(); img.src = base64; state.bg.media = img; }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function setDialogueBg(diagId, input) {
+            const file = input.files[0]; if(!file) return;
+            let diag = state.dialogues.find(d => d.id === diagId); if(!diag) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                let base64 = e.target.result; let img = new Image(); img.src = base64;
+                diag.bgBase64 = base64; diag.bgMedia = img;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // -------- نظام الشخصيات ومواقعها المخصصة --------
+        function generateId() { return Math.random().toString(36).substr(2, 9); }
+
+        function addSpeaker(codeStr = null) {
+            const id = generateId(); const speakerNum = state.speakers.length + 1; const isFirst = speakerNum % 2 !== 0;
+            const newSpeaker = {
+                id: id, code: codeStr || `S${speakerNum}`, name: `Speaker ${speakerNum}`, 
+                ttsEngine: 'pocket', voice: POCKET_VOICES[(speakerNum-1) % POCKET_VOICES.length], lang: 'en',
+                imageBase64: null, imageObj: null, showImage: true,
+                x: isFirst ? 25 : 75, y: 55, scale: 30, textX: isFirst ? 30 : 70, textY: 30,
+                vizOn: true, vizStyle: 'symmetric', vizColor: '#3b82f6', vizScale: 100, vizX: isFirst ? 30 : 70, vizY: 70
+            };
+            state.speakers.push(newSpeaker); renderSpeakersUI(); updateDialogueSpeakersDropdowns();
+        }
+
+        function removeSpeaker(id) { state.speakers = state.speakers.filter(s => s.id !== id); renderSpeakersUI(); updateDialogueSpeakersDropdowns(); }
+
+        function getVoiceOptionsHtml(engine, currentVoice) {
+            if(engine === 'cartesia') {
+                return CARTESIA_VOICES.map(v => `<option value="${v.id}" ${v.id===currentVoice?'selected':''}>${v.name}</option>`).join('') + 
+                       `<option value="custom" ${CARTESIA_VOICES.find(x=>x.id===currentVoice)?'':'selected'}>صوت مخصص (ID)</option>`;
+            } else {
+                return POCKET_VOICES.map(v => `<option value="${v}" ${v===currentVoice?'selected':''}>صوت: ${v}</option>`).join('');
+            }
+        }
+
+        function renderSpeakersUI() {
+            const container = document.getElementById('speakers-container'); container.innerHTML = '';
+            state.speakers.forEach(s => {
+                let isCustomCartesia = s.ttsEngine === 'cartesia' && !CARTESIA_VOICES.find(v => v.id === s.voice);
+                
+                const div = document.createElement('div');
+                div.className = "bg-[#18181b] border border-[#27272a] p-3 rounded-lg relative mb-3";
                 div.innerHTML = `
-                    <div class="segment-header cursor-pointer text-amber-500 font-bold p-2 bg-[#27272a] text-xs flex justify-between" onclick="changeAyah(${i - state.currentIndex}); event.stopPropagation();">
-                        <span>الآية ${p.num}</span><span>${isAudioReady ? formatTime(p.startTime/1000) : '-:-'}</span>
+                    <button onclick="removeSpeaker('${s.id}')" class="absolute top-2 left-2 text-red-500 hover:text-red-400"><i class="fa-solid fa-trash"></i></button>
+                    
+                    <div class="flex gap-3 items-center mb-2">
+                        <div class="file-btn bg-[#27272a] hover:bg-[#3f3f46] w-16 h-16 rounded flex-shrink-0 !p-0 flex items-center justify-center overflow-hidden border border-blue-500/50">
+                            ${s.imageObj ? `<img src="${s.imageObj.src}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-user text-xl"></i>`}
+                            <input type="file" accept="image/*" onchange="uploadSpeakerImg('${s.id}', this)">
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex gap-1 mb-1">
+                                <input type="text" value="${s.code}" onchange="updateSpeakerProp('${s.id}', 'code', this.value)" placeholder="كود A,B" class="w-1/3 text-xs text-center font-bold text-amber-400">
+                                <input type="text" value="${s.name}" onchange="updateSpeakerProp('${s.id}', 'name', this.value)" placeholder="اسم الشخصية" class="w-2/3 text-xs">
+                            </div>
+                            <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mt-2">
+                                <input type="checkbox" ${s.showImage ? 'checked' : ''} onchange="updateSpeakerProp('${s.id}', 'showImage', this.checked)" class="w-3 h-3 accent-blue-500 rounded">
+                                <span class="text-[10px] text-zinc-300">إظهار صورة الشخصية</span>
+                            </label>
+                        </div>
                     </div>
-                    <div class="p-3 text-center text-sm text-zinc-300 leading-relaxed font-bold" style="font-family: 'Amiri Quran', serif; direction:rtl;">
-                        ${p.words.map((w, wIdx) => { 
-                            let showTxt = w.text.replace(/\|\^.*/, ''); 
-                            return `<span class="tl-word ${w.newPage ? 'page-break' : ''} ${w.newLine ? 'line-break' : ''}" onclick="showContextMenu(${i}, ${wIdx}, this, event)">${showTxt}</span>` 
-                        }).join(' ')}
-                    </div>`;
+
+                    <div class="bg-[#09090b] p-2 rounded border border-[#3f3f46] mb-2">
+                        <h4 class="text-[10px] font-bold text-indigo-400 mb-2">إعدادات محرك الصوت</h4>
+                        <div class="grid grid-cols-2 gap-2 mb-2">
+                            <div>
+                                <label class="text-[9px] text-zinc-400 block mb-1">المحرك</label>
+                                <select onchange="handleEngineChange('${s.id}', this.value)" class="!p-1 text-[10px]">
+                                    <option value="pocket" ${s.ttsEngine==='pocket'?'selected':''}>Pocket TTS</option>
+                                    <option value="cartesia" ${s.ttsEngine==='cartesia'?'selected':''}>Cartesia AI</option>
+                                </select>
+                            </div>
+                            ${s.ttsEngine === 'cartesia' ? `
+                            <div>
+                                <label class="text-[9px] text-zinc-400 block mb-1">لغة التحدث</label>
+                                <select onchange="updateSpeakerProp('${s.id}', 'lang', this.value)" class="!p-1 text-[10px]">
+                                    ${CARTESIA_LANGS.map(l => `<option value="${l.code}" ${l.code===s.lang?'selected':''}>${l.name}</option>`).join('')}
+                                </select>
+                            </div>
+                            ` : '<div></div>'}
+                        </div>
+                        
+                        <div class="flex gap-1">
+                            <select onchange="handleVoiceSelChange('${s.id}', this.value)" class="!p-1 text-[10px] flex-1">
+                                ${getVoiceOptionsHtml(s.ttsEngine, s.voice)}
+                            </select>
+                            ${isCustomCartesia ? `<input type="text" value="${s.voice}" onchange="updateSpeakerProp('${s.id}', 'voice', this.value)" placeholder="ID الصوت" class="!p-1 text-[10px] flex-1">` : ''}
+                        </div>
+                    </div>
+                    
+                    <details class="mb-2 !bg-[#09090b]">
+                        <summary class="!p-2 text-[10px]"><i class="fa-solid fa-arrows-up-down-left-right"></i> مكان الشخصية والنص (أو اسحب بالماوس)</summary>
+                        <div class="details-body !p-2 border-t border-[#27272a]">
+                            <div class="grid grid-cols-3 gap-2 mb-2">
+                                <div><label class="text-[9px] text-zinc-400 block">شخصية (X)</label><input type="range" min="0" max="100" value="${Math.round(s.x)}" oninput="updateSpeakerProp('${s.id}', 'x', this.value)"></div>
+                                <div><label class="text-[9px] text-zinc-400 block">شخصية (Y)</label><input type="range" min="0" max="100" value="${Math.round(s.y)}" oninput="updateSpeakerProp('${s.id}', 'y', this.value)"></div>
+                                <div><label class="text-[9px] text-zinc-400 block">حجم الصورة</label><input type="range" min="10" max="100" value="${s.scale}" oninput="updateSpeakerProp('${s.id}', 'scale', this.value)"></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div><label class="text-[9px] text-emerald-400 block font-bold">مكان النص (X)</label><input type="range" min="0" max="100" value="${Math.round(s.textX)}" oninput="updateSpeakerProp('${s.id}', 'textX', this.value)"></div>
+                                <div><label class="text-[9px] text-emerald-400 block font-bold">مكان النص (Y)</label><input type="range" min="0" max="100" value="${Math.round(s.textY)}" oninput="updateSpeakerProp('${s.id}', 'textY', this.value)"></div>
+                            </div>
+                        </div>
+                    </details>
+
+                    <details class="!bg-[#09090b] !m-0">
+                        <summary class="!p-2 text-[10px]"><i class="fa-solid fa-wave-square"></i> إعدادات الموجة الصوتية</summary>
+                        <div class="details-body !p-2 border-t border-[#27272a]">
+                            <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer mb-2">
+                                <input type="checkbox" ${s.vizOn ? 'checked' : ''} onchange="updateSpeakerProp('${s.id}', 'vizOn', this.checked)" class="w-3 h-3 accent-blue-500 rounded">
+                                <span class="text-[10px] text-zinc-300 font-bold">تفعيل الموجة</span>
+                            </label>
+                            <div class="mb-2">
+                                <label class="text-[9px] text-zinc-400 block mb-1">شكل الموجة</label>
+                                <select onchange="updateSpeakerProp('${s.id}', 'vizStyle', this.value)" class="!p-1 text-[10px] w-full">
+                                    <option value="symmetric" ${s.vizStyle === 'symmetric' ? 'selected' : ''}>متناظرة</option>
+                                    <option value="bottom-up" ${s.vizStyle === 'bottom-up' ? 'selected' : ''}>أعمدة للأعلى</option>
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 mb-2">
+                                <div><label class="text-[9px] text-zinc-400 block">لون الموجة</label><input type="color" value="${s.vizColor}" oninput="updateSpeakerProp('${s.id}', 'vizColor', this.value)" class="h-6 p-0 border-0 rounded w-full"></div>
+                                <div><label class="text-[9px] text-zinc-400 block">حجم الموجة</label><input type="range" min="10" max="200" value="${s.vizScale}" oninput="updateSpeakerProp('${s.id}', 'vizScale', this.value)"></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div><label class="text-[9px] text-zinc-400 block">موقع الموجة (X)</label><input type="range" min="0" max="100" value="${Math.round(s.vizX)}" oninput="updateSpeakerProp('${s.id}', 'vizX', this.value)"></div>
+                                <div><label class="text-[9px] text-zinc-400 block">موقع الموجة (Y)</label><input type="range" min="0" max="100" value="${Math.round(s.vizY)}" oninput="updateSpeakerProp('${s.id}', 'vizY', this.value)"></div>
+                            </div>
+                        </div>
+                    </details>
+                `;
                 container.appendChild(div);
             });
         }
 
-        function mergeAudioBuffers(ctx, buffers) { let totalLength = 0; buffers.forEach(b => totalLength += b.length); const tmp = ctx.createBuffer(buffers[0].numberOfChannels, totalLength, buffers[0].sampleRate); let offset = 0; buffers.forEach(buffer => { for (let channel = 0; channel < buffer.numberOfChannels; channel++) { tmp.getChannelData(channel).set(buffer.getChannelData(channel), offset); } offset += buffer.length; }); return tmp; }
-
-        function bufferToWave(abuffer) {
-            let numOfChan = abuffer.numberOfChannels, length = abuffer.length * numOfChan * 2 + 44, buffer = new ArrayBuffer(length), view = new DataView(buffer), channels =[], i, sample, offset = 0, pos = 0;
-            const setUint16 = (d) => { view.setUint16(pos, d, true); pos += 2; }; const setUint32 = (d) => { view.setUint32(pos, d, true); pos += 4; };
-            setUint32(0x46464952); setUint32(length - 8); setUint32(0x45564157); setUint32(0x20746d66); setUint32(16); setUint16(1); setUint16(numOfChan); setUint32(abuffer.sampleRate); setUint32(abuffer.sampleRate * 2 * numOfChan); setUint16(numOfChan * 2); setUint16(16); setUint32(0x61746164); setUint32(length - pos - 4);
-            for(i = 0; i < abuffer.numberOfChannels; i++) channels.push(abuffer.getChannelData(i));
-            while(pos < length) { for(i = 0; i < numOfChan; i++) { sample = Math.max(-1, Math.min(1, channels[i][offset])); sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767)|0; view.setInt16(pos, sample, true); pos += 2; } offset++; }
-            return new Blob([buffer], {type: "audio/wav"});
+        function handleEngineChange(id, engine) {
+            let speaker = state.speakers.find(s => s.id === id);
+            speaker.ttsEngine = engine; speaker.voice = engine === 'cartesia' ? CARTESIA_VOICES[0].id : POCKET_VOICES[0];
+            renderSpeakersUI();
         }
 
-        function toArabicNumber(n) { const d = {'0':'٠','1':'١','2':'٢','3':'٣','4':'٤','5':'٥','6':'٦','7':'٧','8':'٨','9':'٩'}; return n.toString().replace(/\d/g, m => d[m]); }
+        function handleVoiceSelChange(id, val) {
+            let speaker = state.speakers.find(s => s.id === id);
+            speaker.voice = val === 'custom' ? '' : val; renderSpeakersUI();
+        }
+
+        function updateSpeakerProp(id, prop, value) {
+            let speaker = state.speakers.find(s => s.id === id);
+            if(speaker) {
+                if(['x', 'y', 'scale', 'textX', 'textY', 'vizX', 'vizY', 'vizScale'].includes(prop)) speaker[prop] = parseFloat(value);
+                else speaker[prop] = value;
+                if(prop === 'name' || prop === 'code') updateDialogueSpeakersDropdowns();
+            }
+        }
+
+        function uploadSpeakerImg(id, input) {
+            if(input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => { 
+                    let base64 = e.target.result; let img = new Image(); img.src = base64; 
+                    img.onload = () => { let speaker = state.speakers.find(s => s.id === id); speaker.imageBase64 = base64; speaker.imageObj = img; renderSpeakersUI(); } 
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // -------- نظام السيناريو --------
+        function addDialogueRow() {
+            const id = generateId();
+            state.dialogues.push({ id: id, speakerId: state.speakers.length > 0 ? state.speakers[0].id : '', target: '', pronunciation: '', native: '', baseAudioBuffer: null, repeat: 1, pauseAfter: 1, start: 0, end: 0, bgMedia: null, bgBase64: null });
+            renderDialoguesUI();
+        }
+
+        function removeDialogueRow(id) { state.dialogues = state.dialogues.filter(d => d.id !== id); renderDialoguesUI(); rebuildGlobalTimeline(); }
+
+        function renderDialoguesUI() {
+            const container = document.getElementById('dialogues-container'); container.innerHTML = '';
+            state.dialogues.forEach((d, index) => {
+                const div = document.createElement('div');
+                div.className = `dialogue-card ${index === state.currentIndex ? 'active' : ''}`; div.id = `dialogue-card-${index}`;
+                div.onclick = () => { if(state.currentIndex !== index) { state.currentIndex = index; updateDialogueHighlight(); playWhooshSFX(); } };
+                div.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-bold text-zinc-400">مشهد ${index + 1} ${d.baseAudioBuffer ? '✅' : '❌'}</span>
+                        <div class="flex gap-2 items-center">
+                            <label class="cursor-pointer text-[10px] text-blue-400 hover:underline"><i class="fa-solid fa-image"></i> خلفية خاصة<input type="file" accept="image/*" class="hidden" onchange="setDialogueBg('${d.id}', this)"></label>
+                            <button onclick="generateSingleAudio('${d.id}', this); event.stopPropagation();" class="bg-blue-600 hover:bg-blue-500 text-white text-[10px] px-2 py-1 rounded shadow"><i class="fa-solid fa-microphone"></i> توليد</button>
+                            <button onclick="removeDialogueRow('${d.id}'); event.stopPropagation();" class="text-red-500 hover:text-red-400"><i class="fa-solid fa-times"></i></button>
+                        </div>
+                    </div>
+                    <select onchange="updateDialogueProp('${d.id}', 'speakerId', this.value)" class="mb-2 dialogue-speaker-select border-[#3f3f46]">
+                        ${generateSpeakerOptions(d.speakerId)}
+                    </select>
+                    <textarea placeholder="الجملة (Target) e.g. [Hello]{#f472b6}" onchange="updateDialogueProp('${d.id}', 'target', this.value)" class="mb-1 h-14 font-sans text-[11px]" dir="ltr">${d.target}</textarea>
+                    <textarea placeholder="النطق (Pronunciation) e.g. [هالو]{#f472b6}" onchange="updateDialogueProp('${d.id}', 'pronunciation', this.value)" class="mb-1 h-10 font-sans text-[11px] border-[#3f3f46]">${d.pronunciation}</textarea>
+                    <textarea placeholder="الترجمة (Native) e.g. [مرحباً]{#f472b6}" onchange="updateDialogueProp('${d.id}', 'native', this.value)" class="mb-2 h-10 text-[11px] border-[#3f3f46]">${d.native}</textarea>
+                    
+                    <div class="grid grid-cols-2 gap-2 bg-[#18181b] p-2 rounded border border-[#27272a]">
+                        <div><label class="text-[9px] text-zinc-400 block mb-1">تكرار المشهد</label>
+                            <select onchange="updateDialogueProp('${d.id}', 'repeat', parseInt(this.value)); rebuildGlobalTimeline();" class="!p-1 text-[10px]">
+                                ${[1,2,3,4,5].map(v => `<option value="${v}" ${v===d.repeat?'selected':''}>${v} مرات</option>`).join('')}
+                            </select>
+                        </div>
+                        <div><label class="text-[9px] text-zinc-400 block mb-1">صمت بعد الجملة</label>
+                            <select onchange="updateDialogueProp('${d.id}', 'pauseAfter', parseFloat(this.value)); rebuildGlobalTimeline();" class="!p-1 text-[10px]">
+                                ${[0.5, 1, 1.5, 2, 3, 4, 5].map(v => `<option value="${v}" ${v===d.pauseAfter?'selected':''}>${v} ثانية</option>`).join('')}
+                            </select>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function generateSpeakerOptions(selectedId) {
+            if(state.speakers.length === 0) return `<option value="">أضف شخصيات أولاً</option>`;
+            return state.speakers.map(s => `<option value="${s.id}" ${s.id === selectedId ? 'selected' : ''}>${s.code} - ${s.name}</option>`).join('');
+        }
+
+        function updateDialogueSpeakersDropdowns() { document.querySelectorAll('.dialogue-speaker-select').forEach(select => { select.innerHTML = generateSpeakerOptions(select.value); }); }
+        function updateDialogueProp(id, prop, value) { let diag = state.dialogues.find(d => d.id === id); if(diag) diag[prop] = value; }
+
+        function changeDialogue(step) {
+            if(state.dialogues.length === 0) return; 
+            state.currentIndex += step;
+            if(state.currentIndex < 0) state.currentIndex = 0; if(state.currentIndex >= state.dialogues.length) state.currentIndex = state.dialogues.length - 1;
+            if (state.globalAudioBuffer && audioPlayer.src) { audioPlayer.currentTime = state.dialogues[state.currentIndex].start / 1000; }
+            updateDialogueHighlight();
+            playWhooshSFX();
+        }
+
+        function updateDialogueHighlight() {
+            document.querySelectorAll('.dialogue-card').forEach(c => c.classList.remove('active'));
+            const activeCard = document.getElementById(`dialogue-card-${state.currentIndex}`);
+            if(activeCard) activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            if(activeCard) activeCard.classList.add('active');
+            document.getElementById('preview-label').innerText = `معاينة المشهد: ${state.currentIndex + 1}`;
+        }
+
+        // المؤثر الصوتي للانتقالات بدون أي ملفات خارجية (Web Audio Synthesizer)
+        function playWhooshSFX() {
+            if(!state.audioCtx) return;
+            try {
+                let osc = state.audioCtx.createOscillator();
+                let gain = state.audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, state.audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(80, state.audioCtx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.15, state.audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, state.audioCtx.currentTime + 0.15);
+                osc.connect(gain); gain.connect(state.audioCtx.destination);
+                osc.start(); osc.stop(state.audioCtx.currentTime + 0.15);
+            } catch(e) {}
+        }
+
+        // -------- توليد الصوت APIs --------
+        function stripTags(text) { return text.replace(/\[(.*?)\]\{#.*?\}/g, '$1'); }
+
+        async function fetchPocketTTS(text, voiceName) {
+            try {
+                let cleanText = stripTags(text); 
+                const postRes = await fetch("https://mahmoudmody777-pocket-tts-test.hf.space/gradio_api/call/tts_generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ data: [cleanText, voiceName] }) });
+                if(!postRes.ok) throw new Error("PocketTTS API Error"); const { event_id } = await postRes.json();
+                const getRes = await fetch(`https://mahmoudmody777-pocket-tts-test.hf.space/gradio_api/call/tts_generate/${event_id}`);
+                const textData = await getRes.text();
+                const urlMatch = textData.match(/"url":\s*"([^"]+)"/);
+                if(urlMatch && urlMatch[1]) { const audioFetch = await fetch(urlMatch[1]); return await audioFetch.arrayBuffer(); } else throw new Error("URL not found");
+            } catch (err) { console.error("PocketTTS Error:", err); return null; }
+        }
+
+        async function fetchCartesiaTTS(text, voiceId, language) {
+            try {
+                let cleanText = stripTags(text);
+                let apiKey = document.getElementById('cartesia-api-key').value;
+                if(!apiKey) throw new Error("Missing Cartesia API Key");
+
+                const postRes = await fetch("https://api.cartesia.ai/tts/bytes", {
+                    method: "POST",
+                    headers: { "Cartesia-Version": "2024-03-01", "X-API-Key": apiKey, "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        model_id: "sonic-3.5", transcript: cleanText, voice: { mode: "id", id: voiceId },
+                        output_format: { container: "wav", encoding: "pcm_s16le", sample_rate: 44100 }, language: language
+                    })
+                });
+                if(!postRes.ok) throw new Error("Cartesia Error"); return await postRes.arrayBuffer();
+            } catch(err) { console.error("Cartesia Error:", err); return null; }
+        }
+
+        async function initAudioCtx() {
+            window.AudioContext = window.AudioContext || window.webkitAudioContext; 
+            if(!state.audioCtx) state.audioCtx = new AudioContext();
+            if(!state.analyser) { state.analyser = state.audioCtx.createAnalyser(); state.analyser.fftSize = 256; state.dataArray = new Uint8Array(state.analyser.frequencyBinCount); }
+        }
+
+        async function processAudioForDialogue(diag) {
+            let speaker = state.speakers.find(s => s.id === diag.speakerId); if(!speaker) return false;
+            let arrayBuffer = (speaker.ttsEngine === 'cartesia') ? 
+                await fetchCartesiaTTS(diag.target, speaker.voice, speaker.lang) : 
+                await fetchPocketTTS(diag.target, speaker.voice);
+
+            if(arrayBuffer) { diag.baseAudioBuffer = await state.audioCtx.decodeAudioData(arrayBuffer); return true; }
+            return false;
+        }
+
+        async function generateSingleAudio(id, btnEl) {
+            let diag = state.dialogues.find(d => d.id === id); if(!diag || !diag.target.trim()) return alert("اكتب النص أولاً.");
+            let oldText = btnEl.innerHTML; btnEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; btnEl.disabled = true;
+            await initAudioCtx();
+            let success = await processAudioForDialogue(diag);
+            if(success) { renderDialoguesUI(); rebuildGlobalTimeline(); } else alert("فشل التوليد. تأكد من إعدادات API والاتصال.");
+            btnEl.innerHTML = oldText; btnEl.disabled = false;
+        }
+
+        async function generateAllAudio() {
+            if(state.dialogues.length === 0) return alert("أضف سيناريو أولاً.");
+            const btnText = document.getElementById('btn-fetch-text'); btnText.innerText = "جاري التوليد..."; btnText.parentElement.classList.add('opacity-50', 'pointer-events-none');
+            await initAudioCtx();
+            for (let i = 0; i < state.dialogues.length; i++) {
+                let diag = state.dialogues[i]; if(!diag.target.trim() || diag.baseAudioBuffer) continue; 
+                btnText.innerText = `توليد مشهد ${i + 1}/${state.dialogues.length}...`;
+                await processAudioForDialogue(diag);
+            }
+            renderDialoguesUI(); rebuildGlobalTimeline();
+            btnText.innerText = "اكتمل بنجاح!"; setTimeout(() => { btnText.innerText = "توليد كل الأصوات الناقصة"; btnText.parentElement.classList.remove('opacity-50', 'pointer-events-none'); }, 2000);
+        }
+
+        function createSilentBuffer(ctx, seconds) { return ctx.createBuffer(1, ctx.sampleRate * seconds, ctx.sampleRate); }
+
+        function rebuildGlobalTimeline() {
+            if(!state.audioCtx) return;
+            let buffers = []; let globalTimeMs = 0;
+            for (let d of state.dialogues) {
+                if(!d.baseAudioBuffer) continue;
+                d.start = globalTimeMs;
+                for(let r=0; r < d.repeat; r++) {
+                    buffers.push(d.baseAudioBuffer); globalTimeMs += d.baseAudioBuffer.duration * 1000;
+                    if(r < d.repeat - 1) { let pBuf = createSilentBuffer(state.audioCtx, 0.5); buffers.push(pBuf); globalTimeMs += 500; }
+                }
+                d.end = globalTimeMs;
+                let pauseBuf = createSilentBuffer(state.audioCtx, d.pauseAfter); buffers.push(pauseBuf); globalTimeMs += d.pauseAfter * 1000;
+            }
+
+            if(buffers.length > 0) {
+                state.globalAudioBuffer = mergeAudioBuffers(state.audioCtx, buffers);
+                let wavBlob = bufferToWave(state.globalAudioBuffer); audioPlayer.src = URL.createObjectURL(wavBlob);
+                audioPlayer.ontimeupdate = () => {
+                    if(!state.isExporting) {
+                        document.getElementById('progress-bar-audio').value = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+                        document.getElementById('time-current').innerText = formatTime(audioPlayer.currentTime); document.getElementById('time-total').innerText = formatTime(audioPlayer.duration);
+                        let timeMs = audioPlayer.currentTime * 1000; let activeIdx = state.dialogues.findIndex(d => timeMs >= d.start && timeMs <= d.end + (d.pauseAfter*1000)); 
+                        if(activeIdx !== -1 && activeIdx !== state.currentIndex) { state.currentIndex = activeIdx; updateDialogueHighlight(); }
+                    }
+                };
+            } else { state.globalAudioBuffer = null; audioPlayer.src = ""; }
+        }
+
+        function mergeAudioBuffers(ctx, buffers) { let totalLength = 0; buffers.forEach(b => totalLength += b.length); const tmp = ctx.createBuffer(buffers[0].numberOfChannels, totalLength, buffers[0].sampleRate); let offset = 0; buffers.forEach(buffer => { for (let channel = 0; channel < buffer.numberOfChannels; channel++) { if(channel < buffer.numberOfChannels && channel < tmp.numberOfChannels) tmp.getChannelData(channel).set(buffer.getChannelData(channel), offset); } offset += buffer.length; }); return tmp; }
+        function bufferToWave(abuffer) { let numOfChan = abuffer.numberOfChannels, length = abuffer.length * numOfChan * 2 + 44, buffer = new ArrayBuffer(length), view = new DataView(buffer), channels =[], i, sample, offset = 0, pos = 0; const setUint16 = (d) => { view.setUint16(pos, d, true); pos += 2; }; const setUint32 = (d) => { view.setUint32(pos, d, true); pos += 4; }; setUint32(0x46464952); setUint32(length - 8); setUint32(0x45564157); setUint32(0x20746d66); setUint32(16); setUint16(1); setUint16(numOfChan); setUint32(abuffer.sampleRate); setUint32(abuffer.sampleRate * 2 * numOfChan); setUint16(numOfChan * 2); setUint16(16); setUint32(0x61746164); setUint32(length - pos - 4); for(i = 0; i < abuffer.numberOfChannels; i++) channels.push(abuffer.getChannelData(i)); while(pos < length) { for(i = 0; i < numOfChan; i++) { sample = Math.max(-1, Math.min(1, channels[i][offset])); sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767)|0; view.setInt16(pos, sample, true); pos += 2; } offset++; } return new Blob([buffer], {type: "audio/wav"}); }
         function formatTime(secs) { if(isNaN(secs)) return "00:00"; let m = Math.floor(secs / 60); let s = Math.floor(secs % 60); return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
 
         function togglePlay() {
-            if(!audioPlayer.src) return alert("قم بجلب الصوت أولاً.");
+            if(!audioPlayer.src) return alert("قم بتوليد الأصوات أولاً.");
             if (state.audioCtx && state.audioCtx.state === 'suspended') state.audioCtx.resume();
-            if(!window.isAudioConnectedToViz && state.audioCtx) { 
-                try { 
-                    let source = state.audioCtx.createMediaElementSource(audioPlayer); 
-                    connectAudioGraph(state.audioCtx, source, state.analyser, state.audioCtx.destination, false);
-                    window.isAudioConnectedToViz = true; 
-                } catch(e) {} 
-            }
-            if (audioPlayer.paused) { 
-                audioPlayer.play(); 
-                document.getElementById('play-btn').innerHTML = '<i class="fa-solid fa-pause"></i>'; 
-            } else { 
-                audioPlayer.pause(); 
-                document.getElementById('play-btn').innerHTML = '<i class="fa-solid fa-play"></i>'; 
-            }
+            if(!window.isAudioConnectedToViz && state.audioCtx && state.analyser) { try { let source = state.audioCtx.createMediaElementSource(audioPlayer); source.connect(state.analyser); state.analyser.connect(state.audioCtx.destination); window.isAudioConnectedToViz = true; } catch(e) {} }
+            if (audioPlayer.paused) { audioPlayer.play(); document.getElementById('play-btn').innerHTML = '<i class="fa-solid fa-pause"></i>'; } 
+            else { audioPlayer.pause(); document.getElementById('play-btn').innerHTML = '<i class="fa-solid fa-play"></i>'; }
         }
-        
         function seekAudio(val) { if(audioPlayer.src) audioPlayer.currentTime = (val / 100) * audioPlayer.duration; }
         function drawCover(ctxToDraw, img, w, h) { ctxToDraw.imageSmoothingEnabled = true; ctxToDraw.imageSmoothingQuality = 'high'; let r = Math.max(C_W/w, C_H/h); let cw = Math.floor(w*r), ch = Math.floor(h*r); ctxToDraw.drawImage(img, 0, 0, w, h, Math.floor((C_W-cw)/2), Math.floor((C_H-ch)/2), cw, ch); }
-        function wrapTextLine(ctxToDraw, t, x, y, mW, lH) { let w=t.split(' '), line='', lines=[]; for(let n=0; n<w.length; n++) { let test=line+w[n]+' '; if(ctxToDraw.measureText(test).width>mW && n>0) { lines.push(line); line=w[n]+' '; } else line=test; } lines.push(line); let sY = y - ((lines.length-1)*lH)/2; for(let i=0; i<lines.length; i++) ctxToDraw.fillText(lines[i].trim(), x, sY + (i*lH)); }
 
+        function parseColoredText(text, defaultColor) {
+            if(!text) return [];
+            const regex = /\[(.*?)\]\{(#.*?)\}|([^\[\]]+)/g;
+            let segments = []; let match;
+            while ((match = regex.exec(text)) !== null) {
+                if (match[1] && match[2]) { segments.push({ text: match[1], color: match[2] }); } 
+                else if (match[3]) { segments.push({ text: match[3], color: defaultColor }); }
+            }
+            return segments;
+        }
+
+        // رسم النص الذكي ومطابقة النيون المطور للكلمات
+        function drawColoredLineCentered(ctxToDraw, segments, x, y, fontCss, direction = "ltr", isSpeaking = false) {
+            ctxToDraw.font = fontCss; ctxToDraw.textBaseline = "middle";
+            let totalWidth = 0;
+            let widths = segments.map(seg => { let w = ctxToDraw.measureText(seg.text).width; totalWidth += w; return w; });
+            
+            let maxWidth = C_W * 0.9; let scale = 1;
+            if(totalWidth > maxWidth) { scale = maxWidth / totalWidth; }
+            
+            ctxToDraw.save(); ctxToDraw.translate(x, y); if(scale !== 1) ctxToDraw.scale(scale, scale);
+            let currentX = direction === "ltr" ? -(totalWidth / 2) : (totalWidth / 2);
+
+            segments.forEach((seg, i) => {
+                ctxToDraw.fillStyle = seg.color;
+                ctxToDraw.strokeStyle = "#000000"; 
+                ctxToDraw.lineWidth = state.settings.strokeWidth !== undefined ? state.settings.strokeWidth : 6; 
+                ctxToDraw.lineJoin = "round";
+                
+                // تطبيق توهج النيون العبقري والمطور عند الحديث
+                if(isSpeaking) {
+                    ctxToDraw.shadowColor = state.settings.glowColor || "#3b82f6";
+                    ctxToDraw.shadowBlur = state.settings.glowBlur !== undefined ? state.settings.glowBlur : 25;
+                } else {
+                    ctxToDraw.shadowBlur = 0;
+                }
+
+                if (direction === "ltr") {
+                    ctxToDraw.strokeText(seg.text, currentX, 0); ctxToDraw.fillText(seg.text, currentX, 0);
+                    currentX += widths[i];
+                } else {
+                    ctxToDraw.strokeText(seg.text, currentX - widths[i], 0); ctxToDraw.fillText(seg.text, currentX - widths[i], 0);
+                    currentX -= widths[i];
+                }
+            });
+            ctxToDraw.restore();
+        }
+
+        // -------- حلقة الرسم وتوليد الإطارات (Render Loop) --------
         function renderLoop() {
             offCtx.clearRect(0, 0, C_W, C_H);
             let s = state.settings;
-            
-            // حساب معامل تسريع الحركة بناء على السرعة والـ detune المستعملين لحماية الصوت
-            let totalSpeedFactor = (s.audioSpeed || 1.0) * Math.pow(2, (s.audioDetune || 0) / 1200);
-            
-            let elapsedRealMs = state.isExporting ? (Date.now() - (window.exportStartTime || Date.now())) : 0;
-            let baseTimeMs = state.isExporting ? (elapsedRealMs * totalSpeedFactor) : (audioPlayer.currentTime * 1000);
-            let timeMs = baseTimeMs + ((s.syncOffset || 0) * 1000); 
+            let timeMs = state.isExporting ? (Date.now() - (window.exportStartTime || Date.now())) : (audioPlayer.currentTime * 1000);
+            let isPlaying = (!audioPlayer.paused && audioPlayer.src) || state.isExporting;
 
-            let activePhrase = null;
-            if (!state.audioBuffer && state.phrases.length > 0) { activePhrase = state.phrases[state.currentIndex]; } 
-            else if (state.phrases.length > 0) { activePhrase = state.phrases.find(p => timeMs >= p.startTime && timeMs <= p.endTime); }
-            
-            offCtx.save();
-            if (s.camOn) {
-                let speedMultiplier = 1.5; let t = (baseTimeMs / 1000) * 0.05 * speedMultiplier; let scale = 1, tx = 0, ty = 0;
-                if (s.camType === 'zoom') { scale = 1 + ((Math.sin(t * 2) + 1) / 2) * 0.3; } else if (s.camType === 'pan') { tx = Math.sin(t * 2) * 80; scale = 1.15; } else if (s.camType === 'kenburns') { scale = 1 + ((Math.sin(t * 1.5) + 1) / 2) * 0.2; tx = Math.sin(t * 1.8) * 60; ty = Math.cos(t * 1.3) * 30; scale *= 1.1; } else if (s.camType === 'combined') { scale = 1 + ((Math.sin(t * 2.2) * Math.cos(t * 1.5) + 1) / 2) * 0.35; tx = (Math.sin(t * 1.7) + Math.cos(t * 1.1)) * 50; ty = (Math.cos(t * 1.9) + Math.sin(t * 1.4)) * 30; scale *= 1.2; }
-                offCtx.translate(C_W/2, C_H/2); offCtx.scale(scale, scale); offCtx.translate(-C_W/2 + tx, -C_H/2 + ty);
+            let activeDiag = null;
+            if (state.globalAudioBuffer && state.dialogues.length > 0) { activeDiag = state.dialogues.find(d => timeMs >= d.start && timeMs <= d.end); } 
+            if (!activeDiag && !isPlaying && state.dialogues.length > 0) { activeDiag = state.dialogues[state.currentIndex]; }
+
+            // 1. رسم الخلفية
+            if(activeDiag && activeDiag.bgMedia) {
+                drawCover(offCtx, activeDiag.bgMedia, activeDiag.bgMedia.width, activeDiag.bgMedia.height);
+            } else if(state.bg.type !== 'none' && state.bg.media) { 
+                if(state.bg.type === 'video' && state.bg.media.readyState >= 2) drawCover(offCtx, state.bg.media, state.bg.media.videoWidth, state.bg.media.videoHeight); 
+                else if(state.bg.type === 'image') drawCover(offCtx, state.bg.media, state.bg.media.width, state.bg.media.height); 
+            } else { 
+                let grad = offCtx.createLinearGradient(0,0,0,C_H); grad.addColorStop(0,"#1e1b4b"); grad.addColorStop(1,"#09090b"); offCtx.fillStyle = grad; offCtx.fillRect(0,0,C_W,C_H); 
             }
+            offCtx.fillStyle = `rgba(0,0,0,${s.bgOp || 0.4})`; offCtx.fillRect(0,0,C_W,C_H);
 
-            let bg = state.globalBg;
-            if(bg.type !== 'none' && bg.media) { if(bg.type === 'video' && bg.media.readyState >= 2) drawCover(offCtx, bg.media, bg.media.videoWidth, bg.media.videoHeight); else if(bg.type === 'image') drawCover(offCtx, bg.media, bg.media.width, bg.media.height); } 
-            else { let grad = offCtx.createLinearGradient(0,0,0,C_H); grad.addColorStop(0,"#18181b"); grad.addColorStop(1,"#09090b"); offCtx.fillStyle = grad; offCtx.fillRect(0,0,C_W,C_H); }
-            offCtx.restore();
+            // 2. تحديث ورسم جزيئات الخلفية
+            updateAndDrawParticles(offCtx);
 
-            if(s.filter === 'bw') { offCtx.globalCompositeOperation='saturation'; offCtx.fillStyle='white'; offCtx.fillRect(0,0,C_W,C_H); offCtx.globalCompositeOperation='source-over'; }
-            if(s.filter === 'warm') { offCtx.fillStyle='rgba(245, 158, 11, 0.15)'; offCtx.fillRect(0,0,C_W,C_H); }
-            if(s.filter === 'cool') { offCtx.fillStyle='rgba(14, 165, 233, 0.15)'; offCtx.fillRect(0,0,C_W,C_H); }
-            offCtx.fillStyle = `rgba(0,0,0,${s.bgOp || 0.5})`; offCtx.fillRect(0,0,C_W,C_H);
-
-            if(s.bokehOn) {
-                offCtx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-                bokehs.forEach(p => { p.y -= p.speedY; p.x += Math.sin(baseTimeMs/2000 + p.phase) * p.speedX; if(p.y < -0.2) { p.y = 1.2; p.x = Math.random(); } offCtx.beginPath(); offCtx.arc(p.x * C_W, p.y * C_H, p.size, 0, Math.PI*2); offCtx.fill(); });
-            }
-            if(s.partOn) {
-                offCtx.fillStyle = 'rgba(255, 215, 0, 0.6)';
-                particles.forEach(p => { p.y -= p.speedY; p.x += Math.sin(baseTimeMs/1000 + p.phase) * p.speedX; if(p.y < 0) { p.y = 1.1; p.x = Math.random(); } offCtx.globalAlpha = p.opacity * 0.8; offCtx.beginPath(); offCtx.arc(p.x * C_W, p.y * C_H, p.size, 0, Math.PI*2); offCtx.fill(); }); offCtx.globalAlpha = 1;
-            }
-            if(s.leaksOn) {
-                offCtx.globalCompositeOperation = 'screen'; let lx = Math.sin(baseTimeMs/3000) * (C_W/3); let lg = offCtx.createRadialGradient(lx, 0, 0, lx, 0, C_W*0.6); lg.addColorStop(0, 'rgba(255,100,50,0.15)'); lg.addColorStop(1, 'rgba(0,0,0,0)'); offCtx.fillStyle = lg; offCtx.fillRect(0,0,C_W,C_H); offCtx.globalCompositeOperation = 'source-over';
-            }
-
-            if(s.vizOn && state.analyser && (!audioPlayer.paused || state.isExporting)) {
-                state.analyser.getByteFrequencyData(state.dataArray);
-                let count = Math.floor(state.dataArray.length * 0.6); let startX = C_W * s.vizX; let baseY = C_H * s.vizY;
-                offCtx.shadowColor = s.vizColor; offCtx.shadowBlur = 15; offCtx.fillStyle = s.vizColor; offCtx.strokeStyle = s.vizColor; offCtx.lineCap = "round"; 
-                offCtx.beginPath();
+            // 3. رسم الشخصيات والموجات الصوتية وإطارات التحديد المباشر عند السحب
+            state.speakers.forEach(speaker => {
+                let isSpeaking = activeDiag && activeDiag.speakerId === speaker.id && isPlaying;
                 
-                if (s.vizStyle === 'circle' || s.vizStyle === 'radial-bars' || s.vizStyle === 'hexagon') {
-                    let radius = s.vizStyle==='hexagon' ? 100 : 80; offCtx.lineWidth = 4;
-                    let sides = s.vizStyle==='hexagon' ? 6 : count;
-                    for(let i=0; i < sides; i++) {
-                        let val = state.dataArray[Math.floor(i*(count/sides))]; let h = (val / 255) * 50; let angle = (i / sides) * Math.PI * 2 - Math.PI/2;
-                        if(s.vizStyle === 'radial-bars') {
-                            offCtx.moveTo(startX + Math.cos(angle)*radius, baseY + Math.sin(angle)*radius); offCtx.lineTo(startX + Math.cos(angle)*(radius+h), baseY + Math.sin(angle)*(radius+h));
-                        } else { let x = startX + Math.cos(angle)*(radius+h); let y = baseY + Math.sin(angle)*(radius+h); if(i===0) offCtx.moveTo(x,y); else offCtx.lineTo(x,y); }
+                if(speaker.showImage) {
+                    let sSize = C_W * (speaker.scale / 100); let xPos = C_W * (speaker.x / 100); let yPos = C_H * (speaker.y / 100);
+                    offCtx.save();
+                    if(isSpeaking) { yPos += Math.sin(timeMs / 80) * 8; offCtx.shadowColor = s.glowColor || '#3b82f6'; offCtx.shadowBlur = 35; }
+                    offCtx.globalAlpha = 1.0; 
+
+                    if(speaker.imageObj) {
+                        let ratio = speaker.imageObj.width / speaker.imageObj.height; let drawW = sSize; let drawH = sSize / ratio;
+                        offCtx.drawImage(speaker.imageObj, xPos - drawW/2, yPos - drawH/2, drawW, drawH);
+                        
+                        // إطار تحديد بصري عند السحب بالماوس Dragging
+                        if(activeDrag && activeDrag.id === speaker.id && activeDrag.type === 'speaker') {
+                            offCtx.strokeStyle = '#3b82f6'; offCtx.lineWidth = 4; offCtx.setLineDash([8, 8]);
+                            offCtx.strokeRect(xPos - drawW/2 - 5, yPos - drawH/2 - 5, drawW + 10, drawH + 10);
+                        }
                     }
-                    if(s.vizStyle !== 'radial-bars') offCtx.closePath();
-                } 
-                else if (s.vizStyle === 'pulse-ring') { let avg = state.dataArray.slice(0,count).reduce((a,b)=>a+b)/count; offCtx.lineWidth = 6; offCtx.arc(startX, baseY, 50 + (avg/255)*100, 0, Math.PI*2); }
-                else if (s.vizStyle === 'symmetric' || s.vizStyle === 'double-wave') {
-                    let barW = (C_W * 0.6) / count; offCtx.lineWidth = barW * 0.8;
-                    for(let i=0; i < count; i++) {
-                        let h = (state.dataArray[i] / 255) * 60; if(h < 2) h = 2; let x = startX - (C_W*0.3) + (i * barW);
-                        if(s.vizStyle === 'symmetric') { offCtx.moveTo(x, baseY - h/2); offCtx.lineTo(x, baseY + h/2); } else { if(i===0) { offCtx.moveTo(x, baseY-h); } else { offCtx.lineTo(x, baseY-h); } }
-                    }
-                    if(s.vizStyle === 'double-wave') { for(let i=count-1; i >= 0; i--) { let h = (state.dataArray[i] / 255) * 60; if(h < 2) h = 2; let x = startX - (C_W*0.3) + (i * barW); offCtx.lineTo(x, baseY+h); } offCtx.closePath(); }
+                    offCtx.restore();
                 }
-                else if (s.vizStyle === 'top-drop') { let barW = (C_W * 0.8) / count; offCtx.lineWidth = barW * 0.8; for(let i=0; i < count; i++) { let h = (state.dataArray[i] / 255) * 80; let x = startX - (C_W*0.4) + (i * barW); offCtx.moveTo(x, 0); offCtx.lineTo(x, h); } }
-                else if (s.vizStyle === 'corner') {
-                    offCtx.lineWidth = 4;
-                    for(let i=0; i < count/2; i++) {
-                        let h = (state.dataArray[i] / 255) * 150; let a1 = (i/(count/2)) * Math.PI/2; let a2 = Math.PI - a1;
-                        offCtx.moveTo(0, C_H); offCtx.lineTo(Math.cos(a1)*h, C_H - Math.sin(a1)*h);
-                        offCtx.moveTo(C_W, C_H); offCtx.lineTo(C_W + Math.cos(a2)*h, C_H - Math.sin(a2)*h);
-                    }
-                }
-                else if (s.vizStyle === 'heartbeat') {
-                    offCtx.lineWidth = 4; let step = (C_W*0.6)/count;
-                    for(let i=0; i < count; i++) {
-                        let h = (state.dataArray[i] / 255) * 60; let x = startX - (C_W*0.3) + (i * step); let beat = i%4===0 ? h : (i%4===1 ? -h : 0);
-                        if(i===0) offCtx.moveTo(x, baseY); else offCtx.lineTo(x, baseY - beat);
-                    }
-                }
-                else if (s.vizStyle === 'line-glow') { let avg = state.dataArray.slice(0,count).reduce((a,b)=>a+b)/count; offCtx.lineWidth = 2 + (avg/255)*20; offCtx.moveTo(startX - C_W*0.3, baseY); offCtx.lineTo(startX + C_W*0.3, baseY); }
-                else {
-                    let barW = ((C_W * 0.6) / count) / 2; offCtx.lineWidth = barW * 0.8;
-                    for(let i=0; i < count; i++) {
-                        let val = state.dataArray[i]; let h = (val / 255) * 50; if(h < 2) h = 2; 
-                        let xR = startX + (i * (barW * 2.5)); let xL = startX - (i * (barW * 2.5));
-                        if(s.vizStyle === 'bars') { offCtx.moveTo(xR, baseY); offCtx.lineTo(xR, baseY - h); if(i!==0){ offCtx.moveTo(xL, baseY); offCtx.lineTo(xL, baseY - h); } } 
-                        else if (s.vizStyle === 'dots') { offCtx.moveTo(xR, baseY-h); offCtx.arc(xR, baseY-h, barW, 0, Math.PI*2); if(i!==0){ offCtx.moveTo(xL, baseY-h); offCtx.arc(xL, baseY-h, barW, 0, Math.PI*2); } } 
-                        else if (s.vizStyle === 'wave') { if(i===0) offCtx.moveTo(xR, baseY-h); else offCtx.lineTo(xR, baseY-h); }
-                        else if (s.vizStyle === 'block-bars') { let blocks = Math.floor(h / 10); for(let b=0; b<blocks; b++) { offCtx.moveTo(xR, baseY - (b*12)); offCtx.lineTo(xR, baseY - (b*12) - 8); if(i!==0) { offCtx.moveTo(xL, baseY - (b*12)); offCtx.lineTo(xL, baseY - (b*12) - 8); } } }
-                        else if (s.vizStyle === 'bounce-dots') { let jump = Math.sin(baseTimeMs/100 + i)*10 + h; offCtx.moveTo(xR, baseY-jump); offCtx.arc(xR, baseY-jump, barW, 0, Math.PI*2); if(i!==0){ offCtx.moveTo(xL, baseY-jump); offCtx.arc(xL, baseY-jump, barW, 0, Math.PI*2); } }
+
+                if (speaker.vizOn) {
+                    let drawViz = false; let fakeMode = false;
+                    if (isPlaying && isSpeaking && state.analyser) { drawViz = true; state.analyser.getByteFrequencyData(state.dataArray); }
+                    else if (!isPlaying) { drawViz = true; fakeMode = true; } 
+
+                    if (drawViz) {
+                        let count = 20; let startX = C_W * (speaker.vizX/100); let baseY = C_H * (speaker.vizY/100);
+                        let barW = (C_W * (speaker.vizScale/100)) / count;
+                        
+                        offCtx.shadowColor = speaker.vizColor || '#3b82f6'; offCtx.shadowBlur = 10; offCtx.fillStyle = speaker.vizColor || '#3b82f6'; offCtx.beginPath();
+                        for(let i=0; i < count; i++) {
+                            let h = 5;
+                            if(!fakeMode) { let val = state.dataArray[i * 3] || 0; h = Math.max(5, (val / 255) * (C_H * 0.15 * (speaker.vizScale/100))); }
+                            else { h = Math.max(5, Math.abs(Math.sin((Date.now() / 200) + i)) * 60 * (speaker.vizScale/100)); } 
+                            let x = startX - ((count * barW)/2) + (i * barW);
+                            if (speaker.vizStyle === 'bottom-up') { let upH = h * 1.3; offCtx.roundRect(x, baseY - upH, barW * 0.7, upH, barW * 0.35); } 
+                            else { offCtx.roundRect(x, baseY - h/2, barW * 0.6, h, barW * 0.3); }
+                        }
+                        offCtx.fill(); offCtx.shadowBlur = 0;
+
+                        // إطار تحديد للموجة عند السحب
+                        if(activeDrag && activeDrag.id === speaker.id && activeDrag.type === 'viz') {
+                            offCtx.strokeStyle = '#3b82f6'; offCtx.lineWidth = 3; offCtx.setLineDash([4, 4]);
+                            offCtx.strokeRect(startX - (C_W*(speaker.vizScale/100))/2 - 10, baseY - 40, (C_W*(speaker.vizScale/100)) + 20, 80);
+                        }
                     }
                 }
-                offCtx.stroke(); if(s.vizStyle === 'circle' || s.vizStyle === 'hexagon' || s.vizStyle === 'double-wave') offCtx.fill(); offCtx.shadowBlur = 0; 
-            }
+            });
 
-            if(s.infoOn && globalSurahs.length > 0) {
-                let sName = globalSurahs.find(x => x.number == val('surah'))?.name.replace('سُورَةُ ', '') || "السورة";
-                let rSelect = document.getElementById('reciter'); 
-                let rName = rSelect.options[rSelect.selectedIndex].text.replace(/\(/g, '- ').replace(/\)/g, ' -');
-                
-                offCtx.textAlign = "center"; offCtx.shadowColor = "#000"; offCtx.shadowBlur = 10;
-                offCtx.font = `bold 35px ${s.infoFont}`; offCtx.fillStyle = s.infoColor; offCtx.fillText(`سورة ${sName}`, C_W * s.infoX, C_H * s.infoY); 
-                offCtx.globalAlpha = 0.8; offCtx.font = `25px ${s.infoFont}`; offCtx.fillText(rName, C_W * s.infoX, (C_H * s.infoY) + 40); 
-                offCtx.globalAlpha = 1.0; offCtx.shadowBlur = 0;
-            }
+            // 4. رسم النصوص والتوهج النيون مع دعم أصل موقع السحب
+            if (activeDiag) {
+                let activeSpeaker = state.speakers.find(sp => sp.id === activeDiag.speakerId);
+                let isSpeaking = activeSpeaker && activeDiag && isPlaying;
+                let tX = C_W * (activeSpeaker ? activeSpeaker.textX / 100 : 0.5);
+                let tY = C_H * (activeSpeaker ? activeSpeaker.textY / 100 : 0.7);
+                let lSpace = s.lineSpace || 70;
 
-            let logoOffset = 0;
-            if(state.logoImage) { let imgW = state.logoImage.width; let imgH = state.logoImage.height; let maxW = C_W * s.logoScale; if(imgW > maxW) { let ratio = maxW / imgW; imgW *= ratio; imgH *= ratio; } offCtx.drawImage(state.logoImage, (C_W * s.logoX) - (imgW/2), (C_H * s.logoY) - (imgH/2), imgW, imgH); logoOffset = (imgH/2) + 20; }
-            if(s.wmText) { offCtx.font = `bold ${s.wmSize}px ${s.wmFont}`; offCtx.fillStyle = "rgba(255,255,255,0.4)"; offCtx.textAlign = "center"; offCtx.textBaseline = "middle"; offCtx.fillText(s.wmText, C_W * s.logoX, (C_H * s.logoY) + logoOffset); }
+                let textEn = activeDiag.target.trim() ? activeDiag.target : "Sample Target Text";
+                let textPr = activeDiag.pronunciation.trim() ? activeDiag.pronunciation : "";
+                let textAr = activeDiag.native.trim() ? activeDiag.native : "نص تجريبي";
 
-            let globalTransAlpha = 1; let globalTransBlur = 0; let globalTransScale = 1; let globalTransY = 0; let globalFlashAlpha = 0;
+                let tAlpha = 1, tScale = 1, tYOffset = 0;
 
-            if (activePhrase) {
-                let screens = []; let currentScreen = [];
-                activePhrase.words.forEach(w => { if (w.newPage && currentScreen.length > 0) { screens.push(currentScreen); currentScreen = []; } currentScreen.push(w); }); if(currentScreen.length > 0) screens.push(currentScreen);
-                let activeScreen = screens[0]; for(let screen of screens) { if(timeMs >= screen[0].start && timeMs <= screen[screen.length-1].end) { activeScreen = screen; break; } }
-                
-                if (state.audioBuffer) {
-                    let screenStart = activeScreen[0].start; let screenEnd = activeScreen[activeScreen.length - 1].end; 
-                    let fadeDurationIn = 500; let fadeDurationOut = 100; // منع اختفاء النص مبكراً
-                    let p = 1;
-                    
-                    if (timeMs < screenStart + fadeDurationIn) { p = (timeMs - screenStart) / fadeDurationIn; } 
-                    else if (timeMs > screenEnd - fadeDurationOut) { p = (screenEnd - timeMs) / fadeDurationOut; }
-                    
-                    if (p < 0) p = 0; if (p > 1) p = 1;
+                if (isPlaying && activeDiag.baseAudioBuffer) {
+                    let timeIn = timeMs - activeDiag.start;
+                    let timeOut = activeDiag.end - timeMs;
+                    let animType = s.textAnim || 'zoom';
 
-                    if (p < 1) {
-                        globalTransAlpha = p;
-                        switch (s.ayahTrans) {
-                            case 'blur-fade': globalTransBlur = (1 - p) * 20; break;
-                            case 'zoom-fade': globalTransScale = 1 + (1 - p) * 0.3; break;
-                            case 'slide-blur': globalTransY = (1 - p) * 50; globalTransBlur = (1 - p) * 10; break;
-                            case 'flash-burn': globalTransBlur = (1 - p) * 5; globalFlashAlpha = (1 - p); break;
-                            case 'glitch-shift': if(p < 0.5) globalTransAlpha = 0; break;
-                            case 'fade': break; 
+                    if(animType !== 'none') {
+                        if (timeIn < 250) { 
+                            tAlpha = Math.max(0, timeIn / 250);
+                            if(animType === 'zoom') tScale = 0.85 + (0.15 * tAlpha);
+                            if(animType === 'slide') tYOffset = 25 * (1 - tAlpha);
+                        } 
+                        else if (timeOut < 250) { 
+                            tAlpha = Math.max(0, timeOut / 250);
+                            if(animType === 'zoom') tScale = 1 + (0.1 * (1 - tAlpha));
+                            if(animType === 'slide') tYOffset = -25 * (1 - tAlpha);
                         }
                     }
                 }
 
-                if (globalTransAlpha < 1 && state.audioBuffer && s.transDimEnable) { offCtx.fillStyle = `rgba(0,0,0,${(1 - globalTransAlpha) * 0.8})`; offCtx.fillRect(0, 0, C_W, C_H); }
-                offCtx.globalAlpha = globalTransAlpha; 
-                if(globalTransBlur > 0) offCtx.filter = `blur(${globalTransBlur}px)`;
+                offCtx.save();
+                offCtx.globalAlpha = tAlpha;
+                offCtx.translate(tX, tY + tYOffset);
+                offCtx.scale(tScale, tScale);
+                offCtx.translate(-tX, -tY - tYOffset);
 
-                offCtx.font = `bold ${s.fontS}px ${s.fontF}`; offCtx.textAlign = "center"; offCtx.textBaseline = "middle";
-                let lines = []; let currentLine =[]; let currentWidth = 0; 
-                let spaceW = offCtx.measureText(" ").width + (s.wordSpacing || 0); 
-                let maxW = C_W * 0.85;
-
-                activeScreen.forEach(w => {
-                    let displayTxt = w.text;
-                    if(displayTxt.includes('|^')) {
-                        let pts = displayTxt.split('|^');
-                        displayTxt = (s.fontF === "'Hafs'") ? `${pts[0]} ${pts[1]}` : `${pts[0]} ﴿${pts[1]}﴾`;
-                    }
-                    w.drawText = displayTxt;
-                    let wWidth = offCtx.measureText(displayTxt).width;
-                    if ((currentWidth + wWidth + spaceW > maxW && currentLine.length > 0) || (w.newLine && currentLine.length > 0)) { lines.push({ words: currentLine, width: currentWidth }); currentLine = [w]; currentWidth = wWidth; } 
-                    else { currentLine.push(w); currentWidth += wWidth + (currentLine.length > 1 ? spaceW : 0); }
-                });
-                if(currentLine.length > 0) lines.push({ words: currentLine, width: currentWidth });
-
-                let lineH = s.fontS * 1.6; let startY = (C_H * (s.posY/100)) - ((lines.length - 1) * lineH) / 2;
-                let bottomOfQuranText = startY + ((lines.length - 1) * lineH) + (lineH / 2);
-                let isCenterStyle = (s.style === 'center-focus' || s.style === 'center-focus-rainbow');
-
-                lines.forEach((line, i) => {
-                    let y = startY + (i * lineH); let startX = (C_W / 2) + (line.width / 2); 
-                    line.words.forEach(w => {
-                        let wWidth = offCtx.measureText(w.drawText).width; let centerX = startX - (wWidth / 2);
-                        let isActive = (!state.audioBuffer) ? true : (timeMs >= w.start && timeMs <= w.end);
-                        let wordProgress = (!state.audioBuffer) ? 1 : (isActive ? Math.min(1, (timeMs - w.start) / Math.max(1, w.end - w.start)) : 0);
-                        
-                        let useAnim = s.animOn && s.animStyle !== 'none' && isActive && !w.drawText.includes('﴿') && state.audioBuffer;
-                        let drawScale = globalTransScale, drawOffsetY = globalTransY, drawGlow = 0, drawAlpha = 1, tx = centerX, ty = y, drawRotation = 0;
-
-                        if (useAnim) {
-                            const intensity = s.animInt || 0.7; const speed = s.animSpeed || 1.5;
-                            switch (s.animStyle) {
-                                case 'pulse-glow': let pulse = Math.sin(wordProgress * Math.PI * 4 * speed) * 0.5 + 0.5; drawScale *= 1 + pulse * 0.1 * intensity; drawGlow = 20 + pulse * 30 * intensity; break;
-                                case 'pop-scale': drawScale *= 0.75 + Math.pow(wordProgress, 0.4) * 0.45 * intensity; break;
-                                case 'slide-up': drawOffsetY += (1 - (1 - Math.pow(1 - wordProgress, 3))) * 75 * intensity; drawAlpha = wordProgress * 0.6 + 0.4; break;
-                                case 'rotate-in': drawRotation = (1 - Math.pow(wordProgress, 0.5)) * Math.PI * intensity; drawScale *= wordProgress; drawAlpha = wordProgress; break;
-                                case 'bounce-drop': let drop = Math.max(0, 1 - wordProgress * 3); drawOffsetY += -Math.abs(Math.cos(wordProgress * Math.PI * 3)) * 50 * drop * intensity; drawAlpha = wordProgress * 2 > 1 ? 1 : wordProgress * 2; break;
-                                case 'blur-focus': drawScale *= 1 + (1 - wordProgress) * 0.5 * intensity; drawAlpha = wordProgress; offCtx.shadowBlur = (1 - wordProgress) * 30 * intensity; offCtx.shadowColor = s.baseC; break;
-                                case 'elastic-pop': let t2 = wordProgress * 2; let tempS = t2 < 1 ? t2 * 1.2 : 1.2 - (t2 - 1) * 0.2; if (tempS < 0) tempS = 0.1; drawScale *= 1 + (tempS - 1) * intensity; break;
-                                case 'shake-intense': if (wordProgress < 0.9) { tx += (Math.random() - 0.5) * 10 * intensity; ty += (Math.random() - 0.5) * 10 * intensity; } break;
-                                case 'flip-x': let flipProg = Math.min(1, wordProgress * 2); drawScale *= Math.cos((1 - flipProg) * Math.PI); drawAlpha = flipProg; break;
-                                case 'zoom-out-fade': drawScale *= 1 + (1 - Math.pow(wordProgress, 0.3)) * 2 * intensity; drawAlpha = wordProgress; break;
-                                case 'wave-text': drawOffsetY += Math.sin(timeMs / 100 * speed) * 15 * intensity; break;
-                                case 'ghost-trail': drawOffsetY += -(1 - wordProgress) * 40 * intensity; drawAlpha = wordProgress; drawGlow = (1 - wordProgress) * 30 * intensity; break;
-                                case 'swing-3d': let swing = Math.sin(wordProgress * Math.PI * 3) * (1 - wordProgress); drawRotation = swing * 0.5 * intensity; tx += swing * 20 * intensity; break;
-                                case 'typewriter': let charsToShow = Math.floor(wordProgress * w.drawText.length); w.drawText = w.drawText.substring(0, charsToShow); break;
-                                case 'typewriter-cursor': let cShow = Math.floor(wordProgress * w.drawText.length); w.drawText = w.drawText.substring(0, cShow) + (Math.floor(timeMs / 150) % 2 === 0 ? " _" : ""); break;
-                            }
-                        }
-
-                        if(s.animStyle !== 'blur-focus' || !useAnim) offCtx.shadowBlur = 0;
-                        
-                        let isHollow = false;
-                        if (isActive && state.audioBuffer) { 
-                            if(s.style === 'gradient-fill') { let grd = offCtx.createLinearGradient(centerX - wWidth/2, y - lineH/2, centerX + wWidth/2, y + lineH/2); grd.addColorStop(0, s.hiC); grd.addColorStop(1, s.baseC); offCtx.fillStyle = grd; grd.shadowColor = s.hiC; grd.shadowBlur = 10; } 
-                            else if (s.style === 'neon-border') { offCtx.fillStyle = s.baseC; offCtx.shadowColor = s.hiC; offCtx.shadowBlur = 30 + drawGlow; } 
-                            else if (s.style === 'shadow-pop') { offCtx.fillStyle = s.hiC; offCtx.shadowColor = 'rgba(0,0,0,0.8)'; offCtx.shadowBlur = 5; offCtx.shadowOffsetY = 8; offCtx.shadowOffsetX = 8; }
-                            else if (s.style === 'invert-box') { offCtx.fillStyle = s.hiC; offCtx.fillRect(tx - wWidth/2 - 10, ty - lineH/2, wWidth + 20, lineH); offCtx.fillStyle = s.baseC; }
-                            else if (s.style === 'underline-glow') { offCtx.fillStyle = s.hiC; offCtx.fillRect(tx - wWidth/2, ty + lineH/2.5, wWidth, 5); offCtx.shadowColor = s.hiC; offCtx.shadowBlur = 15; }
-                            else if (s.style === 'hollow-active') { isHollow = true; offCtx.strokeStyle = s.hiC; offCtx.lineWidth = 2; offCtx.shadowColor = s.hiC; offCtx.shadowBlur = 10; }
-                            else if (s.style === 'gold-foil') { let lg = offCtx.createLinearGradient(tx-wWidth/2, ty-lineH/2, tx+wWidth/2, ty+lineH/2); lg.addColorStop(0, '#bf953f'); lg.addColorStop(0.25, '#fcf6ba'); lg.addColorStop(0.5, '#b38728'); lg.addColorStop(0.75, '#fbf5b7'); lg.addColorStop(1, '#aa771c'); offCtx.fillStyle = lg; }
-                            else if (s.style === 'fire-text') { let lg = offCtx.createLinearGradient(0, ty+lineH/2, 0, ty-lineH/2); lg.addColorStop(0, '#ffcc00'); lg.addColorStop(0.5, '#ff6600'); lg.addColorStop(1, '#cc0000'); offCtx.fillStyle = lg; offCtx.shadowColor = '#ff6600'; offCtx.shadowBlur = 20; }
-                            else if (s.style === 'glass-morphism') { offCtx.fillStyle = 'rgba(255,255,255,0.2)'; offCtx.beginPath(); offCtx.roundRect(tx - wWidth/2 - 15, ty - lineH/2, wWidth + 30, lineH, 15); offCtx.fill(); offCtx.fillStyle = s.hiC; offCtx.shadowColor = 'rgba(255,255,255,0.5)'; offCtx.shadowBlur = 10; }
-                            else if (s.style === 'silver-chrome') { let lg = offCtx.createLinearGradient(0, ty-lineH/2, 0, ty+lineH/2); lg.addColorStop(0, '#ffffff'); lg.addColorStop(0.4, '#888888'); lg.addColorStop(0.5, '#222222'); lg.addColorStop(0.6, '#aaaaaa'); lg.addColorStop(1, '#eeeeee'); offCtx.fillStyle = lg; }
-                            else if (s.style === 'moonlight') { offCtx.fillStyle = '#ffffff'; offCtx.shadowColor = '#0ea5e9'; offCtx.shadowBlur = 30 + drawGlow; }
-                            else if (s.style === 'rainbow') { offCtx.fillStyle = `hsl(${(timeMs/10)%360}, 100%, 60%)`; offCtx.shadowColor = offCtx.fillStyle; offCtx.shadowBlur = 15; }
-                            else if (s.style === 'center-focus-rainbow') { offCtx.fillStyle = `hsl(${(timeMs/10)%360}, 100%, 60%)`; offCtx.shadowColor = offCtx.fillStyle; offCtx.shadowBlur = 15 + drawGlow; }
-                            else { offCtx.fillStyle = s.hiC; if(s.animStyle !== 'blur-focus' || !useAnim) offCtx.shadowBlur = drawGlow; offCtx.shadowColor = s.hiC; }
-                        } else { 
-                            offCtx.fillStyle = s.baseC; offCtx.globalAlpha = (s.style === 'quran-dim') ? 0.2 : 0.85; 
-                        }
-                        
-                        offCtx.globalAlpha *= drawAlpha * globalTransAlpha; 
-
-                        let textToDraw = w.drawText; delete w.drawText;
-                        
-                        const renderTextStr = (txt, px, py) => {
-                            if (s.textGlitchOn && Math.random() < 0.2 && !w.text.includes('|^')) {
-                                let shift = (Math.random() - 0.5) * s.textGlitchInt;
-                                let origFill = offCtx.fillStyle;
-                                offCtx.fillStyle = 'red'; offCtx.fillText(txt, px + shift, py);
-                                offCtx.fillStyle = 'cyan'; offCtx.fillText(txt, px - shift, py);
-                                offCtx.fillStyle = origFill; offCtx.fillText(txt, px + (Math.random()*2), py);
-                            } else {
-                                if(s.strokeW > 0 && s.strokeC && !isHollow) { offCtx.strokeStyle = s.strokeC; offCtx.lineWidth = s.strokeW; offCtx.strokeText(txt, px, py); }
-                                if(isHollow) offCtx.strokeText(txt, px, py); else offCtx.fillText(txt, px, py);
-                            }
-                        };
-
-                        if (isCenterStyle && state.audioBuffer) {
-                            if (isActive) { tx = C_W / 2; ty = C_H * (s.posY / 100); offCtx.save(); offCtx.translate(tx, ty + drawOffsetY); offCtx.rotate(drawRotation); offCtx.scale(drawScale, drawScale); renderTextStr(textToDraw, 0, 0); offCtx.restore(); }
-                        } else {
-                            offCtx.save(); offCtx.translate(tx, ty + drawOffsetY); offCtx.rotate(drawRotation); offCtx.scale(drawScale, drawScale); renderTextStr(textToDraw, 0, 0); offCtx.restore();
-                        }
-                        offCtx.globalAlpha = globalTransAlpha; offCtx.shadowBlur = 0; offCtx.shadowOffsetY = 0; offCtx.shadowOffsetX = 0; startX -= (wWidth + spaceW);
-                    });
-                });
-
-                if(activePhrase.trans) {
-                    let transFontSize = s.fontS * 0.35; offCtx.font = `600 ${transFontSize}px 'Cairo', sans-serif`; offCtx.fillStyle = s.transColor || "#cbd5e1"; offCtx.shadowColor = "rgba(0,0,0,0.8)"; offCtx.shadowBlur = 4; offCtx.shadowOffsetY = 2;
-                    offCtx.direction = /^[a-zA-Z]/.test(activePhrase.trans.trim()) ? "ltr" : "rtl";
-                    wrapTextLine(offCtx, activePhrase.trans, C_W/2, Math.max(C_H * (s.transY/100), bottomOfQuranText + 25) + globalTransY, maxW, transFontSize * 1.5);
-                    offCtx.direction = "rtl"; offCtx.shadowBlur = 0; offCtx.shadowOffsetY = 0;
+                // إطار تحديد للنص عند السحب
+                if(activeSpeaker && activeDrag && activeDrag.id === activeSpeaker.id && activeDrag.type === 'text') {
+                    offCtx.strokeStyle = '#10b981'; offCtx.lineWidth = 3; offCtx.setLineDash([6, 6]);
+                    offCtx.strokeRect(tX - (C_W*0.4), tY - 30, C_W*0.8, lSpace * 3);
                 }
-                
-                offCtx.filter = 'none';
-                if(globalFlashAlpha > 0) { offCtx.fillStyle = `rgba(255,255,255,${globalFlashAlpha})`; offCtx.fillRect(0,0,C_W,C_H); }
+
+                // رسم الخط الإنجليزي بالتوهج النيون
+                let fontEnCss = `900 ${s.enSize || 50}px ${s.fontEn || "'Outfit', sans-serif"}`;
+                let segmentsEn = parseColoredText(textEn, s.defaultColor || "#ffffff");
+                drawColoredLineCentered(offCtx, segmentsEn, tX, tY + tYOffset, fontEnCss, "ltr", isSpeaking);
+
+                // رسم خط النطق الصوتيات بالتوهج النيون
+                if(textPr) {
+                    let fontPrCss = `800 ${s.prSize || 40}px ${s.fontPr || "'Cairo', sans-serif"}`;
+                    let segmentsPr = parseColoredText(textPr, s.defaultColor || "#ffffff");
+                    drawColoredLineCentered(offCtx, segmentsPr, tX, tY + tYOffset + lSpace, fontPrCss, "rtl", isSpeaking);
+                }
+
+                // رسم الخط العربي بالتوهج النيون
+                if(textAr) {
+                    let fontArCss = `900 ${s.arSize || 40}px ${s.fontAr || "'Cairo', sans-serif"}`;
+                    let segmentsAr = parseColoredText(textAr, s.defaultColor || "#ffffff");
+                    let finalY = textPr ? tY + tYOffset + (lSpace * 2) : tY + tYOffset + lSpace;
+                    drawColoredLineCentered(offCtx, segmentsAr, tX, finalY, fontArCss, "rtl", isSpeaking);
+                }
+
+                offCtx.restore();
             }
-            
-            if(s.vigOn) { let vigGrd = offCtx.createRadialGradient(C_W/2, C_H/2, C_W*0.4, C_W/2, C_H/2, C_W*0.8); vigGrd.addColorStop(0, 'rgba(0,0,0,0)'); vigGrd.addColorStop(1, 'rgba(0,0,0,0.85)'); offCtx.fillStyle = vigGrd; offCtx.fillRect(0,0,C_W,C_H); }
-            if(s.barsOn) { let barH = Math.min(100, baseTimeMs/5); offCtx.fillStyle = '#000'; offCtx.fillRect(0,0,C_W,barH); offCtx.fillRect(0,C_H-barH,C_W,barH); }
 
-            offCtx.globalAlpha = 1; 
-
-            // Final Composite to Main Canvas
-            ctx.clearRect(0, 0, C_W, C_H);
-            
-            let isTransGlitch = (s.ayahTrans === 'glitch-shift' && activePhrase && globalTransAlpha < 1 && globalTransAlpha > 0);
-            
-            if (s.glitchInt > 0 || isTransGlitch) {
-                let gInt = s.glitchInt > 0 ? s.glitchInt : 20; 
-                ctx.drawImage(offCanvas, 0, 0); 
-                if(Math.random() < (isTransGlitch ? 0.8 : 0.3)) { let sY = Math.random() * C_H; let sH = 5 + Math.random() * 50; let sX = (Math.random() - 0.5) * gInt * 5; ctx.drawImage(offCanvas, 0, sY, C_W, sH, sX, sY, C_W, sH); }
-                if(Math.random() < (isTransGlitch ? 0.5 : 0.1)) { let sY = Math.random() * C_H; let sH = 50 + Math.random() * 100; let sX = (Math.random() - 0.5) * gInt * 10; ctx.drawImage(offCanvas, 0, sY, C_W, sH, sX, sY, C_W, sH); }
-                if (Math.random() < (isTransGlitch ? 0.9 : 0.5)) { ctx.globalAlpha = 0.4; ctx.drawImage(offCanvas, gInt, 0); ctx.drawImage(offCanvas, -gInt, 0); ctx.globalAlpha = 1.0; }
-            } 
-            else if (s.rippleInt > 0) {
-                let intensity = s.rippleInt; let timePhase = baseTimeMs * 0.003;
-                for (let y = 0; y < C_H; y += 30) { let yInt = y | 0; let oX = (Math.sin((yInt * 0.01) + timePhase) * intensity) | 0; ctx.drawImage(offCanvas, 0, yInt, C_W, 30, oX, yInt, C_W, 30); }
-            } else { ctx.drawImage(offCanvas, 0, 0); }
-
-            if(s.bloomOn) { ctx.globalCompositeOperation = 'screen'; ctx.globalAlpha = 0.4; ctx.filter = 'blur(15px)'; ctx.drawImage(canvas, 0, 0); ctx.filter = 'none'; ctx.globalAlpha = 1.0; ctx.globalCompositeOperation = 'source-over'; }
-            if(s.grainInt > 0) { ctx.globalCompositeOperation = 'overlay'; ctx.globalAlpha = s.grainInt / 100; let ptrn = ctx.createPattern(grainCanvas, 'repeat'); ctx.fillStyle = ptrn; ctx.save(); ctx.translate((Math.random()-0.5)*100, (Math.random()-0.5)*100); ctx.fillRect(-100,-100,C_W+200,C_H+200); ctx.restore(); ctx.globalAlpha = 1.0; ctx.globalCompositeOperation = 'source-over'; }
-
-            requestAnimationFrame(renderLoop);
+            ctx.clearRect(0, 0, C_W, C_H); ctx.drawImage(offCanvas, 0, 0); requestAnimationFrame(renderLoop);
         }
 
+        // -------- نظام التصدير السريع المباشر --------
         let ffmpeg = null;
         async function startExport() {
-            if(state.phrases.length === 0 || !state.audioBuffer) return alert("الرجاء جلب الصوت والمزامنة أولاً.");
+            if(state.dialogues.length === 0 || !state.globalAudioBuffer) return alert("الرجاء توليد الأصوات أولاً.");
             
             const btn = document.getElementById('btn-export'); const msg = document.getElementById('status-msg'); const bar = document.getElementById('progress-bar-export'); const dLink = document.getElementById('download-link');
             btn.disabled = true; document.getElementById('export-status').classList.remove('hidden'); dLink.classList.add('hidden'); state.isExporting = true; audioPlayer.pause();
 
             try {
-                if (!ffmpeg) { const { createFFmpeg } = window.FFmpeg; ffmpeg = createFFmpeg({ log: true, corePath: "https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js" }); msg.innerText = "جاري تحميل محرك التصدير (FFmpeg)..."; await ffmpeg.load(); }
+                if (!ffmpeg) { const { createFFmpeg } = window.FFmpeg; ffmpeg = createFFmpeg({ log: false, corePath: "https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js" }); msg.innerText = "تحميل محرك التصدير..."; await ffmpeg.load(); }
                 msg.innerText = "🔴 جاري التسجيل المباشر للفيديو..."; bar.style.width = "40%";
 
-                if (state.globalBg.type === 'video' && state.globalBg.media) { state.globalBg.media.currentTime = 0; state.globalBg.media.playbackRate = 1.0; state.globalBg.media.play(); }
-                
                 let exportAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); let dest = exportAudioCtx.createMediaStreamDestination();
                 state.analyser = exportAudioCtx.createAnalyser(); state.analyser.fftSize = 256; state.dataArray = new Uint8Array(state.analyser.frequencyBinCount);
+
                 const canvasStream = canvas.captureStream(30); const combinedStream = new MediaStream([ ...canvasStream.getVideoTracks(), ...dest.stream.getAudioTracks() ]); 
 
                 let mime = 'video/webm;codecs=vp8'; if (MediaRecorder.isTypeSupported('video/webm;codecs=h264')) { mime = 'video/webm;codecs=h264'; }
-                let quality = parseInt(document.getElementById('video-quality').value); let exportBitrate = quality === 720 ? 1200000 : 2500000; 
-                const recorder = new MediaRecorder(combinedStream, { mimeType: mime, videoBitsPerSecond: exportBitrate });
+                const recorder = new MediaRecorder(combinedStream, { mimeType: mime, videoBitsPerSecond: 4000000 });
                 let chunks = []; recorder.ondataavailable = e => { if(e.data.size > 0) chunks.push(e.data); };
                 
                 recorder.onstop = async () => {
@@ -1291,50 +1123,18 @@
                     const videoBlob = new Blob(chunks, { type: mime });
                     try {
                         const webmData = new Uint8Array(await videoBlob.arrayBuffer()); ffmpeg.FS('writeFile', 'in.webm', webmData);
-                        let ffmpegArgs = []; if (mime.includes('h264')) { ffmpegArgs = ['-i', 'in.webm', '-c', 'copy', 'out.mp4']; } else { ffmpegArgs = ['-i', 'in.webm', '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '30', '-vf', 'scale=720:-2', '-c:a', 'aac', '-b:a', '128k', 'out.mp4']; }
-                        const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 120000)); await Promise.race([ffmpeg.run(...ffmpegArgs), timeout]);
-                        const mp4 = ffmpeg.FS('readFile', 'out.mp4');
-                        dLink.href = URL.createObjectURL(new Blob([mp4.buffer], {type: 'video/mp4'})); dLink.download = `Quran_Studio_${Date.now()}.mp4`; dLink.innerHTML = '<i class="fa-solid fa-download ml-1"></i> تحميل الفيديو بصيغة MP4'; dLink.className = "mt-4 w-full block bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl transition text-sm text-center shadow-lg shadow-emerald-600/30"; dLink.classList.remove('hidden');
-                        msg.innerText = "✅ اكتمل التصدير بنجاح (MP4)!"; bar.style.width = "100%"; ffmpeg.FS('unlink', 'in.webm'); ffmpeg.FS('unlink', 'out.mp4');
+                        let ffmpegArgs = ['-i', 'in.webm', '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '28', '-c:a', 'aac', 'out.mp4'];
+                        await ffmpeg.run(...ffmpegArgs); const mp4 = ffmpeg.FS('readFile', 'out.mp4');
+                        dLink.href = URL.createObjectURL(new Blob([mp4.buffer], {type: 'video/mp4'})); dLink.download = `EduLang_Ultra_${Date.now()}.mp4`; dLink.innerHTML = '<i class="fa-solid fa-download ml-1"></i> تحميل الفيديو (MP4)'; dLink.className = "mt-4 w-full block bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl transition text-sm text-center shadow-lg shadow-emerald-600/30"; dLink.classList.remove('hidden');
+                        msg.innerText = "✅ اكتمل التصدير بنجاح!"; bar.style.width = "100%"; ffmpeg.FS('unlink', 'in.webm'); ffmpeg.FS('unlink', 'out.mp4');
                     } catch (err) {
-                        msg.innerText = "⚠️ تم استخراج فيديو WebM بنجاح (بديل سريع وآمن)!"; msg.classList.replace('text-emerald-400', 'text-amber-400');
-                        dLink.href = URL.createObjectURL(videoBlob); dLink.download = `Quran_Studio_${Date.now()}.webm`; dLink.innerHTML = '<i class="fa-solid fa-download ml-1"></i> تحميل الفيديو الأساسي (WebM)'; dLink.className = "mt-4 w-full block bg-amber-600 hover:bg-amber-500 text-white font-bold py-4 rounded-xl transition text-sm text-center"; dLink.classList.remove('hidden'); bar.style.width = "100%"; 
+                        dLink.href = URL.createObjectURL(videoBlob); dLink.download = `EduLang_Ultra_${Date.now()}.webm`; dLink.innerHTML = '<i class="fa-solid fa-download ml-1"></i> تحميل الفيديو (WebM)'; dLink.className = "mt-4 w-full block bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl transition text-sm text-center"; dLink.classList.remove('hidden'); bar.style.width = "100%"; msg.innerText = "اكتمل التصدير!";
                     } finally { btn.disabled = false; }
                 };
 
-                recorder.start(); 
-                
-                let source = exportAudioCtx.createBufferSource(); 
-                source.buffer = state.audioBuffer; 
-                source.playbackRate.value = state.settings.audioSpeed || 1.0;
-                source.detune.value = state.settings.audioDetune || 0;
-                
-                connectAudioGraph(exportAudioCtx, source, state.analyser, dest, true);
-
-                if (state.settings.ambientVol > 0) {
-                    try {
-                        let noise = createProceduralNoise(exportAudioCtx);
-                        let ambientGain = exportAudioCtx.createGain();
-                        ambientGain.gain.value = state.settings.ambientVol;
-                        
-                        noise.filter.connect(ambientGain);
-                        ambientGain.connect(state.analyser); 
-                        
-                        noise.source.start(0);
-                        window.activeExportAmbientSource = noise.source;
-                    } catch(err) {
-                        console.error("Failed to mix ambient audio during export:", err);
-                    }
-                }
-
-                window.exportStartTime = Date.now(); 
-                source.onended = () => { 
-                    if(window.activeExportAmbientSource) {
-                        try { window.activeExportAmbientSource.stop(); } catch(e){}
-                    }
-                    setTimeout(() => recorder.stop(), 500); 
-                }; 
-                source.start(0);
+                recorder.start(); let source = exportAudioCtx.createBufferSource(); source.buffer = state.globalAudioBuffer; 
+                source.connect(state.analyser); state.analyser.connect(dest); source.connect(exportAudioCtx.destination); 
+                window.exportStartTime = Date.now(); source.onended = () => { setTimeout(() => recorder.stop(), 500); }; source.start(0);
 
             } catch(e) { console.error(e); msg.innerText = "❌ حدث خطأ أثناء التحضير."; btn.disabled = false; state.isExporting = false; }
         }
